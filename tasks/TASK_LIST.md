@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.6 — DEV
+→ NEXT: Task 1.6 — TEST
 
 ---
 
@@ -228,7 +228,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.6 — Feed Events Router
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —  
+- [x] **DEV** — `persona: tasks/personas/developer.md` —  
   Read spec: `tasks/specs/task-1.6.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 1.6"`
