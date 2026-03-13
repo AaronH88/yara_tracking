@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.1 — DEV
+→ NEXT: Task 2.1 — TEST
 
 ---
 
@@ -363,7 +363,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 2.1 — Vite + Tailwind + React Router Setup
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —  
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-2.1.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 2.1"`
@@ -375,7 +375,7 @@ Spec files live in: `tasks/specs/`
   On done: check box, cursor → `→ NEXT: Task 2.1 — VERIFY`
 
 - [ ] **VERIFY** —  
-  Run: `cd frontend && npm test -- --watchAll=false 2>&1 | tee tasks/feedback/task-2.1-verify.txt`
+  Run: `cd frontend && npm test 2>&1 | tee tasks/feedback/task-2.1-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 2.1 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 2.1 — DEV`
 
