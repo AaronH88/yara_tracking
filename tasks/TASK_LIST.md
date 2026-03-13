@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.9 — DEV
+→ NEXT: Task 1.9 — VERIFY
 
 ---
 
@@ -309,13 +309,13 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.9 — Calendar Router
 
-- [ ] **DEV** (attempt 2) — `persona: tasks/personas/developer.md` —
+- [x] **DEV** (attempt 2) — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-1.9.md`
   If retrying, read feedback: `tasks/feedback/task-1.9-verify.txt`
   Commit: `git add -A && git commit -m "dev: task 1.9"`
   On done: check box, cursor → `→ NEXT: Task 1.9 — TEST`
 
-- [ ] **TEST** (attempt 2) — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** (attempt 2) — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-1.9.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 1.9"`
   On done: check box, cursor → `→ NEXT: Task 1.9 — VERIFY`
