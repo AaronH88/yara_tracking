@@ -193,26 +193,26 @@ def run_cmd(cmd: str) -> str:
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=ROOT)
     return result.stdout + result.stderr
 
-def run_sandbox_task(prompt: str, mode: str = "agentic") -> int:
-    """Run a Claude Code sandbox invocation. Returns exit code."""
+def run_sandbox_task(prompt: str) -> int:
     result = subprocess.run(
         [str(SANDBOX), "--task", prompt],
-        cwd=ROOT
+        cwd=ROOT,
+        stdin=subprocess.DEVNULL  # same fix as the sandbox script
     )
     return result.returncode
 
 def run_sandbox_exec(cmd: str, output_file: Path) -> int:
-    """Run a command in the sandbox and capture output."""
     output_file.parent.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         [str(SANDBOX), "--exec", cmd],
         capture_output=True,
         text=True,
-        cwd=ROOT
+        cwd=ROOT,
+        stdin=subprocess.DEVNULL  # same fix
     )
     combined = result.stdout + result.stderr
     output_file.write_text(combined)
-    print(combined[-2000:])  # Show tail for visibility
+    print(combined[-2000:])
     return result.returncode
 
 # ── Role execution ─────────────────────────────────────────────────────────────
