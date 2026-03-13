@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from datetime import date, datetime
+
+from pydantic import BaseModel, Field
 
 
 class BabyCreate(BaseModel):
@@ -8,7 +9,13 @@ class BabyCreate(BaseModel):
     gender: str | None = None
 
 
-class BabyRead(BaseModel):
+class BabyUpdate(BaseModel):
+    name: str | None = None
+    birthdate: date | None = None
+    gender: str | None = None
+
+
+class BabyResponse(BaseModel):
     id: int
     name: str
     birthdate: date
@@ -18,17 +25,15 @@ class BabyRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class BabyUpdate(BaseModel):
-    name: str | None = None
-    birthdate: date | None = None
-    gender: str | None = None
-
-
 class UserCreate(BaseModel):
     name: str
 
 
-class UserRead(BaseModel):
+class UserUpdate(BaseModel):
+    name: str | None = None
+
+
+class UserResponse(BaseModel):
     id: int
     name: str
     created_at: datetime | None
@@ -36,21 +41,26 @@ class UserRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class UserUpdate(BaseModel):
-    name: str | None = None
-
-
 class FeedEventCreate(BaseModel):
     user_id: int
     type: str
-    started_at: datetime
+    started_at: datetime = Field(default_factory=datetime.utcnow)
     ended_at: datetime | None = None
     amount_oz: float | None = None
     amount_ml: float | None = None
     notes: str | None = None
 
 
-class FeedEventRead(BaseModel):
+class FeedEventUpdate(BaseModel):
+    type: str | None = None
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
+    amount_oz: float | None = None
+    amount_ml: float | None = None
+    notes: str | None = None
+
+
+class FeedEventResponse(BaseModel):
     id: int
     baby_id: int
     user_id: int
@@ -65,24 +75,22 @@ class FeedEventRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class FeedEventUpdate(BaseModel):
-    type: str | None = None
-    started_at: datetime | None = None
-    ended_at: datetime | None = None
-    amount_oz: float | None = None
-    amount_ml: float | None = None
-    notes: str | None = None
-
-
 class SleepEventCreate(BaseModel):
     user_id: int
     type: str
-    started_at: datetime
+    started_at: datetime = Field(default_factory=datetime.utcnow)
     ended_at: datetime | None = None
     notes: str | None = None
 
 
-class SleepEventRead(BaseModel):
+class SleepEventUpdate(BaseModel):
+    type: str | None = None
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
+    notes: str | None = None
+
+
+class SleepEventResponse(BaseModel):
     id: int
     baby_id: int
     user_id: int
@@ -95,13 +103,6 @@ class SleepEventRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class SleepEventUpdate(BaseModel):
-    type: str | None = None
-    started_at: datetime | None = None
-    ended_at: datetime | None = None
-    notes: str | None = None
-
-
 class DiaperEventCreate(BaseModel):
     user_id: int
     logged_at: datetime
@@ -109,7 +110,13 @@ class DiaperEventCreate(BaseModel):
     notes: str | None = None
 
 
-class DiaperEventRead(BaseModel):
+class DiaperEventUpdate(BaseModel):
+    logged_at: datetime | None = None
+    type: str | None = None
+    notes: str | None = None
+
+
+class DiaperEventResponse(BaseModel):
     id: int
     baby_id: int
     user_id: int
@@ -119,12 +126,6 @@ class DiaperEventRead(BaseModel):
     created_at: datetime | None
 
     model_config = {"from_attributes": True}
-
-
-class DiaperEventUpdate(BaseModel):
-    logged_at: datetime | None = None
-    type: str | None = None
-    notes: str | None = None
 
 
 class PumpEventCreate(BaseModel):
@@ -138,7 +139,17 @@ class PumpEventCreate(BaseModel):
     notes: str | None = None
 
 
-class PumpEventRead(BaseModel):
+class PumpEventUpdate(BaseModel):
+    logged_at: datetime | None = None
+    duration_minutes: int | None = None
+    left_oz: float | None = None
+    left_ml: float | None = None
+    right_oz: float | None = None
+    right_ml: float | None = None
+    notes: str | None = None
+
+
+class PumpEventResponse(BaseModel):
     id: int
     user_id: int
     logged_at: datetime
@@ -153,16 +164,6 @@ class PumpEventRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class PumpEventUpdate(BaseModel):
-    logged_at: datetime | None = None
-    duration_minutes: int | None = None
-    left_oz: float | None = None
-    left_ml: float | None = None
-    right_oz: float | None = None
-    right_ml: float | None = None
-    notes: str | None = None
-
-
 class MeasurementCreate(BaseModel):
     user_id: int
     measured_at: date
@@ -172,7 +173,15 @@ class MeasurementCreate(BaseModel):
     notes: str | None = None
 
 
-class MeasurementRead(BaseModel):
+class MeasurementUpdate(BaseModel):
+    measured_at: date | None = None
+    weight_oz: float | None = None
+    height_in: float | None = None
+    head_cm: float | None = None
+    notes: str | None = None
+
+
+class MeasurementResponse(BaseModel):
     id: int
     baby_id: int
     user_id: int
@@ -186,14 +195,6 @@ class MeasurementRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class MeasurementUpdate(BaseModel):
-    measured_at: date | None = None
-    weight_oz: float | None = None
-    height_in: float | None = None
-    head_cm: float | None = None
-    notes: str | None = None
-
-
 class MilestoneCreate(BaseModel):
     user_id: int
     occurred_at: date
@@ -201,7 +202,13 @@ class MilestoneCreate(BaseModel):
     notes: str | None = None
 
 
-class MilestoneRead(BaseModel):
+class MilestoneUpdate(BaseModel):
+    occurred_at: date | None = None
+    title: str | None = None
+    notes: str | None = None
+
+
+class MilestoneResponse(BaseModel):
     id: int
     baby_id: int
     user_id: int
@@ -213,13 +220,7 @@ class MilestoneRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class MilestoneUpdate(BaseModel):
-    occurred_at: date | None = None
-    title: str | None = None
-    notes: str | None = None
-
-
-class SettingRead(BaseModel):
+class SettingResponse(BaseModel):
     key: str
     value: str | None
 
