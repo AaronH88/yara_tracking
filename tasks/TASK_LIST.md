@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.10 — TEST
+→ NEXT: Task 2.1 — DEV
 
 ---
 
@@ -336,23 +336,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.10 — Settings Router
 
-- [x] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** (attempt 2) — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-1.10.md`
-  If retrying, read feedback: _(none yet)_
+  If retrying, read feedback: `tasks/feedback/task-1.10-verify-fail.txt`
   Commit: `git add -A && git commit -m "dev: task 1.10"`
   On done: check box, cursor → `→ NEXT: Task 1.10 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —  
+- [x] **TEST** (attempt 2) — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-1.10.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 1.10"`
   On done: check box, cursor → `→ NEXT: Task 1.10 — VERIFY`
 
-- [ ] **VERIFY** —  
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-1.10-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 1.10 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 1.10 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —  
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-1.10.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-1.10-verify.txt`
   Verdict → `tasks/feedback/task-1.10-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 2.1 — DEV`
