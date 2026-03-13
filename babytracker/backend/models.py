@@ -1,10 +1,7 @@
 from sqlalchemy import Column, Integer, Text, Float, Date, DateTime, ForeignKey
-from sqlalchemy.orm import DeclarativeBase
 from datetime import datetime, timezone
 
-
-class Base(DeclarativeBase):
-    pass
+from database import Base
 
 
 class Baby(Base):

@@ -2,8 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
-from database import engine
-from models import Base
+from database import engine, Base
 from routers import (
     babies,
     users,
