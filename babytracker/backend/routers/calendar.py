@@ -3,7 +3,7 @@ from datetime import date, datetime, time
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import func, select, cast, Date
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -47,21 +47,21 @@ async def get_month_summary(
 
     feed_counts = await _count_by_date(
         db, FeedEvent, FeedEvent.baby_id == baby_id,
-        cast(FeedEvent.started_at, Date),
+        func.date(FeedEvent.started_at),
         FeedEvent.started_at >= month_start,
         FeedEvent.started_at <= month_end,
     )
 
     sleep_counts = await _count_by_date(
         db, SleepEvent, SleepEvent.baby_id == baby_id,
-        cast(SleepEvent.started_at, Date),
+        func.date(SleepEvent.started_at),
         SleepEvent.started_at >= month_start,
         SleepEvent.started_at <= month_end,
     )
 
     diaper_counts = await _count_by_date(
         db, DiaperEvent, DiaperEvent.baby_id == baby_id,
-        cast(DiaperEvent.logged_at, Date),
+        func.date(DiaperEvent.logged_at),
         DiaperEvent.logged_at >= month_start,
         DiaperEvent.logged_at <= month_end,
     )
@@ -75,19 +75,26 @@ async def get_month_summary(
         )
     )
     milestone_rows = await db.execute(milestone_query)
-    milestone_dates = {row[0] for row in milestone_rows.all()}
+    milestone_date_strings = set()
+    for row in milestone_rows.all():
+        occurred = row[0]
+        milestone_date_strings.add(
+            occurred.isoformat() if isinstance(occurred, date) else str(occurred)
+        )
 
-    all_dates = set(feed_counts) | set(sleep_counts) | set(diaper_counts) | milestone_dates
+    all_date_strings = (
+        set(feed_counts) | set(sleep_counts)
+        | set(diaper_counts) | milestone_date_strings
+    )
 
     summaries: dict[str, DaySummary] = {}
-    for day_date in sorted(all_dates):
-        date_str = day_date.isoformat()
+    for date_str in sorted(all_date_strings):
         summaries[date_str] = DaySummary(
             date=date_str,
-            feed_count=feed_counts.get(day_date, 0),
-            sleep_count=sleep_counts.get(day_date, 0),
-            diaper_count=diaper_counts.get(day_date, 0),
-            has_milestone=day_date in milestone_dates,
+            feed_count=feed_counts.get(date_str, 0),
+            sleep_count=sleep_counts.get(date_str, 0),
+            diaper_count=diaper_counts.get(date_str, 0),
+            has_milestone=date_str in milestone_date_strings,
         )
 
     return summaries
@@ -177,5 +184,5 @@ async def _count_by_date(db: AsyncSession, model, owner_filter, date_expr, *rang
         .where(owner_filter, *range_filters)
         .group_by(date_expr)
     )
-    rows = await db.execute(query)
-    return {row[0]: row[1] for row in rows.all()}
+    result = await db.execute(query)
+    return {str(row[0]): row[1] for row in result.all()}
