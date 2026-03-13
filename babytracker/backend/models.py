@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, Text, Float, Date, DateTime, ForeignKey
-from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, Text, Float, Date, DateTime, ForeignKey, func
 
 from database import Base
 
@@ -11,7 +10,7 @@ class Baby(Base):
     name = Column(Text, nullable=False)
     birthdate = Column(Date, nullable=False)
     gender = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class User(Base):
@@ -19,7 +18,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False, unique=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class FeedEvent(Base):
@@ -29,12 +28,12 @@ class FeedEvent(Base):
     baby_id = Column(Integer, ForeignKey("babies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     type = Column(Text, nullable=False)
-    started_at = Column(DateTime, nullable=False)
-    ended_at = Column(DateTime)
+    started_at = Column(DateTime(timezone=True), nullable=False)
+    ended_at = Column(DateTime(timezone=True))
     amount_oz = Column(Float)
     amount_ml = Column(Float)
     notes = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class SleepEvent(Base):
@@ -44,10 +43,10 @@ class SleepEvent(Base):
     baby_id = Column(Integer, ForeignKey("babies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     type = Column(Text, nullable=False)
-    started_at = Column(DateTime, nullable=False)
-    ended_at = Column(DateTime)
+    started_at = Column(DateTime(timezone=True), nullable=False)
+    ended_at = Column(DateTime(timezone=True))
     notes = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class DiaperEvent(Base):
@@ -56,10 +55,10 @@ class DiaperEvent(Base):
     id = Column(Integer, primary_key=True)
     baby_id = Column(Integer, ForeignKey("babies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    logged_at = Column(DateTime, nullable=False)
+    logged_at = Column(DateTime(timezone=True), nullable=False)
     type = Column(Text, nullable=False)
     notes = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class PumpEvent(Base):
@@ -67,14 +66,14 @@ class PumpEvent(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    logged_at = Column(DateTime, nullable=False)
+    logged_at = Column(DateTime(timezone=True), nullable=False)
     duration_minutes = Column(Integer)
     left_oz = Column(Float)
     left_ml = Column(Float)
     right_oz = Column(Float)
     right_ml = Column(Float)
     notes = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class Measurement(Base):
@@ -88,7 +87,7 @@ class Measurement(Base):
     height_in = Column(Float)
     head_cm = Column(Float)
     notes = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class Milestone(Base):
@@ -100,7 +99,7 @@ class Milestone(Base):
     occurred_at = Column(Date, nullable=False)
     title = Column(Text, nullable=False)
     notes = Column(Text)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class Setting(Base):
@@ -108,3 +107,9 @@ class Setting(Base):
 
     key = Column(Text, primary_key=True)
     value = Column(Text)
+
+
+async def create_tables():
+    from database import engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

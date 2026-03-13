@@ -22,20 +22,20 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 0.1 — DEV
+→ NEXT: Task 1.2 — DEV
 
 ---
 
 ## Task 0.1 — Initialise Project Structure
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —  
+- [x] **DEV** — `persona: tasks/personas/developer.md` —  
   Read spec: `tasks/specs/task-0.1.md`
   Implement the task. When done:
   - Run `git add -A && git commit -m "dev: task 0.1"`
   - Check this box
   - Set cursor to: `→ NEXT: Task 0.1 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —  
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Read spec: `tasks/specs/task-0.1.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
@@ -43,7 +43,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 0.1 — VERIFY`
 
-- [ ] **VERIFY** —  
+- [x] **VERIFY** —
   Run the test suite:
   ```
   cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-0.1-verify.txt
@@ -59,7 +59,7 @@ Spec files live in: `tasks/specs/`
   - If attempt number would exceed 3: replace checkbox with `[BLOCKED]` and stop
   - Set cursor to: `→ NEXT: Task 0.1 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —  
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Read spec: `tasks/specs/task-0.1.md`
   Read diff: `git diff HEAD~2` (covers dev + test commits)
   Read verify output: `tasks/feedback/task-0.1-verify.txt`
@@ -84,7 +84,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.1 — Database Setup
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —  
+- [x] **DEV** — `persona: tasks/personas/developer.md` —  
   Read spec: `tasks/specs/task-1.1.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:
@@ -92,7 +92,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 1.1 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —  
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Read spec: `tasks/specs/task-1.1.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
@@ -100,13 +100,13 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 1.1 — VERIFY`
 
-- [ ] **VERIFY** —  
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-1.1-verify.txt`
   If pass: check box, set cursor to `→ NEXT: Task 1.1 — JUDGE`
   If fail: uncheck DEV + TEST, increment attempts, set cursor to `→ NEXT: Task 1.1 — DEV`
   If any attempt > 3: mark `[BLOCKED]` and stop.
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —  
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Read spec: `tasks/specs/task-1.1.md`
   Read diff: `git diff HEAD~2`
   Read verify output: `tasks/feedback/task-1.1-verify.txt`
@@ -964,16 +964,13 @@ Spec files live in: `tasks/specs/`
   - `tasks/ARCHITECTURE_REF.md` — what was planned
   - `git log --oneline` — what was actually built
   - All `tasks/feedback/*-judge.md` files — what concerns were raised
-  - The running codebase
 
-  Write your verdict to: `tasks/feedback/final-judge.md`
+  Write your full verdict to: `tasks/feedback/final-judge.md`
 
-  You are looking for systemic issues that per-task judges may have missed:
-  - Patterns that were inconsistent across phases
-  - Concerns that appeared in multiple pass_with_concerns verdicts
-  - Anything that would make this codebase hard to maintain
+  Then update `tasks/BUILD_STATUS.md` — overwrite the entire file with one of:
 
-  If PASS: check this box. Write "✓ BUILD COMPLETE" at the top of this file.
-  If FAIL: write a prioritised list of issues to `tasks/feedback/final-judge.md`
-           Do not uncheck individual tasks — list what needs a cleanup pass instead.
-           Leave this box unchecked. A human will decide next steps.
+  If PASS:
+  APPROVED
+
+  If FAIL:
+  FAILED — see tasks/feedback/final-judge.md
