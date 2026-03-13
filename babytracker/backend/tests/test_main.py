@@ -79,7 +79,8 @@ def test_all_routers_registered_under_api_v1():
 @pytest.mark.anyio
 async def test_lifespan_calls_create_tables():
     """Lifespan startup should call create_tables()."""
-    with patch("main.create_tables", new_callable=AsyncMock) as mock_create:
+    with patch("main.create_tables", new_callable=AsyncMock) as mock_create, \
+         patch("main.seed_settings", new_callable=AsyncMock):
         async with lifespan(app):
             mock_create.assert_awaited_once()
 
