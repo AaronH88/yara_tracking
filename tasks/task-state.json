@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "project": "babytracker",
+  "created_at": "2026-03-13T15:27:35.815810+00:00",
+  "last_updated": "2026-03-13T15:27:35.815810+00:00",
+  "final_judge_status": "pending",
+  "tasks": [
+    {
+      "id": "0.1",
+      "title": "Initialise Project Structure",
+      "phase": 0,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "1.1",
+      "title": "Database Setup",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.2",
+      "title": "Database Models",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.3",
+      "title": "Pydantic Schemas",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.4",
+      "title": "FastAPI App Entry Point",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.5",
+      "title": "Babies & Users Routers",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.6",
+      "title": "Feed Events Router",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.7",
+      "title": "Sleep Events Router",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.8",
+      "title": "Diaper, Pump, Measurement, Milestone Routers",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.9",
+      "title": "Calendar Router",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "1.10",
+      "title": "Settings Router",
+      "phase": 1,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "2.1",
+      "title": "Vite + Tailwind + React Router Setup",
+      "phase": 2,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "2.2",
+      "title": "Context Providers",
+      "phase": 2,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "2.3",
+      "title": "Persona Gate (Who Are You Modal)",
+      "phase": 2,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "2.4",
+      "title": "Layout Shell",
+      "phase": 2,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "3.1",
+      "title": "useTimer Hook",
+      "phase": 3,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "3.2",
+      "title": "useActiveEvents Hook",
+      "phase": 3,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "3.3",
+      "title": "Feed Timer Component",
+      "phase": 3,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "3.4",
+      "title": "Sleep Timer Component",
+      "phase": 3,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "3.5",
+      "title": "ActiveTimer Display Component",
+      "phase": 3,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "3.6",
+      "title": "Quick Actions & Dashboard",
+      "phase": 3,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "4.1",
+      "title": "Event Edit Forms",
+      "phase": 4,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "4.2",
+      "title": "History Page",
+      "phase": 4,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "4.3",
+      "title": "Calendar Month View",
+      "phase": 4,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "4.4",
+      "title": "Calendar Day Timeline",
+      "phase": 4,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "5.1",
+      "title": "Admin Page",
+      "phase": 5,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "5.2",
+      "title": "Settings Page",
+      "phase": 5,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "both",
+      "history": []
+    },
+    {
+      "id": "6.1",
+      "title": "PWA Manifest & Meta Tags",
+      "phase": 6,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "6.2",
+      "title": "Mobile UX Polish",
+      "phase": 6,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "6.3",
+      "title": "Retroactive Entry UX",
+      "phase": 6,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "frontend",
+      "history": []
+    },
+    {
+      "id": "7.1",
+      "title": "LXC Deployment Script",
+      "phase": 7,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "7.2",
+      "title": "Environment Configuration",
+      "phase": 7,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    },
+    {
+      "id": "7.3",
+      "title": "Basic Backup Script",
+      "phase": 7,
+      "state": "PENDING",
+      "current_iteration": 1,
+      "max_iterations": 3,
+      "verify_scope": "backend",
+      "history": []
+    }
+  ]
+}
