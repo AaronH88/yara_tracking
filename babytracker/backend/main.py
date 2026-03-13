@@ -1,22 +1,43 @@
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 from pathlib import Path
 
-from database import engine, Base
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from models import create_tables
 from routers import (
     babies,
-    users,
-    feeds,
-    sleeps,
+    calendar,
     diapers,
-    pumps,
+    feeds,
     measurements,
     milestones,
-    calendar,
+    pumps,
     settings,
+    sleeps,
+    users,
 )
 
-app = FastAPI(title="Baby Tracker")
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_tables()
+    yield
+
+
+app = FastAPI(title="Baby Tracker", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(babies.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
@@ -29,12 +50,15 @@ app.include_router(milestones.router, prefix="/api/v1")
 app.include_router(calendar.router, prefix="/api/v1")
 app.include_router(settings.router, prefix="/api/v1")
 
-frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
-if frontend_dist.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="static")
+if FRONTEND_DIST.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIST)), name="static")
 
 
-@app.on_event("startup")
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    if full_path.startswith("api/"):
+        return JSONResponse(status_code=404, content={"detail": "Not Found"})
+    index_html = FRONTEND_DIST / "index.html"
+    if index_html.exists():
+        return FileResponse(str(index_html))
+    return JSONResponse(status_code=404, content={"detail": "Frontend not built yet"})
