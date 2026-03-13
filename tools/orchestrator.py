@@ -13,6 +13,8 @@ import subprocess
 import sys
 import argparse
 import re
+import tempfile
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -194,12 +196,21 @@ def run_cmd(cmd: str) -> str:
     return result.stdout + result.stderr
 
 def run_sandbox_task(prompt: str) -> int:
-    result = subprocess.run(
-        [str(SANDBOX), "--task", prompt],
-        cwd=ROOT,
-        stdin=subprocess.DEVNULL  # same fix as the sandbox script
-    )
-    return result.returncode
+    # Write prompt to a temp file inside the worktree so the container can read it
+    prompt_file = ROOT / "tasks" / "feedback" / ".current-prompt.md"
+    prompt_file.parent.mkdir(parents=True, exist_ok=True)
+    prompt_file.write_text(prompt)
+    
+    try:
+        result = subprocess.run(
+            [str(SANDBOX), "--task-file", str(prompt_file)],
+            cwd=ROOT,
+            stdin=subprocess.DEVNULL
+        )
+        return result.returncode
+    finally:
+        # Clean up after — don't leave prompts lying around
+        prompt_file.unlink(missing_ok=True)
 
 def run_sandbox_exec(cmd: str, output_file: Path) -> int:
     output_file.parent.mkdir(parents=True, exist_ok=True)

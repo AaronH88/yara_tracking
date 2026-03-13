@@ -1,9 +1,9 @@
 # Baby Tracker — Task Status
-_Last updated: 2026-03-13T17:10:56.879510+00:00_
+_Last updated: 2026-03-13T17:13:36.090650+00:00_
 
 
 ## Phase 0
-- 🔨 **0.1** — Initialise Project Structure  `DEVELOPING` _iter 1/3_
+- 🧪 **0.1** — Initialise Project Structure  `TESTING` _iter 1/3_
 
 ## Phase 1
 - ⏳ **1.1** — Database Setup  `PENDING` _iter 1/3_

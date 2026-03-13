@@ -2,18 +2,25 @@
   "schema_version": 1,
   "project": "babytracker",
   "created_at": "2026-03-13T15:27:35.815810+00:00",
-  "last_updated": "2026-03-13T17:10:56.879510+00:00",
+  "last_updated": "2026-03-13T17:13:36.090650+00:00",
   "final_judge_status": "pending",
   "tasks": [
     {
       "id": "0.1",
       "title": "Initialise Project Structure",
       "phase": 0,
-      "state": "DEVELOPING",
+      "state": "TESTING",
       "current_iteration": 1,
       "max_iterations": 3,
       "verify_scope": "both",
-      "history": []
+      "history": [
+        {
+          "timestamp": "2026-03-13T17:13:30.125348+00:00",
+          "role": "developer",
+          "iteration": 1,
+          "exit_code": 0
+        }
+      ]
     },
     {
       "id": "1.1",

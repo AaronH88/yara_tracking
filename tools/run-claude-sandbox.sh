@@ -325,7 +325,7 @@ fi
 # ── Determine container command ────────────────────────────────────────────────
 CONTAINER_CMD=()
 TTY_FLAG="--tty"
-STDIN_REDIRECT=""
+INTERACTIVE_FLAG="--interactive"
 
 if [ "$MODE" = "interactive" ] || [ "$MODE" = "agentic" ]; then
     CONTAINER_CMD=(claude --dangerously-skip-permissions)
@@ -343,7 +343,7 @@ if [ "$MODE" = "interactive" ] || [ "$MODE" = "agentic" ]; then
     if [ "$MODE" = "agentic" ]; then
         CONTAINER_CMD+=(-p "$TASK")
         TTY_FLAG=""
-        STDIN_REDIRECT="</dev/null"
+        INTERACTIVE_FLAG=""
     fi
 
     if [ -n "$APPEND_SYSTEM_PROMPT_FILE" ]; then
@@ -361,7 +361,7 @@ elif [ "$MODE" = "shell" ]; then
 elif [ "$MODE" = "exec" ]; then
     CONTAINER_CMD=(/bin/bash -c "$EXEC_CMD")
     TTY_FLAG=""
-    STDIN_REDIRECT="</dev/null"
+    INTERACTIVE_FLAG=""
 fi
 
 # ── Print summary ──────────────────────────────────────────────────────────────
@@ -411,65 +411,32 @@ if [ "$MODE" = "interactive" ] || [ "$MODE" = "agentic" ]; then
 fi
 
 # ── Run ────────────────────────────────────────────────────────────────────────
-if [ -n "$STDIN_REDIRECT" ]; then
-    podman run \
-        --rm \
-        --interactive \
-        ${TTY_FLAG:+--tty} \
-        --name "$CONTAINER_NAME" \
-        \
-        `# Mount only the worktree — nothing else from the host filesystem` \
-        --volume "${WORKTREE_ROOT}:${CONTAINER_WORKDIR}:z" \
-        --workdir "$CONTAINER_WORKDIR" \
-        \
-        `# Persistent auth — survives container restarts, isolated from host ~/.claude` \
-        --volume "${AUTH_DIR}:/home/node/.claude:z" \
-        \
-        `# Forward all project env vars — no hardcoded variable names` \
-        --env-file "${ENV_FILE}" \
-        \
-        `# Resource limits` \
-        --memory "$MEMORY_LIMIT" \
-        --cpus "$CPU_LIMIT" \
-        \
-        `# Security: drop all capabilities, no privilege escalation` \
-        --cap-drop ALL \
-        --security-opt no-new-privileges \
-        \
-        `# Network` \
-        "${NETWORK_ARGS[@]}" \
-        \
-        "$SANDBOX_IMAGE" \
-        "${CONTAINER_CMD[@]}" \
-        </dev/null
-else
-    podman run \
-        --rm \
-        --interactive \
-        ${TTY_FLAG:+--tty} \
-        --name "$CONTAINER_NAME" \
-        \
-        `# Mount only the worktree — nothing else from the host filesystem` \
-        --volume "${WORKTREE_ROOT}:${CONTAINER_WORKDIR}:z" \
-        --workdir "$CONTAINER_WORKDIR" \
-        \
-        `# Persistent auth — survives container restarts, isolated from host ~/.claude` \
-        --volume "${AUTH_DIR}:/home/node/.claude:z" \
-        \
-        `# Forward all project env vars — no hardcoded variable names` \
-        --env-file "${ENV_FILE}" \
-        \
-        `# Resource limits` \
-        --memory "$MEMORY_LIMIT" \
-        --cpus "$CPU_LIMIT" \
-        \
-        `# Security: drop all capabilities, no privilege escalation` \
-        --cap-drop ALL \
-        --security-opt no-new-privileges \
-        \
-        `# Network` \
-        "${NETWORK_ARGS[@]}" \
-        \
-        "$SANDBOX_IMAGE" \
-        "${CONTAINER_CMD[@]}"
-fi
+podman run \
+    --rm \
+    ${INTERACTIVE_FLAG:+--interactive} \
+    ${TTY_FLAG:+--tty} \
+    --name "$CONTAINER_NAME" \
+    \
+    `# Mount only the worktree — nothing else from the host filesystem` \
+    --volume "${WORKTREE_ROOT}:${CONTAINER_WORKDIR}:z" \
+    --workdir "$CONTAINER_WORKDIR" \
+    \
+    `# Persistent auth — survives container restarts, isolated from host ~/.claude` \
+    --volume "${AUTH_DIR}:/home/node/.claude:z" \
+    \
+    `# Forward all project env vars — no hardcoded variable names` \
+    --env-file "${ENV_FILE}" \
+    \
+    `# Resource limits` \
+    --memory "$MEMORY_LIMIT" \
+    --cpus "$CPU_LIMIT" \
+    \
+    `# Security: drop all capabilities, no privilege escalation` \
+    --cap-drop ALL \
+    --security-opt no-new-privileges \
+    \
+    `# Network` \
+    "${NETWORK_ARGS[@]}" \
+    \
+    "$SANDBOX_IMAGE" \
+    "${CONTAINER_CMD[@]}"
