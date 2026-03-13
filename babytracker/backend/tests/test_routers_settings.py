@@ -221,3 +221,63 @@ async def test_patch_settings_overwrites_same_key_twice(seeded_client):
     )
     assert resp.status_code == 200
     assert resp.json()["units"] == "imperial"
+
+
+@pytest.mark.anyio
+async def test_patch_settings_rejects_non_dict_body(seeded_client):
+    """PATCH /settings with a JSON array instead of object returns 422."""
+    resp = await seeded_client.patch(
+        "/api/v1/settings", json=["units", "metric"]
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.anyio
+async def test_get_settings_method_not_allowed_for_post(client):
+    """POST /settings is not a valid method and should return 405."""
+    resp = await client.post("/api/v1/settings", json={"units": "metric"})
+    assert resp.status_code == 405
+
+
+@pytest.mark.anyio
+async def test_get_settings_method_not_allowed_for_delete(client):
+    """DELETE /settings is not a valid method and should return 405."""
+    resp = await client.delete("/api/v1/settings")
+    assert resp.status_code == 405
+
+
+@pytest.mark.anyio
+async def test_patch_settings_empty_string_value(seeded_client):
+    """PATCH /settings allows setting a value to an empty string."""
+    resp = await seeded_client.patch(
+        "/api/v1/settings", json={"units": ""}
+    )
+    assert resp.status_code == 200
+    assert resp.json()["units"] == ""
+
+
+@pytest.mark.anyio
+async def test_seed_settings_fills_missing_key_only(db_session):
+    """seed_settings adds only missing defaults, preserving existing ones."""
+    # Only add one of the two defaults
+    db_session.add(Setting(key="units", value="metric"))
+    await db_session.commit()
+
+    await seed_settings(db_session)
+
+    units = await db_session.get(Setting, "units")
+    time_format = await db_session.get(Setting, "time_format")
+    assert units.value == "metric"  # preserved
+    assert time_format is not None
+    assert time_format.value == "24h"  # filled in
+
+
+@pytest.mark.anyio
+async def test_patch_settings_does_not_remove_unmentioned_keys(seeded_client):
+    """PATCH only updates provided keys; unmentioned keys remain intact."""
+    resp = await seeded_client.patch(
+        "/api/v1/settings", json={"units": "metric"}
+    )
+    data = resp.json()
+    assert "time_format" in data
+    assert data["time_format"] == "24h"
