@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.8 — DEV
+→ NEXT: Task 1.9 — TEST
 
 ---
 
@@ -282,23 +282,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.8 — Remaining Routers
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —  
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-1.8.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 1.8"`
   On done: check box, cursor → `→ NEXT: Task 1.8 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —  
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-1.8.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 1.8"`
   On done: check box, cursor → `→ NEXT: Task 1.8 — VERIFY`
 
-- [ ] **VERIFY** —  
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-1.8-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 1.8 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 1.8 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —  
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-1.8.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-1.8-verify.txt`
   Verdict → `tasks/feedback/task-1.8-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 1.9 — DEV`
@@ -309,7 +309,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.9 — Calendar Router
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —  
+- [x] **DEV** — `persona: tasks/personas/developer.md` —  
   Read spec: `tasks/specs/task-1.9.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 1.9"`
