@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, Real, Date, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Text, Float, Date, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase
 from datetime import datetime, timezone
 
@@ -34,8 +34,8 @@ class FeedEvent(Base):
     type = Column(Text, nullable=False)
     started_at = Column(DateTime, nullable=False)
     ended_at = Column(DateTime)
-    amount_oz = Column(Real)
-    amount_ml = Column(Real)
+    amount_oz = Column(Float)
+    amount_ml = Column(Float)
     notes = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -72,10 +72,10 @@ class PumpEvent(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     logged_at = Column(DateTime, nullable=False)
     duration_minutes = Column(Integer)
-    left_oz = Column(Real)
-    left_ml = Column(Real)
-    right_oz = Column(Real)
-    right_ml = Column(Real)
+    left_oz = Column(Float)
+    left_ml = Column(Float)
+    right_oz = Column(Float)
+    right_ml = Column(Float)
     notes = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -87,9 +87,9 @@ class Measurement(Base):
     baby_id = Column(Integer, ForeignKey("babies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     measured_at = Column(Date, nullable=False)
-    weight_oz = Column(Real)
-    height_in = Column(Real)
-    head_cm = Column(Real)
+    weight_oz = Column(Float)
+    height_in = Column(Float)
+    head_cm = Column(Float)
     notes = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
