@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.9 — VERIFY
+→ NEXT: Task 1.10 — DEV
 
 ---
 
@@ -320,12 +320,12 @@ Spec files live in: `tasks/specs/`
   Commit: `git add -A && git commit -m "test: task 1.9"`
   On done: check box, cursor → `→ NEXT: Task 1.9 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-1.9-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 1.9 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 1.9 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —  
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-1.9.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-1.9-verify.txt`
   Verdict → `tasks/feedback/task-1.9-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 1.10 — DEV`
