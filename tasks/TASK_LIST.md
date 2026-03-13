@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.6 — TEST
+→ NEXT: Task 1.7 — DEV
 
 ---
 
@@ -234,17 +234,17 @@ Spec files live in: `tasks/specs/`
   Commit: `git add -A && git commit -m "dev: task 1.6"`
   On done: check box, cursor → `→ NEXT: Task 1.6 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —  
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-1.6.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 1.6"`
   On done: check box, cursor → `→ NEXT: Task 1.6 — VERIFY`
 
-- [ ] **VERIFY** —  
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-1.6-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 1.6 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 1.6 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —  
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-1.6.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-1.6-verify.txt`
   Verdict → `tasks/feedback/task-1.6-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 1.7 — DEV`
