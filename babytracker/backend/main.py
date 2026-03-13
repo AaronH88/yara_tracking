@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from database import get_db
 from models import create_tables
+from routers.settings import seed_settings
 from routers import (
     babies,
     calendar,
@@ -26,6 +28,8 @@ FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await create_tables()
+    async for db in get_db():
+        await seed_settings(db)
     yield
 
 
