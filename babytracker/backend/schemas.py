@@ -52,6 +52,7 @@ class FeedEventCreate(BaseModel):
 
 
 class FeedEventUpdate(BaseModel):
+    user_id: int | None = None
     type: str | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
