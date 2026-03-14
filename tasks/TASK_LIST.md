@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.3 — DEV
+→ NEXT: Task 2.4 — DEV
 
 ---
 
@@ -417,23 +417,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 2.3 — Persona Gate (Who Are You Modal)
 
-- [ ] **DEV** (attempt 2) — `persona: tasks/personas/developer.md` —
+- [x] **DEV** (attempt 2) — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-2.3.md`
   If retrying, read feedback: `tasks/feedback/task-2.3-verify-fail.txt`
   Commit: `git add -A && git commit -m "dev: task 2.3"`
   On done: check box, cursor → `→ NEXT: Task 2.3 — TEST`
 
-- [ ] **TEST** (attempt 2) — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** (attempt 2) — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-2.3.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 2.3"`
   On done: check box, cursor → `→ NEXT: Task 2.3 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-2.3-verify.txt && cd ../frontend && npm test -- --watchAll=false 2>&1 | tee -a tasks/feedback/task-2.3-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 2.3 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 2.3 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-2.3.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-2.3-verify.txt`
   Verdict → `tasks/feedback/task-2.3-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 2.4 — DEV`
