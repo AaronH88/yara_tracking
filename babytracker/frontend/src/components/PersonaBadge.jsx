@@ -32,13 +32,13 @@ export default function PersonaBadge() {
     <div className="relative" ref={sheetRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+        className="rounded-full bg-pastel-lavender px-3 py-1 text-sm font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
       >
-        You: {persona.name}
+        {persona.name}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-pastel-lavender bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           {users
             .filter((user) => user.id !== persona.id)
             .map((user) => (
@@ -48,7 +48,7 @@ export default function PersonaBadge() {
                   setPersona(user);
                   setOpen(false);
                 }}
-                className="flex w-full items-center px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+                className="flex w-full items-center px-4 py-2 text-left text-sm text-gray-700 hover:bg-pastel-mint dark:text-gray-200 dark:hover:bg-gray-700"
               >
                 Switch to {user.name}
               </button>
@@ -58,7 +58,7 @@ export default function PersonaBadge() {
               clearPersona();
               setOpen(false);
             }}
-            className="flex w-full items-center px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50 dark:text-red-400 dark:hover:bg-gray-700"
+            className="flex w-full items-center px-4 py-2 text-left text-sm text-red-600 hover:bg-pastel-rose dark:text-red-400 dark:hover:bg-gray-700"
           >
             Sign out
           </button>

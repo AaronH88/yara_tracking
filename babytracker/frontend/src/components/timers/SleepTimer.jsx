@@ -97,10 +97,10 @@ export default function SleepTimer() {
   if (stoppedSleep) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+        <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
           Sleep Details
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-purple-600 dark:text-purple-400">
           {SLEEP_TYPE_LABELS[stoppedSleep.type] || stoppedSleep.type}
         </p>
         <form onSubmit={saveNotes} className="space-y-3">
@@ -116,7 +116,7 @@ export default function SleepTimer() {
               value={formNotes}
               onChange={(e) => setFormNotes(e.target.value)}
               rows={2}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2
+              className="mt-1 block w-full rounded-lg border-2 border-purple-200 px-3 py-2
                 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               placeholder="Optional notes..."
             />
@@ -125,16 +125,17 @@ export default function SleepTimer() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 rounded-lg bg-blue-600 py-2 text-white font-medium
-                hover:bg-blue-700 disabled:opacity-50"
+              className="flex-1 rounded-2xl bg-purple-600 py-3 text-white font-semibold
+                hover:bg-purple-700 disabled:opacity-50 shadow-md active:scale-95 transition-all"
             >
               Save
             </button>
             <button
               type="button"
               onClick={skipNotes}
-              className="flex-1 rounded-lg border border-gray-300 py-2 text-gray-700 font-medium
-                hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex-1 rounded-2xl border-2 border-purple-200 py-3 text-purple-700 font-semibold
+                hover:bg-pastel-lavender dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700
+                active:scale-95 transition-all"
             >
               Skip
             </button>
@@ -147,17 +148,23 @@ export default function SleepTimer() {
   if (activeSleep) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          {SLEEP_TYPE_LABELS[activeSleep.type] || activeSleep.type}
-        </p>
-        <p className="text-4xl font-mono font-bold text-indigo-600 dark:text-indigo-400">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-2xl">😴</span>
+          <span className="text-xs font-semibold text-purple-700 bg-white/60 rounded-full px-3 py-1 dark:text-purple-300 dark:bg-white/20">
+            {SLEEP_TYPE_LABELS[activeSleep.type] || activeSleep.type}
+          </span>
+        </div>
+        <p className="text-5xl font-bold text-purple-800 dark:text-purple-300">
           {elapsed ?? "0s"}
         </p>
+        <div className="text-sm text-purple-600 dark:text-purple-400 mb-4">
+          Started {elapsed ?? "just now"} ago
+        </div>
         <button
           onClick={wakeUp}
           disabled={submitting}
-          className="w-full rounded-lg bg-amber-600 py-3 text-white text-lg font-semibold
-            hover:bg-amber-700 disabled:opacity-50"
+          className="w-full rounded-2xl bg-purple-600 py-3 text-white font-semibold
+            hover:bg-purple-700 disabled:opacity-50 shadow-md active:scale-95 transition-all"
         >
           Wake Up
         </button>
@@ -172,11 +179,12 @@ export default function SleepTimer() {
           key={type}
           onClick={() => startSleep(type)}
           disabled={submitting}
-          className="flex flex-col items-center justify-center rounded-xl border-2
-            border-gray-200 bg-white py-6 text-lg font-semibold text-gray-800
-            hover:border-indigo-400 hover:bg-indigo-50 disabled:opacity-50
+          className="flex flex-col items-center justify-center rounded-2xl border-2
+            border-purple-200 bg-white py-6 text-lg font-semibold text-purple-800
+            hover:bg-pastel-lavender shadow-md disabled:opacity-50
             dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
-            dark:hover:border-indigo-500 dark:hover:bg-gray-700"
+            dark:hover:border-purple-500 dark:hover:bg-gray-700
+            active:scale-95 transition-all"
         >
           {label}
         </button>

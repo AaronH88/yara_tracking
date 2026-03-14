@@ -37,12 +37,12 @@ export default function BabySwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => hasMultipleBabies && setOpen(!open)}
-        className={`flex items-center gap-1 text-lg font-semibold text-gray-900 dark:text-white ${
+        className={`flex items-center gap-1 text-lg font-semibold text-purple-900 dark:text-white ${
           hasMultipleBabies ? "cursor-pointer" : "cursor-default"
         }`}
       >
         <span>{selectedBaby.name}</span>
-        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+        <span className="text-sm font-normal text-purple-600 dark:text-gray-400">
           ({formatAge(selectedBaby.birthdate)})
         </span>
         {hasMultipleBabies && (
@@ -50,7 +50,7 @@ export default function BabySwitcher() {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className={`h-5 w-5 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`h-5 w-5 text-purple-400 transition-transform ${open ? "rotate-180" : ""}`}
           >
             <path
               fillRule="evenodd"
@@ -62,7 +62,7 @@ export default function BabySwitcher() {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-pastel-lavender bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           {babies.map((baby) => (
             <button
               key={baby.id}
@@ -72,8 +72,8 @@ export default function BabySwitcher() {
               }}
               className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm ${
                 baby.id === selectedBaby.id
-                  ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                  : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-pastel-lavender text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                  : "text-gray-700 hover:bg-pastel-mint dark:text-gray-200 dark:hover:bg-gray-700"
               }`}
             >
               <span className="font-medium">{baby.name}</span>

@@ -123,7 +123,7 @@ export default function Admin() {
   return (
     <div className="space-y-6 p-4">
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-gray-800 dark:text-gray-200">
+        <h2 className="mb-3 text-lg font-bold text-purple-800 dark:text-purple-300">
           Users
         </h2>
 
@@ -131,14 +131,14 @@ export default function Admin() {
           {users.map((user) => (
             <div
               key={user.id}
-              className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800"
+              className="flex items-center gap-3 rounded-2xl border border-pastel-lavender/40 bg-white/90 backdrop-blur-sm p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800"
             >
               <span className="min-w-0 flex-1 text-sm font-medium text-gray-800 dark:text-gray-200">
                 {user.name}
               </span>
               <button
                 onClick={() => setEditingUser({ ...user })}
-                className="rounded-lg px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                className="rounded-lg px-4 py-2 text-sm text-purple-600 hover:bg-pastel-lavender dark:text-purple-400 dark:hover:bg-purple-900/30"
                 aria-label={`Edit ${user.name}`}
               >
                 Edit
@@ -163,11 +163,11 @@ export default function Admin() {
             value={newUserName}
             onChange={(e) => setNewUserName(e.target.value)}
             placeholder="New user name"
-            className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="min-w-0 flex-1 rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
           <button
             type="submit"
-            className="rounded-lg bg-blue-600 px-4 min-h-[48px] py-3 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-2xl bg-gradient-to-br from-pastel-lavender to-purple-300 border-2 border-purple-300 px-4 min-h-[48px] py-3 text-sm font-semibold text-purple-800 hover:shadow-lg shadow-md active:scale-95 transition-all"
           >
             Add User
           </button>
@@ -178,7 +178,7 @@ export default function Admin() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-gray-800 dark:text-gray-200">
+        <h2 className="mb-3 text-lg font-bold text-purple-800 dark:text-purple-300">
           Babies
         </h2>
 
@@ -186,7 +186,7 @@ export default function Admin() {
           {babies.map((baby) => (
             <div
               key={baby.id}
-              className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800"
+              className="flex items-center gap-3 rounded-2xl border border-pastel-lavender/40 bg-white/90 backdrop-blur-sm p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800"
             >
               <div className="min-w-0 flex-1">
                 <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
@@ -203,7 +203,7 @@ export default function Admin() {
               </div>
               <button
                 onClick={() => setEditingBaby({ ...baby })}
-                className="rounded-lg px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                className="rounded-lg px-4 py-2 text-sm text-purple-600 hover:bg-pastel-lavender dark:text-purple-400 dark:hover:bg-purple-900/30"
                 aria-label={`Edit ${baby.name}`}
               >
                 Edit
@@ -218,18 +218,18 @@ export default function Admin() {
             value={newBaby.name}
             onChange={(e) => setNewBaby((prev) => ({ ...prev, name: e.target.value }))}
             placeholder="Baby name"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
           <input
             type="date"
             value={newBaby.birthdate}
             onChange={(e) => setNewBaby((prev) => ({ ...prev, birthdate: e.target.value }))}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
           <select
             value={newBaby.gender}
             onChange={(e) => setNewBaby((prev) => ({ ...prev, gender: e.target.value }))}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           >
             <option value="">Gender (optional)</option>
             <option value="male">Male</option>
@@ -237,7 +237,7 @@ export default function Admin() {
           </select>
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 min-h-[48px] py-3 text-sm font-medium text-white hover:bg-blue-700"
+            className="w-full rounded-2xl bg-gradient-to-br from-pastel-lavender to-purple-300 border-2 border-purple-300 min-h-[48px] py-3 text-sm font-semibold text-purple-800 hover:shadow-lg shadow-md active:scale-95 transition-all"
           >
             Add Baby
           </button>
@@ -249,7 +249,7 @@ export default function Admin() {
 
       {deletingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800">
+          <div className="w-full max-w-sm rounded-2xl bg-white/95 backdrop-blur-sm p-6 shadow-xl dark:bg-gray-800">
             <p className="text-sm text-gray-700 dark:text-gray-300">
               Delete user <strong>{deletingUser.name}</strong>?
             </p>
@@ -259,13 +259,13 @@ export default function Admin() {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleDeleteUser}
-                className="flex-1 rounded-lg bg-red-600 min-h-[48px] py-3 font-medium text-white hover:bg-red-700"
+                className="flex-1 rounded-2xl bg-red-600 min-h-[48px] py-3 font-semibold text-white hover:bg-red-700 shadow-md active:scale-95 transition-all"
               >
                 Delete
               </button>
               <button
                 onClick={() => setDeletingUser(null)}
-                className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex-1 rounded-2xl border-2 border-purple-200 min-h-[48px] py-3 font-semibold text-purple-700 hover:bg-pastel-lavender dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 active:scale-95 transition-all"
               >
                 Cancel
               </button>
@@ -276,8 +276,8 @@ export default function Admin() {
 
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
-          <div className="w-full max-w-lg rounded-t-2xl bg-white p-6 dark:bg-gray-800">
-            <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
+          <div className="w-full max-w-lg rounded-t-2xl bg-white/95 backdrop-blur-sm p-6 shadow-xl dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-bold text-purple-800 dark:text-purple-300">
               Edit User
             </h3>
             <form onSubmit={handleUpdateUser} className="space-y-3">
@@ -287,19 +287,19 @@ export default function Admin() {
                 onChange={(e) =>
                   setEditingUser((prev) => ({ ...prev, name: e.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               />
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-blue-600 min-h-[48px] py-3 font-medium text-white hover:bg-blue-700"
+                  className="flex-1 rounded-2xl bg-gradient-to-br from-pastel-lavender to-purple-300 border-2 border-purple-300 min-h-[48px] py-3 font-semibold text-purple-800 hover:shadow-lg shadow-md active:scale-95 transition-all"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}
-                  className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="flex-1 rounded-2xl border-2 border-purple-200 min-h-[48px] py-3 font-semibold text-purple-700 hover:bg-pastel-lavender dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 active:scale-95 transition-all"
                 >
                   Cancel
                 </button>
@@ -311,8 +311,8 @@ export default function Admin() {
 
       {editingBaby && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
-          <div className="w-full max-w-lg rounded-t-2xl bg-white p-6 dark:bg-gray-800">
-            <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
+          <div className="w-full max-w-lg rounded-t-2xl bg-white/95 backdrop-blur-sm p-6 shadow-xl dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-bold text-purple-800 dark:text-purple-300">
               Edit Baby
             </h3>
             <form onSubmit={handleUpdateBaby} className="space-y-3">
@@ -323,7 +323,7 @@ export default function Admin() {
                   setEditingBaby((prev) => ({ ...prev, name: e.target.value }))
                 }
                 placeholder="Name"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               />
               <input
                 type="date"
@@ -331,14 +331,14 @@ export default function Admin() {
                 onChange={(e) =>
                   setEditingBaby((prev) => ({ ...prev, birthdate: e.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               />
               <select
                 value={editingBaby.gender || ""}
                 onChange={(e) =>
                   setEditingBaby((prev) => ({ ...prev, gender: e.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full rounded-lg border-2 border-purple-200 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Gender (optional)</option>
                 <option value="male">Male</option>
@@ -347,14 +347,14 @@ export default function Admin() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-blue-600 min-h-[48px] py-3 font-medium text-white hover:bg-blue-700"
+                  className="flex-1 rounded-2xl bg-gradient-to-br from-pastel-lavender to-purple-300 border-2 border-purple-300 min-h-[48px] py-3 font-semibold text-purple-800 hover:shadow-lg shadow-md active:scale-95 transition-all"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditingBaby(null)}
-                  className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="flex-1 rounded-2xl border-2 border-purple-200 min-h-[48px] py-3 font-semibold text-purple-700 hover:bg-pastel-lavender dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 active:scale-95 transition-all"
                 >
                   Cancel
                 </button>

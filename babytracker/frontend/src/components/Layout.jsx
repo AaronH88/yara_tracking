@@ -38,8 +38,8 @@ function ApiErrorBanner() {
 
 export default function Layout() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-gray-50 dark:bg-gray-950">
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-pastel-mint to-pastel-sky dark:bg-gradient-to-br dark:from-gray-950 dark:to-gray-900">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-pastel-lavender/30 bg-white/80 backdrop-blur-sm px-4 py-3 dark:border-gray-700 dark:bg-gray-900/80">
         <BabySwitcher />
         <PersonaBadge />
       </header>

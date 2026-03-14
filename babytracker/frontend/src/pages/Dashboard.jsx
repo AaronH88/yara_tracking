@@ -140,7 +140,7 @@ export default function Dashboard() {
       <div className="space-y-4 p-4">
         <button
           onClick={() => setShowFeedTimer(false)}
-          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-purple-600 hover:bg-pastel-lavender dark:text-purple-400 dark:hover:bg-purple-900/30"
         >
           &larr; Back to Dashboard
         </button>
@@ -154,7 +154,7 @@ export default function Dashboard() {
       <div className="space-y-4 p-4">
         <button
           onClick={() => setShowSleepTimer(false)}
-          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-purple-600 hover:bg-pastel-lavender dark:text-purple-400 dark:hover:bg-purple-900/30"
         >
           &larr; Back to Dashboard
         </button>
@@ -167,16 +167,16 @@ export default function Dashboard() {
     <div className="space-y-6 p-4">
       {(activeFeed || activeSleep) && (
         <section>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">
             Active Timers
           </h2>
           {activeFeed && (
-            <div className="rounded-xl border-2 border-blue-300 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/30">
+            <div className="rounded-3xl border-2 border-orange-200 bg-gradient-to-r from-pastel-peach to-pastel-rose p-5 shadow-lg dark:border-orange-700 dark:bg-gradient-to-r dark:from-orange-900/30 dark:to-pink-900/30">
               <FeedTimer />
             </div>
           )}
           {activeSleep && (
-            <div className="rounded-xl border-2 border-indigo-300 bg-indigo-50 p-4 dark:border-indigo-700 dark:bg-indigo-900/30 mt-3">
+            <div className="rounded-3xl border-2 border-purple-200 bg-gradient-to-r from-pastel-lavender to-purple-200 p-5 shadow-lg mt-3 dark:border-purple-700 dark:bg-gradient-to-r dark:from-purple-900/30 dark:to-indigo-900/30">
               <SleepTimer />
             </div>
           )}
@@ -184,77 +184,87 @@ export default function Dashboard() {
       )}
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">
           Quick Log
         </h2>
         <div className="grid grid-cols-3 gap-3 mb-3">
-          {DIAPER_TYPES.map(({ type, label }) => (
-            <button
-              key={type}
-              onClick={() => logDiaper(type)}
-              disabled={loggingDiaper}
-              className="flex flex-col items-center justify-center rounded-xl border-2
-                border-gray-200 bg-white py-4 text-sm font-semibold text-gray-800
-                hover:border-green-400 hover:bg-green-50 disabled:opacity-50
-                dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
-                dark:hover:border-green-500 dark:hover:bg-gray-700
-                active:scale-95 transition-transform"
-            >
-              <span className="text-lg mb-1">
-                {type === "wet" ? "💧" : type === "dirty" ? "💩" : "💧💩"}
-              </span>
-              {label}
-            </button>
-          ))}
+          {DIAPER_TYPES.map(({ type, label }) => {
+            const getColors = () => {
+              if (type === "wet") {
+                return "border-blue-200 text-blue-700 hover:bg-pastel-sky dark:hover:border-blue-500";
+              }
+              if (type === "dirty") {
+                return "border-orange-200 text-orange-700 hover:bg-pastel-peach dark:hover:border-orange-500";
+              }
+              return "border-purple-200 text-purple-700 hover:bg-pastel-lavender dark:hover:border-purple-500";
+            };
+
+            return (
+              <button
+                key={type}
+                onClick={() => logDiaper(type)}
+                disabled={loggingDiaper}
+                className={`flex flex-col items-center justify-center rounded-2xl border-2
+                  bg-white py-5 text-sm font-semibold shadow-md disabled:opacity-50
+                  dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
+                  dark:hover:bg-gray-700 active:scale-95 transition-all ${getColors()}`}
+              >
+                <span className="text-2xl mb-1">
+                  {type === "wet" ? "💧" : type === "dirty" ? "💩" : "💧💩"}
+                </span>
+                {label}
+              </button>
+            );
+          })}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => setShowFeedTimer(true)}
-            className="flex items-center justify-center rounded-xl border-2
-              border-gray-200 bg-white py-4 text-sm font-semibold text-gray-800
-              hover:border-blue-400 hover:bg-blue-50
+            className="flex items-center justify-center rounded-2xl border-2
+              border-orange-300 bg-gradient-to-br from-pastel-peach to-orange-200 py-4 text-sm font-semibold text-orange-800
+              hover:shadow-lg shadow-md
               dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
-              dark:hover:border-blue-500 dark:hover:bg-gray-700
-              active:scale-95 transition-transform"
+              dark:hover:border-orange-500 dark:hover:bg-gray-700
+              active:scale-95 transition-all"
           >
             🍼 Log Feed
           </button>
           <button
             onClick={() => setShowSleepTimer(true)}
-            className="flex items-center justify-center rounded-xl border-2
-              border-gray-200 bg-white py-4 text-sm font-semibold text-gray-800
-              hover:border-indigo-400 hover:bg-indigo-50
+            className="flex items-center justify-center rounded-2xl border-2
+              border-purple-300 bg-gradient-to-br from-pastel-lavender to-purple-200 py-4 text-sm font-semibold text-purple-800
+              hover:shadow-lg shadow-md
               dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
-              dark:hover:border-indigo-500 dark:hover:bg-gray-700
-              active:scale-95 transition-transform"
+              dark:hover:border-purple-500 dark:hover:bg-gray-700
+              active:scale-95 transition-all"
           >
             😴 Log Sleep
           </button>
         </div>
         <button
           onClick={() => setShowLogPastEvent(true)}
-          className="mt-3 w-full flex items-center justify-center rounded-xl border-2
-            border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-600
-            hover:border-purple-400 hover:bg-purple-50 hover:text-purple-700
+          className="mt-3 w-full flex items-center justify-center rounded-2xl border-2
+            border-dashed border-green-300 bg-white/70 py-3 text-sm font-medium text-green-700
+            hover:bg-pastel-mint
             dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400
-            dark:hover:border-purple-500 dark:hover:bg-gray-700 dark:hover:text-purple-300
-            active:scale-95 transition-transform"
+            dark:hover:border-green-500 dark:hover:bg-gray-700 dark:hover:text-green-300
+            active:scale-95 transition-all"
         >
           📝 Log Past Event
         </button>
       </section>
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">
           Last Events
         </h2>
 
         {sinceLastFeed && (
-          <div className="mb-3 rounded-xl bg-blue-50 p-3 text-center dark:bg-blue-900/20">
-            <p className="text-xs text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+          <div className="mb-3 rounded-2xl bg-gradient-to-r from-pastel-rose to-pastel-peach border-2 border-orange-200 p-4 text-center shadow-md dark:bg-gradient-to-r dark:from-pink-900/30 dark:to-orange-900/30 dark:border-orange-700">
+            <p className="text-xs text-orange-600 dark:text-orange-400 uppercase tracking-wide font-semibold mb-1">
               Since last feed
             </p>
-            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+            <p className="text-3xl font-bold text-orange-800 dark:text-orange-300">
               {sinceLastFeed}
             </p>
           </div>
@@ -312,8 +322,8 @@ export default function Dashboard() {
 function LastEventCard({ label, typeLabel, when, duration, empty }) {
   if (empty) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+      <div className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm p-4 shadow-md dark:border-gray-700 dark:bg-gray-800">
+        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
           {label}
         </p>
         <p className="text-xs text-gray-400 dark:text-gray-500">
@@ -323,19 +333,37 @@ function LastEventCard({ label, typeLabel, when, duration, empty }) {
     );
   }
 
+  const getBorderColor = () => {
+    if (label.includes('Feed')) return 'border-orange-200 dark:border-orange-700';
+    if (label.includes('Sleep')) return 'border-purple-200 dark:border-purple-700';
+    return 'border-blue-200 dark:border-blue-700';
+  };
+
+  const getBgColor = () => {
+    if (label.includes('Feed')) return 'bg-pastel-peach dark:bg-orange-900/30';
+    if (label.includes('Sleep')) return 'bg-pastel-lavender dark:bg-purple-900/30';
+    return 'bg-pastel-sky dark:bg-blue-900/30';
+  };
+
+  const getTextColor = () => {
+    if (label.includes('Feed')) return 'text-orange-700 dark:text-orange-400';
+    if (label.includes('Sleep')) return 'text-purple-700 dark:text-purple-400';
+    return 'text-blue-700 dark:text-blue-400';
+  };
+
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+    <div className={`rounded-2xl border bg-white/90 backdrop-blur-sm p-4 shadow-md ${getBorderColor()} dark:bg-gray-800`}>
+      <div className="flex items-center justify-between mb-2">
+        <p className="font-semibold text-gray-800 dark:text-gray-300">
           {label}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
           {timeAgo(when)}
         </p>
       </div>
-      <div className="flex items-center gap-2 mt-1">
+      <div className="flex items-center gap-2">
         {typeLabel && (
-          <span className="text-xs text-gray-600 dark:text-gray-400">
+          <span className={`text-xs px-2 py-1 rounded-full font-medium ${getBgColor()} ${getTextColor()}`}>
             {typeLabel}
           </span>
         )}

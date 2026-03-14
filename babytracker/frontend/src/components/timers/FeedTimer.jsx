@@ -134,10 +134,10 @@ export default function FeedTimer() {
   if (stoppedFeed) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+        <h3 className="text-lg font-semibold text-orange-800 dark:text-orange-300">
           Feed Details
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-orange-600 dark:text-orange-400">
           {FEED_TYPE_LABELS[stoppedFeed.type] || stoppedFeed.type}
         </p>
         <form onSubmit={saveDetails} className="space-y-3">
@@ -155,7 +155,7 @@ export default function FeedTimer() {
               min="0"
               value={formAmount}
               onChange={(e) => setFormAmount(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2
+              className="mt-1 block w-full rounded-lg border-2 border-orange-200 px-3 py-2
                 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               placeholder="e.g. 4.0"
             />
@@ -172,7 +172,7 @@ export default function FeedTimer() {
               value={formNotes}
               onChange={(e) => setFormNotes(e.target.value)}
               rows={2}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2
+              className="mt-1 block w-full rounded-lg border-2 border-orange-200 px-3 py-2
                 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               placeholder="Optional notes..."
             />
@@ -181,16 +181,17 @@ export default function FeedTimer() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 rounded-lg bg-blue-600 py-2 text-white font-medium
-                hover:bg-blue-700 disabled:opacity-50"
+              className="flex-1 rounded-2xl bg-orange-600 py-3 text-white font-semibold
+                hover:bg-orange-700 disabled:opacity-50 shadow-md active:scale-95 transition-all"
             >
               Save
             </button>
             <button
               type="button"
               onClick={skipDetails}
-              className="flex-1 rounded-lg border border-gray-300 py-2 text-gray-700 font-medium
-                hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex-1 rounded-2xl border-2 border-orange-200 py-3 text-orange-700 font-semibold
+                hover:bg-pastel-peach dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700
+                active:scale-95 transition-all"
             >
               Skip
             </button>
@@ -203,17 +204,23 @@ export default function FeedTimer() {
   if (activeFeed) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          {FEED_TYPE_LABELS[activeFeed.type] || activeFeed.type}
-        </p>
-        <p className="text-4xl font-mono font-bold text-blue-600 dark:text-blue-400">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-2xl">🍼</span>
+          <span className="text-xs font-semibold text-orange-700 bg-white/60 rounded-full px-3 py-1 dark:text-orange-300 dark:bg-white/20">
+            {FEED_TYPE_LABELS[activeFeed.type] || activeFeed.type}
+          </span>
+        </div>
+        <p className="text-5xl font-bold text-orange-800 dark:text-orange-300">
           {elapsed ?? "0s"}
         </p>
+        <div className="text-sm text-orange-600 dark:text-orange-400 mb-4">
+          Started {elapsed ?? "just now"} ago
+        </div>
         <button
           onClick={stopFeed}
           disabled={submitting}
-          className="w-full rounded-lg bg-red-600 py-3 text-white text-lg font-semibold
-            hover:bg-red-700 disabled:opacity-50"
+          className="w-full rounded-2xl bg-orange-600 py-3 text-white font-semibold
+            hover:bg-orange-700 disabled:opacity-50 shadow-md active:scale-95 transition-all"
         >
           Stop Feed
         </button>
@@ -230,15 +237,16 @@ export default function FeedTimer() {
           key={type}
           onClick={() => startFeed(type)}
           disabled={submitting}
-          className="flex flex-col items-center justify-center rounded-xl border-2
-            border-gray-200 bg-white py-6 text-lg font-semibold text-gray-800
-            hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50
+          className="flex flex-col items-center justify-center rounded-2xl border-2
+            border-orange-200 bg-white py-6 text-lg font-semibold text-orange-800
+            hover:bg-pastel-peach shadow-md disabled:opacity-50
             dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
-            dark:hover:border-blue-500 dark:hover:bg-gray-700"
+            dark:hover:border-orange-500 dark:hover:bg-gray-700
+            active:scale-95 transition-all"
         >
           {label}
           {lastSide === type && (
-            <span className="mt-1 text-xs font-normal text-gray-400 dark:text-gray-500">
+            <span className="mt-1 text-xs font-normal text-orange-500 dark:text-gray-500">
               last used
             </span>
           )}
