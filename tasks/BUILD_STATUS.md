@@ -1,3 +1,1 @@
-# Build Status
-
-PENDING
+APPROVED

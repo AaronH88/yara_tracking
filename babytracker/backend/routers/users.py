@@ -11,6 +11,17 @@ from schemas import UserCreate, UserUpdate, UserResponse
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+async def seed_default_users(db: AsyncSession):
+    """Create default admin user if no users exist"""
+    result = await db.execute(select(User))
+    existing_users = result.scalars().all()
+
+    if len(existing_users) == 0:
+        admin_user = User(name="Admin")
+        db.add(admin_user)
+        await db.commit()
+
+
 @router.get("", response_model=list[UserResponse])
 async def list_users(db: AsyncSession = Depends(get_db)):
     rows = await db.execute(select(User))

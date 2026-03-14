@@ -19,6 +19,7 @@ CORS_ORIGINS = [
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "info").upper()
 logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
 from routers.settings import seed_settings
+from routers.users import seed_default_users
 from routers import (
     babies,
     calendar,
@@ -40,6 +41,7 @@ async def lifespan(app: FastAPI):
     await create_tables()
     async for db in get_db():
         await seed_settings(db)
+        await seed_default_users(db)
     yield
 
 

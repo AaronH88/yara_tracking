@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 6.2 — DEV
+→ NEXT: DONE
 
 ---
 
@@ -822,23 +822,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 6.2 — Mobile UX Polish
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-6.2.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 6.2"`
   On done: check box, cursor → `→ NEXT: Task 6.2 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-6.2.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 6.2"`
   On done: check box, cursor → `→ NEXT: Task 6.2 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd frontend && npm test -- --watchAll=false 2>&1 | tee tasks/feedback/task-6.2-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 6.2 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 6.2 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-6.2.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-6.2-verify.txt`
   Verdict → `tasks/feedback/task-6.2-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 6.3 — DEV`
@@ -849,23 +849,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 6.3 — Retroactive Entry UX
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-6.3.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 6.3"`
   On done: check box, cursor → `→ NEXT: Task 6.3 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-6.3.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 6.3"`
   On done: check box, cursor → `→ NEXT: Task 6.3 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd frontend && npm test -- --watchAll=false 2>&1 | tee tasks/feedback/task-6.3-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 6.3 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 6.3 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-6.3.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-6.3-verify.txt`
   Verdict → `tasks/feedback/task-6.3-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 7.1 — DEV`
@@ -876,23 +876,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 7.1 — LXC Deployment Script
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-7.1.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 7.1"`
   On done: check box, cursor → `→ NEXT: Task 7.1 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-7.1.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 7.1"`
   On done: check box, cursor → `→ NEXT: Task 7.1 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-7.1-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 7.1 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 7.1 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-7.1.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-7.1-verify.txt`
   Verdict → `tasks/feedback/task-7.1-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 7.2 — DEV`
@@ -903,23 +903,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 7.2 — Environment Configuration
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-7.2.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 7.2"`
   On done: check box, cursor → `→ NEXT: Task 7.2 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-7.2.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 7.2"`
   On done: check box, cursor → `→ NEXT: Task 7.2 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-7.2-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 7.2 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 7.2 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-7.2.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-7.2-verify.txt`
   Verdict → `tasks/feedback/task-7.2-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 7.3 — DEV`
@@ -930,23 +930,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 7.3 — Basic Backup Script
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-7.3.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 7.3"`
   On done: check box, cursor → `→ NEXT: Task 7.3 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-7.3.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 7.3"`
   On done: check box, cursor → `→ NEXT: Task 7.3 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-7.3-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 7.3 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 7.3 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-7.3.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-7.3-verify.txt`
   Verdict → `tasks/feedback/task-7.3-judge.md`
   If PASS: check box, cursor → `→ NEXT: FINAL JUDGE`
@@ -957,7 +957,7 @@ Spec files live in: `tasks/specs/`
 
 ## Final Judge
 
-- [ ] **FINAL JUDGE** — `persona: tasks/personas/judge.md`
+- [x] **FINAL JUDGE** — `persona: tasks/personas/judge.md`
   You are doing a final review of the entire project, not a single task.
 
   Read:

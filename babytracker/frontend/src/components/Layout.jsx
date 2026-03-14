@@ -12,7 +12,7 @@ function ApiErrorBanner() {
 
     async function checkApi() {
       try {
-        const response = await fetch("/api/v1/babies", { method: "HEAD" });
+        const response = await fetch("/api/v1/settings");
         if (mounted) setOffline(!response.ok);
       } catch {
         if (mounted) setOffline(true);
