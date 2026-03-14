@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useBaby } from "../context/BabyContext";
 import DayTimeline from "../components/DayTimeline";
+import FeedForm from "../components/forms/FeedForm";
+import SleepForm from "../components/forms/SleepForm";
+import DiaperForm from "../components/forms/DiaperForm";
+import MilestoneForm from "../components/forms/MilestoneForm";
 
 const WEEKDAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -18,6 +22,13 @@ const MONTH_NAMES = [
   "November",
   "December",
 ];
+
+const FORM_BY_TYPE = {
+  feed: FeedForm,
+  sleep: SleepForm,
+  diaper: DiaperForm,
+  milestone: MilestoneForm,
+};
 
 function todayString() {
   const d = new Date();
@@ -55,6 +66,23 @@ function dateKey(year, month, day) {
   return `${year}-${mm}-${dd}`;
 }
 
+function dayEventToFormEvent(dayEvent) {
+  const detail = dayEvent.detail || {};
+  const base = { id: dayEvent.id, eventType: dayEvent.event_type };
+  switch (dayEvent.event_type) {
+    case "feed":
+      return { ...base, started_at: detail.started_at, ended_at: detail.ended_at, type: detail.type, amount_oz: detail.amount_oz, user_id: detail.user_id, notes: detail.notes };
+    case "sleep":
+      return { ...base, started_at: detail.started_at, ended_at: detail.ended_at, type: detail.type, user_id: detail.user_id, notes: detail.notes };
+    case "diaper":
+      return { ...base, logged_at: detail.logged_at, type: detail.type, user_id: detail.user_id, notes: detail.notes };
+    case "milestone":
+      return { ...base, occurred_at: detail.occurred_at, title: detail.title, user_id: detail.user_id, notes: detail.notes };
+    default:
+      return base;
+  }
+}
+
 function EventDots({ summary }) {
   if (!summary) return null;
 
@@ -88,6 +116,7 @@ export default function Calendar() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [dayEvents, setDayEvents] = useState([]);
   const [dayLoading, setDayLoading] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
 
   const today = todayString();
   const weeks = buildCalendarGrid(viewYear, viewMonth);
@@ -144,6 +173,16 @@ export default function Calendar() {
     }
   }
 
+  function handleEventTap(dayEvent) {
+    setEditingEvent(dayEventToFormEvent(dayEvent));
+  }
+
+  function handleEditSaved() {
+    setEditingEvent(null);
+    if (selectedDay) fetchDayEvents(selectedDay);
+    fetchMonth();
+  }
+
   function goToPrevMonth() {
     if (viewMonth === 0) {
       setViewYear(viewYear - 1);
@@ -169,6 +208,8 @@ export default function Calendar() {
       </div>
     );
   }
+
+  const EditForm = editingEvent ? FORM_BY_TYPE[editingEvent.eventType] : null;
 
   return (
     <div className="space-y-4 p-4">
@@ -280,7 +321,29 @@ export default function Calendar() {
               day: "numeric",
             })}
           </h3>
-          <DayTimeline events={dayEvents} loading={dayLoading} />
+          <DayTimeline
+            events={dayEvents}
+            loading={dayLoading}
+            onEventTap={handleEventTap}
+          />
+        </div>
+      )}
+
+      {/* Edit form modal */}
+      {editingEvent && EditForm && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Edit{" "}
+              {editingEvent.eventType.charAt(0).toUpperCase() +
+                editingEvent.eventType.slice(1)}
+            </h3>
+            <EditForm
+              event={editingEvent}
+              onSaved={handleEditSaved}
+              onCancel={() => setEditingEvent(null)}
+            />
+          </div>
         </div>
       )}
     </div>

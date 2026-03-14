@@ -147,7 +147,14 @@ async def get_day_events(
             event_type="feed",
             timestamp=feed.started_at,
             id=feed.id,
-            detail={"type": feed.type, "amount_oz": feed.amount_oz, "notes": feed.notes},
+            detail={
+                "type": feed.type,
+                "started_at": feed.started_at.isoformat() if feed.started_at else None,
+                "ended_at": feed.ended_at.isoformat() if feed.ended_at else None,
+                "amount_oz": feed.amount_oz,
+                "user_id": feed.user_id,
+                "notes": feed.notes,
+            },
         ))
 
     for sleep in sleeps.scalars().all():
@@ -155,7 +162,13 @@ async def get_day_events(
             event_type="sleep",
             timestamp=sleep.started_at,
             id=sleep.id,
-            detail={"type": sleep.type, "ended_at": str(sleep.ended_at) if sleep.ended_at else None, "notes": sleep.notes},
+            detail={
+                "type": sleep.type,
+                "started_at": sleep.started_at.isoformat() if sleep.started_at else None,
+                "ended_at": sleep.ended_at.isoformat() if sleep.ended_at else None,
+                "user_id": sleep.user_id,
+                "notes": sleep.notes,
+            },
         ))
 
     for diaper in diapers.scalars().all():
@@ -163,7 +176,12 @@ async def get_day_events(
             event_type="diaper",
             timestamp=diaper.logged_at,
             id=diaper.id,
-            detail={"type": diaper.type, "notes": diaper.notes},
+            detail={
+                "type": diaper.type,
+                "logged_at": diaper.logged_at.isoformat() if diaper.logged_at else None,
+                "user_id": diaper.user_id,
+                "notes": diaper.notes,
+            },
         ))
 
     for milestone in milestones.scalars().all():
@@ -171,7 +189,12 @@ async def get_day_events(
             event_type="milestone",
             timestamp=datetime.combine(milestone.occurred_at, time.min),
             id=milestone.id,
-            detail={"title": milestone.title, "notes": milestone.notes},
+            detail={
+                "title": milestone.title,
+                "occurred_at": milestone.occurred_at.isoformat(),
+                "user_id": milestone.user_id,
+                "notes": milestone.notes,
+            },
         ))
 
     events.sort(key=lambda e: e.timestamp)
