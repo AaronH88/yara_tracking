@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 3.1 — DEV
+→ NEXT: Task 3.2 — DEV
 
 ---
 
@@ -471,23 +471,23 @@ Spec files live in: `tasks/specs/`
 
 ## Task 3.1 — useTimer Hook
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [x] **DEV** — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-3.1.md`
   If retrying, read feedback: _(none yet)_
   Commit: `git add -A && git commit -m "dev: task 3.1"`
   On done: check box, cursor → `→ NEXT: Task 3.1 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-3.1.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 3.1"`
   On done: check box, cursor → `→ NEXT: Task 3.1 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd frontend && npm test -- --watchAll=false 2>&1 | tee tasks/feedback/task-3.1-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 3.1 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 3.1 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-3.1.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-3.1-verify.txt`
   Verdict → `tasks/feedback/task-3.1-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 3.2 — DEV`
