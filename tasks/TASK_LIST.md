@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.4 — TEST
+→ NEXT: Task 3.1 — DEV
 
 ---
 
@@ -450,17 +450,17 @@ Spec files live in: `tasks/specs/`
   Commit: `git add -A && git commit -m "dev: task 2.4"`
   On done: check box, cursor → `→ NEXT: Task 2.4 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-2.4.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 2.4"`
   On done: check box, cursor → `→ NEXT: Task 2.4 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd frontend && npm test -- --watchAll=false 2>&1 | tee tasks/feedback/task-2.4-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 2.4 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 2.4 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-2.4.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-2.4-verify.txt`
   Verdict → `tasks/feedback/task-2.4-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 3.1 — DEV`
