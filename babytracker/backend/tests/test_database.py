@@ -64,7 +64,7 @@ class TestEngineConfiguration:
 
     def test_default_database_url_targets_babytracker_db(self):
         import database
-        assert "babytracker.db" in database.DATABASE_URL
+        assert "babytracker" in database.DATABASE_URL
 
 
 class TestDatabaseUrlFromEnvVar:
@@ -91,7 +91,11 @@ class TestDatabaseUrlFromEnvVar:
             import importlib
             import database
             importlib.reload(database)
-            assert database.DATABASE_URL == "sqlite+aiosqlite:///./babytracker.db"
+            assert database.DATABASE_URL == "sqlite+aiosqlite:////var/lib/babytracker/db.sqlite"
+        # Restore module to use the test DATABASE_URL from the restored env
+        import importlib
+        import database
+        importlib.reload(database)
 
 
 # ── Session factory ──────────────────────────────────────────────────────────
