@@ -18,6 +18,14 @@ vi.mock("../components/timers/FeedTimer", () => ({
 vi.mock("../components/timers/SleepTimer", () => ({
   default: () => <div data-testid="sleep-timer">SleepTimer</div>,
 }));
+vi.mock("../components/LogPastEventModal", () => ({
+  default: ({ onClose }) => (
+    <div data-testid="log-past-event-modal">
+      <button onClick={() => onClose(true)}>MockSave</button>
+      <button onClick={() => onClose(false)}>MockClose</button>
+    </div>
+  ),
+}));
 
 import Dashboard from "../pages/Dashboard";
 import { useBaby } from "../context/BabyContext";
@@ -524,5 +532,78 @@ describe("Dashboard — diaper API URL", () => {
       const body = JSON.parse(diaperCalls[0][1].body);
       expect(() => new Date(body.logged_at).toISOString()).not.toThrow();
     });
+  });
+});
+
+// ---- Log Past Event button ----
+
+describe("Dashboard — Log Past Event", () => {
+  it("renders a 'Log Past Event' button", () => {
+    setupDefaults();
+    render(<Dashboard />);
+
+    expect(screen.getByRole("button", { name: /log past event/i })).toBeInTheDocument();
+  });
+
+  it("opens the LogPastEventModal when Log Past Event is clicked", async () => {
+    setupDefaults();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    expect(screen.queryByTestId("log-past-event-modal")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /log past event/i }));
+
+    expect(screen.getByTestId("log-past-event-modal")).toBeInTheDocument();
+  });
+
+  it("closes the modal when onClose is called with false", async () => {
+    setupDefaults();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /log past event/i }));
+    expect(screen.getByTestId("log-past-event-modal")).toBeInTheDocument();
+
+    await user.click(screen.getByText("MockClose"));
+
+    expect(screen.queryByTestId("log-past-event-modal")).not.toBeInTheDocument();
+  });
+
+  it("closes the modal and refetches events when onClose is called with true (saved)", async () => {
+    setupDefaults();
+    const fetchCalls = [];
+    global.fetch = vi.fn((url, opts) => {
+      fetchCalls.push({ url, method: opts?.method || "GET" });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    // Clear initial fetch calls
+    fetchCalls.length = 0;
+
+    await user.click(screen.getByRole("button", { name: /log past event/i }));
+    await user.click(screen.getByText("MockSave"));
+
+    // Modal should be closed
+    expect(screen.queryByTestId("log-past-event-modal")).not.toBeInTheDocument();
+
+    // Should have refetched last events
+    await waitFor(() => {
+      const refetchCalls = fetchCalls.filter(
+        (c) => c.method === "GET" && c.url.includes("limit=1")
+      );
+      expect(refetchCalls.length).toBeGreaterThanOrEqual(3);
+    });
+  });
+
+  it("does not show Log Past Event button when no baby is selected", () => {
+    useBaby.mockReturnValue({ selectedBaby: null });
+    usePersona.mockReturnValue({ persona: PERSONA });
+    useActiveEvents.mockReturnValue({ activeFeed: null, activeSleep: null, refetch: vi.fn() });
+    render(<Dashboard />);
+
+    expect(screen.queryByRole("button", { name: /log past event/i })).not.toBeInTheDocument();
   });
 });
