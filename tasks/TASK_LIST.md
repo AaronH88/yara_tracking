@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 4.2 — TEST
+→ NEXT: Task 4.3 — DEV
 
 ---
 
@@ -666,17 +666,17 @@ Spec files live in: `tasks/specs/`
   Commit: `git add -A && git commit -m "dev: task 4.2"`
   On done: check box, cursor → `→ NEXT: Task 4.2 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-4.2.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 4.2"`
   On done: check box, cursor → `→ NEXT: Task 4.2 — VERIFY`
 
-- [ ] **VERIFY** —
+- [x] **VERIFY** —
   Run: `cd backend && python -m pytest -v 2>&1 | tee tasks/feedback/task-4.2-verify.txt && cd ../frontend && npm test -- --watchAll=false 2>&1 | tee -a tasks/feedback/task-4.2-verify.txt`
   If pass: check box, cursor → `→ NEXT: Task 4.2 — JUDGE`
   If fail: uncheck DEV + TEST, increment, cursor → `→ NEXT: Task 4.2 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` —
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` —
   Spec: `tasks/specs/task-4.2.md` | Diff: `git diff HEAD~2` | Verify: `tasks/feedback/task-4.2-verify.txt`
   Verdict → `tasks/feedback/task-4.2-judge.md`
   If PASS: check box, cursor → `→ NEXT: Task 4.3 — DEV`
