@@ -105,6 +105,18 @@ describe("PersonaGate — user list", () => {
 
     expect(screen.queryByText(/loading users/i)).not.toBeInTheDocument();
   });
+
+  it("does not show children or error while loading", async () => {
+    global.fetch = vi.fn(() => new Promise(() => {}));
+
+    await act(async () => {
+      renderGate();
+    });
+
+    expect(screen.queryByTestId("app-content")).not.toBeInTheDocument();
+    expect(screen.queryByText(/failed/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no users set up/i)).not.toBeInTheDocument();
+  });
 });
 
 describe("PersonaGate — selecting a user", () => {
@@ -148,6 +160,32 @@ describe("PersonaGate — selecting a user", () => {
     const stored = JSON.parse(localStorage.getItem("babytracker_persona"));
     expect(stored).toEqual({ id: 42, name: "Dad" });
   });
+
+  it("stores the correct user when selecting from multiple options", async () => {
+    const user = userEvent.setup();
+    const mockUsers = [
+      { id: 1, name: "Mom" },
+      { id: 2, name: "Dad" },
+      { id: 3, name: "Grandma" },
+    ];
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockUsers),
+      }),
+    );
+
+    await act(async () => {
+      renderGate();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Dad" }));
+
+    const stored = JSON.parse(localStorage.getItem("babytracker_persona"));
+    expect(stored).toEqual({ id: 2, name: "Dad" });
+    expect(stored).not.toEqual(expect.objectContaining({ name: "Mom" }));
+    expect(stored).not.toEqual(expect.objectContaining({ name: "Grandma" }));
+  });
 });
 
 describe("PersonaGate — returning visitor with persona", () => {
@@ -169,6 +207,27 @@ describe("PersonaGate — returning visitor with persona", () => {
     ).not.toBeInTheDocument();
     // Should not fetch users when persona is already set
     expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("shows modal when localStorage has corrupted persona JSON", async () => {
+    localStorage.setItem("babytracker_persona", "not-valid-json{{{");
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([{ id: 1, name: "Mom" }]),
+      }),
+    );
+
+    await act(async () => {
+      renderGate();
+    });
+
+    expect(
+      screen.getByText(/welcome — who are you\?/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId("app-content")).not.toBeInTheDocument();
+    // Corrupted value should be cleared
+    expect(localStorage.getItem("babytracker_persona")).toBeNull();
   });
 });
 
@@ -208,6 +267,21 @@ describe("PersonaGate — no users exist", () => {
     const buttons = screen.queryAllByRole("button");
     expect(buttons).toHaveLength(0);
   });
+
+  it("does not render children when no users exist", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([]),
+      }),
+    );
+
+    await act(async () => {
+      renderGate();
+    });
+
+    expect(screen.queryByTestId("app-content")).not.toBeInTheDocument();
+  });
 });
 
 describe("PersonaGate — fetch error", () => {
@@ -237,5 +311,52 @@ describe("PersonaGate — fetch error", () => {
 
     expect(screen.getByText(/network error/i)).toBeInTheDocument();
     expect(screen.queryByTestId("app-content")).not.toBeInTheDocument();
+  });
+
+  it("does not show user buttons or admin link on error", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 503,
+        json: () => Promise.resolve({}),
+      }),
+    );
+
+    await act(async () => {
+      renderGate();
+    });
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.queryByRole("link", { name: /admin/i })).not.toBeInTheDocument();
+  });
+
+  it("does not show loading or empty-users message on error", async () => {
+    global.fetch = vi.fn(() => Promise.reject(new Error("Timeout")));
+
+    await act(async () => {
+      renderGate();
+    });
+
+    expect(screen.queryByText(/loading users/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no users set up/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("PersonaGate — single user", () => {
+  it("renders exactly one button for a single-user response", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([{ id: 1, name: "Solo" }]),
+      }),
+    );
+
+    await act(async () => {
+      renderGate();
+    });
+
+    const buttons = screen.getAllByRole("button");
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0]).toHaveTextContent("Solo");
   });
 });
