@@ -52,14 +52,14 @@ const NAV_ITEMS = [
 export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white pb-safe dark:border-gray-700 dark:bg-gray-900">
-      <div className="flex items-center justify-around">
+      <div className="flex items-stretch justify-around">
         {NAV_ITEMS.map(({ to, label, icon }) => (
           <NavLink
             key={to}
             to={to}
             end={to === "/"}
             className={({ isActive }) =>
-              `flex flex-col items-center px-2 py-2 text-xs font-medium transition-colors ${
+              `flex min-h-[48px] flex-1 flex-col items-center justify-center py-2 text-xs font-medium transition-colors ${
                 isActive
                   ? "text-blue-600 dark:text-blue-400"
                   : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"

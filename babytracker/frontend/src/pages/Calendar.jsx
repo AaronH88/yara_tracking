@@ -217,7 +217,7 @@ export default function Calendar() {
       <div className="flex items-center justify-between">
         <button
           onClick={goToPrevMonth}
-          className="rounded-full p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+          className="flex h-12 w-12 items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
           aria-label="Previous month"
         >
           <svg
@@ -238,7 +238,7 @@ export default function Calendar() {
         </h2>
         <button
           onClick={goToNextMonth}
-          className="rounded-full p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+          className="flex h-12 w-12 items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
           aria-label="Next month"
         >
           <svg
@@ -270,9 +270,10 @@ export default function Calendar() {
 
       {/* Calendar grid */}
       {loading ? (
-        <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          Loading...
-        </p>
+        <div className="flex flex-col items-center gap-3 py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 dark:border-gray-700 dark:border-t-blue-400" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">Loading calendar...</p>
+        </div>
       ) : (
         <div className="grid grid-cols-7 gap-px">
           {weeks.flat().map((day, idx) => {

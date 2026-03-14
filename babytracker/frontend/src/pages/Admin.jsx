@@ -138,7 +138,7 @@ export default function Admin() {
               </span>
               <button
                 onClick={() => setEditingUser({ ...user })}
-                className="rounded-lg px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                className="rounded-lg px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                 aria-label={`Edit ${user.name}`}
               >
                 Edit
@@ -148,7 +148,7 @@ export default function Admin() {
                   setDeleteError("");
                   setDeletingUser(user);
                 }}
-                className="rounded-lg px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                className="rounded-lg px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
                 aria-label={`Delete ${user.name}`}
               >
                 Delete
@@ -167,7 +167,7 @@ export default function Admin() {
           />
           <button
             type="submit"
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-lg bg-blue-600 px-4 min-h-[48px] py-3 text-sm font-medium text-white hover:bg-blue-700"
           >
             Add User
           </button>
@@ -203,7 +203,7 @@ export default function Admin() {
               </div>
               <button
                 onClick={() => setEditingBaby({ ...baby })}
-                className="rounded-lg px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                className="rounded-lg px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                 aria-label={`Edit ${baby.name}`}
               >
                 Edit
@@ -237,7 +237,7 @@ export default function Admin() {
           </select>
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="w-full rounded-lg bg-blue-600 min-h-[48px] py-3 text-sm font-medium text-white hover:bg-blue-700"
           >
             Add Baby
           </button>
@@ -259,13 +259,13 @@ export default function Admin() {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleDeleteUser}
-                className="flex-1 rounded-lg bg-red-600 py-2 font-medium text-white hover:bg-red-700"
+                className="flex-1 rounded-lg bg-red-600 min-h-[48px] py-3 font-medium text-white hover:bg-red-700"
               >
                 Delete
               </button>
               <button
                 onClick={() => setDeletingUser(null)}
-                className="flex-1 rounded-lg border border-gray-300 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>
@@ -292,14 +292,14 @@ export default function Admin() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700"
+                  className="flex-1 rounded-lg bg-blue-600 min-h-[48px] py-3 font-medium text-white hover:bg-blue-700"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}
-                  className="flex-1 rounded-lg border border-gray-300 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>
@@ -347,14 +347,14 @@ export default function Admin() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700"
+                  className="flex-1 rounded-lg bg-blue-600 min-h-[48px] py-3 font-medium text-white hover:bg-blue-700"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditingBaby(null)}
-                  className="flex-1 rounded-lg border border-gray-300 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>

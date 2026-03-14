@@ -378,10 +378,10 @@ describe("Calendar — day selection and timeline", () => {
 // ---- Loading state ----
 
 describe("Calendar — loading state", () => {
-  it("shows Loading... while fetching month data", () => {
+  it("shows loading spinner while fetching month data", () => {
     global.fetch = vi.fn(() => new Promise(() => {}));
     render(<Calendar />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("Loading calendar...")).toBeInTheDocument();
   });
 });
 

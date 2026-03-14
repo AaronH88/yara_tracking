@@ -183,12 +183,12 @@ export default function History() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {TYPE_FILTERS.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setTypeFilter(key)}
-            className={`whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               typeFilter === key
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -204,7 +204,7 @@ export default function History() {
           <button
             key={key}
             onClick={() => setDateFilter(key)}
-            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               dateFilter === key
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -216,13 +216,17 @@ export default function History() {
       </div>
 
       {loading && events.length === 0 ? (
-        <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          Loading...
-        </p>
+        <div className="flex flex-col items-center gap-3 py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 dark:border-gray-700 dark:border-t-blue-400" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">Loading events...</p>
+        </div>
       ) : filteredEvents.length === 0 ? (
-        <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          No events found
-        </p>
+        <div className="py-12 text-center">
+          <p className="text-3xl mb-2">📋</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {events.length === 0 ? "No events logged yet" : "No events match your filters"}
+          </p>
+        </div>
       ) : (
         <div className="space-y-2">
           {filteredEvents.map((ev) => (
@@ -261,7 +265,7 @@ export default function History() {
               </button>
               <button
                 onClick={() => setDeletingEvent(ev)}
-                className="p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
                 aria-label="Delete event"
               >
                 <svg
@@ -286,7 +290,7 @@ export default function History() {
         <button
           onClick={() => setLimit((prev) => prev + 50)}
           disabled={loading}
-          className="w-full rounded-lg border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="w-full rounded-lg border border-gray-300 min-h-[48px] py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Load More
         </button>
@@ -301,13 +305,13 @@ export default function History() {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleDelete}
-                className="flex-1 rounded-lg bg-red-600 py-2 font-medium text-white hover:bg-red-700"
+                className="flex-1 rounded-lg bg-red-600 min-h-[48px] py-3 font-medium text-white hover:bg-red-700"
               >
                 Delete
               </button>
               <button
                 onClick={() => setDeletingEvent(null)}
-                className="flex-1 rounded-lg border border-gray-300 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>

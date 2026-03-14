@@ -78,12 +78,12 @@ function makeMilestoneEvent(overrides = {}) {
 describe("DayTimeline — loading state", () => {
   it("shows loading message when loading prop is true", () => {
     render(<DayTimeline events={[]} loading={true} />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("Loading events...")).toBeInTheDocument();
   });
 
   it("does not render events when loading", () => {
     render(<DayTimeline events={[makeFeedEvent()]} loading={true} />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("Loading events...")).toBeInTheDocument();
     expect(screen.queryByText("Bottle")).not.toBeInTheDocument();
   });
 });

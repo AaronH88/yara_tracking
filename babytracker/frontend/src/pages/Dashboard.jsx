@@ -138,7 +138,7 @@ export default function Dashboard() {
       <div className="space-y-4 p-4">
         <button
           onClick={() => setShowFeedTimer(false)}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
         >
           &larr; Back to Dashboard
         </button>
@@ -152,7 +152,7 @@ export default function Dashboard() {
       <div className="space-y-4 p-4">
         <button
           onClick={() => setShowSleepTimer(false)}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
         >
           &larr; Back to Dashboard
         </button>

@@ -140,7 +140,7 @@ export default function DiaperForm({ event, onSaved, onCancel }) {
         <button
           type="submit"
           disabled={submitting}
-          className="flex-1 rounded-lg bg-blue-600 py-2 text-white font-medium
+          className="flex-1 rounded-lg bg-blue-600 min-h-[48px] py-3 text-white font-medium
             hover:bg-blue-700 disabled:opacity-50"
         >
           {event ? "Update" : "Create"}
@@ -149,7 +149,7 @@ export default function DiaperForm({ event, onSaved, onCancel }) {
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 rounded-lg border border-gray-300 py-2 text-gray-700 font-medium
+            className="flex-1 rounded-lg border border-gray-300 min-h-[48px] py-3 text-gray-700 font-medium
               hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             Cancel

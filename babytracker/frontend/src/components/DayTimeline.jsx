@@ -181,17 +181,19 @@ function EventMarker({ ev, onClick, offsetLevel }) {
 export default function DayTimeline({ events, loading, onEventTap }) {
   if (loading) {
     return (
-      <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        Loading...
-      </p>
+      <div className="flex flex-col items-center gap-3 py-8">
+        <div className="h-6 w-6 animate-spin rounded-full border-3 border-gray-200 border-t-blue-600 dark:border-gray-700 dark:border-t-blue-400" />
+        <p className="text-sm text-gray-500 dark:text-gray-400">Loading events...</p>
+      </div>
     );
   }
 
   if (events.length === 0) {
     return (
-      <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        No events this day
-      </p>
+      <div className="py-8 text-center">
+        <p className="text-2xl mb-1">📭</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">No events this day</p>
+      </div>
     );
   }
 

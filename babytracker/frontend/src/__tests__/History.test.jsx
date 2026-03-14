@@ -317,19 +317,19 @@ describe("History — event display", () => {
     });
   });
 
-  it("shows 'No events found' when no events match", async () => {
+  it("shows empty state when no events match", async () => {
     global.fetch = mockFetch();
     render(<History />);
     await waitFor(() => {
-      expect(screen.getByText("No events found")).toBeInTheDocument();
+      expect(screen.getByText("No events logged yet")).toBeInTheDocument();
     });
   });
 
-  it("shows Loading... while fetching", () => {
+  it("shows loading spinner while fetching", () => {
     // Make fetch hang
     global.fetch = vi.fn(() => new Promise(() => {}));
     render(<History />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("Loading events...")).toBeInTheDocument();
   });
 });
 
@@ -748,7 +748,7 @@ describe("History — API integration", () => {
     render(<History />);
 
     await waitFor(() => {
-      expect(screen.getByText("No events found")).toBeInTheDocument();
+      expect(screen.getByText("No events logged yet")).toBeInTheDocument();
     });
   });
 

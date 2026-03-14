@@ -35,9 +35,10 @@ export default function PersonaGate({ children }) {
         </h1>
 
         {loading && (
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            Loading users...
-          </p>
+          <div className="flex flex-col items-center gap-3 py-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 dark:border-gray-700 dark:border-t-blue-400" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">Loading users...</p>
+          </div>
         )}
 
         {fetchError && (
