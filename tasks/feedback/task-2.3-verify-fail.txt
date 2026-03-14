@@ -1,0 +1,23 @@
+VERIFY FAILURE — Task 2.3 (Persona Gate)
+
+Backend: 573 passed (OK)
+Frontend: 6 failed, 51 passed (FAIL)
+
+All 6 failures are in src/__tests__/App.test.jsx (from task 2.1).
+The PersonaGate modal blocks route rendering when no persona is selected.
+Tests that expect to see "Dashboard", "History", "Calendar", "Admin", "Settings"
+instead see the "Welcome — who are you?" modal.
+
+Additionally, the PersonaContext has a JSON.parse crash on invalid localStorage
+data ("not-valid-json{{{") — this is from an edge-case test in PersonaContext
+that writes bad data to localStorage. The error is caught properly in tests
+that expect it, but the App.test.jsx tests render the full app tree which
+triggers this crash in some test ordering scenarios.
+
+Root cause: The App.test.jsx tests from task 2.1 were written before the
+PersonaGate was added. They need to either:
+1. Mock the PersonaContext to provide a selected persona, OR
+2. Set up localStorage with a valid persona before rendering
+
+The DEV and TEST steps for task 2.3 need to account for the PersonaGate
+blocking the app when no user is selected, and update existing tests accordingly.

@@ -7,7 +7,13 @@ const PERSONA_KEY = "babytracker_persona";
 export function PersonaProvider({ children }) {
   const [persona, setPersonaState] = useState(() => {
     const stored = localStorage.getItem(PERSONA_KEY);
-    return stored ? JSON.parse(stored) : null;
+    if (!stored) return null;
+    try {
+      return JSON.parse(stored);
+    } catch {
+      localStorage.removeItem(PERSONA_KEY);
+      return null;
+    }
   });
 
   const setPersona = useCallback((user) => {

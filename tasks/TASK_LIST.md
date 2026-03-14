@@ -417,13 +417,13 @@ Spec files live in: `tasks/specs/`
 
 ## Task 2.3 — Persona Gate (Who Are You Modal)
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` —
+- [ ] **DEV** (attempt 2) — `persona: tasks/personas/developer.md` —
   Read spec: `tasks/specs/task-2.3.md`
-  If retrying, read feedback: _(none yet)_
+  If retrying, read feedback: `tasks/feedback/task-2.3-verify-fail.txt`
   Commit: `git add -A && git commit -m "dev: task 2.3"`
   On done: check box, cursor → `→ NEXT: Task 2.3 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` —
+- [ ] **TEST** (attempt 2) — `persona: tasks/personas/test_writer.md` —
   Spec: `tasks/specs/task-2.3.md` | Diff: `git diff HEAD~1`
   Commit: `git add -A && git commit -m "test: task 2.3"`
   On done: check box, cursor → `→ NEXT: Task 2.3 — VERIFY`

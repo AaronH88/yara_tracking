@@ -2,8 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import App from "../App";
 
+const TEST_PERSONA = { id: 1, name: "TestUser" };
+
 beforeEach(() => {
   localStorage.clear();
+  localStorage.setItem("babytracker_persona", JSON.stringify(TEST_PERSONA));
   global.fetch = vi.fn(() =>
     Promise.resolve({ ok: true, json: () => Promise.resolve([]) }),
   );

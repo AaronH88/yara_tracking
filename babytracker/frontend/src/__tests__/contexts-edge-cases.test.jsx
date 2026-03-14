@@ -56,13 +56,13 @@ afterEach(() => {
 describe("PersonaContext edge cases", () => {
   it("handles corrupted JSON in localStorage gracefully", () => {
     localStorage.setItem("babytracker_persona", "not-valid-json{{{");
-    expect(() => {
-      render(
-        <PersonaProvider>
-          <PersonaConsumer />
-        </PersonaProvider>,
-      );
-    }).toThrow();
+    render(
+      <PersonaProvider>
+        <PersonaConsumer />
+      </PersonaProvider>,
+    );
+    expect(screen.getByTestId("persona")).toHaveTextContent("null");
+    expect(localStorage.getItem("babytracker_persona")).toBeNull();
   });
 
   it("setPersona overwrites previous persona", async () => {
