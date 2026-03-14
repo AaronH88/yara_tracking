@@ -4,6 +4,7 @@ import { usePersona } from "../context/PersonaContext";
 import { useActiveEvents } from "../hooks/useActiveEvents";
 import FeedTimer from "../components/timers/FeedTimer";
 import SleepTimer from "../components/timers/SleepTimer";
+import LogPastEventModal from "../components/LogPastEventModal";
 
 const DIAPER_TYPES = [
   { type: "wet", label: "Wet" },
@@ -63,6 +64,7 @@ export default function Dashboard() {
   const [loggingDiaper, setLoggingDiaper] = useState(false);
   const [showFeedTimer, setShowFeedTimer] = useState(false);
   const [showSleepTimer, setShowSleepTimer] = useState(false);
+  const [showLogPastEvent, setShowLogPastEvent] = useState(false);
   const [sinceLastFeed, setSinceLastFeed] = useState(null);
 
   const fetchLastEvents = useCallback(async () => {
@@ -229,6 +231,17 @@ export default function Dashboard() {
             😴 Log Sleep
           </button>
         </div>
+        <button
+          onClick={() => setShowLogPastEvent(true)}
+          className="mt-3 w-full flex items-center justify-center rounded-xl border-2
+            border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-600
+            hover:border-purple-400 hover:bg-purple-50 hover:text-purple-700
+            dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400
+            dark:hover:border-purple-500 dark:hover:bg-gray-700 dark:hover:text-purple-300
+            active:scale-95 transition-transform"
+        >
+          📝 Log Past Event
+        </button>
       </section>
 
       <section>
@@ -283,6 +296,15 @@ export default function Dashboard() {
           />
         </div>
       </section>
+
+      {showLogPastEvent && (
+        <LogPastEventModal
+          onClose={(saved) => {
+            setShowLogPastEvent(false);
+            if (saved) fetchLastEvents();
+          }}
+        />
+      )}
     </div>
   );
 }
