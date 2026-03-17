@@ -33,9 +33,9 @@ npm run build
 cd -
 
 # Update systemd service file if changed
-echo "Updating systemd service..."
-cp "$SCRIPT_DIR/$SERVICE_FILE" /etc/systemd/system/
-systemctl daemon-reload
+# echo "Updating systemd service..."
+# cp "$SCRIPT_DIR/$SERVICE_FILE" /etc/systemd/system/
+# systemctl daemon-reload
 
 # Restart service
 echo "Starting service..."

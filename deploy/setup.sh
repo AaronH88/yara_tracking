@@ -44,6 +44,36 @@ npm ci
 npm run build
 cd -
 
+# ── Tailscale + TLS cert ──────────────────────────────────────────────────────
+echo "Installing Tailscale..."
+curl -fsSL https://tailscale.com/install.sh | sh
+
+echo ""
+echo "=== Tailscale Authentication Required ==="
+tailscale up
+echo ""
+echo "Open the URL above in your browser, authenticate, then press Enter to continue..."
+read -r
+
+if ! tailscale status &>/dev/null; then
+    echo "ERROR: Tailscale not connected. Re-run after authenticating."
+    exit 1
+fi
+
+TAILSCALE_FQDN=$(tailscale status --json | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['Self']['DNSName'].rstrip('.'))")
+echo "Tailscale FQDN: $TAILSCALE_FQDN"
+
+echo "Provisioning TLS certificate..."
+tailscale cert "$TAILSCALE_FQDN"
+mkdir -p /etc/babytracker/certs
+mv "${TAILSCALE_FQDN}".* /etc/babytracker/certs/
+chown "$SERVICE_USER":"$SERVICE_USER" /etc/babytracker/certs/*
+chmod 640 /etc/babytracker/certs/*
+
+# Inject the real FQDN into the service file
+sed -i "s|TAILSCALE_FQDN_PLACEHOLDER|${TAILSCALE_FQDN}|g" "$SCRIPT_DIR/$SERVICE_FILE"
+# ─────────────────────────────────────────────────────────────────────────────
+
 # Install systemd service
 echo "Installing systemd service..."
 cp "$SCRIPT_DIR/$SERVICE_FILE" /etc/systemd/system/
