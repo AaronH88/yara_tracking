@@ -1,4 +1,5 @@
 # Python
+babytracker/venv/
 babytracker/backend/venv/
 babytracker/backend/__pycache__/
 babytracker/backend/**/__pycache__/
