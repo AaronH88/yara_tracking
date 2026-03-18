@@ -9,7 +9,7 @@ import MeasurementForm from "./forms/MeasurementForm";
 const EVENT_TYPES = [
   { key: "feed", label: "Feed", icon: "🍼" },
   { key: "sleep", label: "Sleep", icon: "😴" },
-  { key: "diaper", label: "Diaper", icon: "🧷" },
+  { key: "diaper", label: "Nappy", icon: "🧷" },
   { key: "pump", label: "Pump", icon: "🧴" },
   { key: "milestone", label: "Milestone", icon: "⭐" },
   { key: "measurement", label: "Measurement", icon: "📏" },

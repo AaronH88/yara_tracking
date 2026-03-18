@@ -29,7 +29,7 @@ function eventLabel(ev) {
     case "sleep":
       return SLEEP_LABELS[detail.type] || detail.type || "Sleep";
     case "diaper":
-      return DIAPER_LABELS[detail.type] || detail.type || "Diaper";
+      return DIAPER_LABELS[detail.type] || detail.type || "Nappy";
     case "milestone":
       return detail.title || "Milestone";
     default:

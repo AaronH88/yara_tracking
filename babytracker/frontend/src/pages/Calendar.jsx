@@ -336,7 +336,7 @@ export default function Calendar() {
           <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
               Edit{" "}
-              {editingEvent.eventType.charAt(0).toUpperCase() +
+              {editingEvent.eventType === "diaper" ? "Nappy" : editingEvent.eventType.charAt(0).toUpperCase() +
                 editingEvent.eventType.slice(1)}
             </h3>
             <EditForm

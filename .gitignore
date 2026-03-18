@@ -1,0 +1,22 @@
+# Python
+babytracker/backend/venv/
+babytracker/backend/__pycache__/
+babytracker/backend/**/__pycache__/
+*.pyc
+*.pyo
+*.db
+*.sqlite
+
+# Frontend
+babytracker/frontend/node_modules/
+babytracker/frontend/dist/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# Task feedback (runtime generated)
+tasks/feedback/

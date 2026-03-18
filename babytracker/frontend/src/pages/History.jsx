@@ -10,7 +10,7 @@ const TYPE_FILTERS = [
   { key: "all", label: "All" },
   { key: "feed", label: "Feeds" },
   { key: "sleep", label: "Sleeps" },
-  { key: "diaper", label: "Diapers" },
+  { key: "diaper", label: "Nappies" },
   { key: "pump", label: "Pumps" },
   { key: "milestone", label: "Milestones" },
 ];
@@ -300,7 +300,7 @@ export default function History() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800">
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Delete this {deletingEvent.eventType} event?
+              Delete this {deletingEvent.eventType === "diaper" ? "nappy" : deletingEvent.eventType} event?
             </p>
             <div className="mt-4 flex gap-3">
               <button
@@ -325,7 +325,7 @@ export default function History() {
           <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
               Edit{" "}
-              {editingEvent.eventType.charAt(0).toUpperCase() +
+              {editingEvent.eventType === "diaper" ? "Nappy" : editingEvent.eventType.charAt(0).toUpperCase() +
                 editingEvent.eventType.slice(1)}
             </h3>
             <EditForm

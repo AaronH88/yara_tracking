@@ -424,7 +424,7 @@ describe("Dashboard — last events summary", () => {
     render(<Dashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText(/last diaper/i)).toBeInTheDocument();
+      expect(screen.getByText(/last nappy/i)).toBeInTheDocument();
       expect(screen.getByText(/wet/i)).toBeInTheDocument();
     });
   });

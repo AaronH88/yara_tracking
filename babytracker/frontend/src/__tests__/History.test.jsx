@@ -206,7 +206,7 @@ describe("History — filter bars", () => {
     expect(allButtons.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole("button", { name: "Feeds" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sleeps" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Diapers" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Nappies" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pumps" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Milestones" })

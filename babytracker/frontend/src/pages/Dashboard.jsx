@@ -295,7 +295,7 @@ export default function Dashboard() {
             empty={!lastSleep}
           />
           <LastEventCard
-            label="Last Diaper"
+            label="Last Nappy"
             typeLabel={
               lastDiaper
                 ? DIAPER_TYPE_LABELS[lastDiaper.type] || lastDiaper.type

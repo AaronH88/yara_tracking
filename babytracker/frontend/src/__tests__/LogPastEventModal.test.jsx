@@ -71,7 +71,7 @@ describe("LogPastEventModal — event type selector", () => {
     render(<LogPastEventModal onClose={vi.fn()} />);
     expect(screen.getByText("Feed")).toBeInTheDocument();
     expect(screen.getByText("Sleep")).toBeInTheDocument();
-    expect(screen.getByText("Diaper")).toBeInTheDocument();
+    expect(screen.getByText("Nappy")).toBeInTheDocument();
     expect(screen.getByText("Pump")).toBeInTheDocument();
     expect(screen.getByText("Milestone")).toBeInTheDocument();
     expect(screen.getByText("Measurement")).toBeInTheDocument();
@@ -118,11 +118,11 @@ describe("LogPastEventModal — selecting event type", () => {
     expect(screen.getByTestId("sleep-form")).toBeInTheDocument();
   });
 
-  it("shows the DiaperForm when Diaper is selected", async () => {
+  it("shows the DiaperForm when Nappy is selected", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<LogPastEventModal onClose={vi.fn()} />);
 
-    await user.click(screen.getByText("Diaper"));
+    await user.click(screen.getByText("Nappy"));
 
     expect(screen.getByTestId("diaper-form")).toBeInTheDocument();
   });
