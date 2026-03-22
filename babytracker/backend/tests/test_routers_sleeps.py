@@ -105,17 +105,19 @@ async def test_create_sleep_as_active_timer(client, seed_baby_and_user):
 
 
 @pytest.mark.anyio
-async def test_create_sleep_409_when_active_sleep_exists(client, seed_baby_and_user):
-    """POST /sleeps with no ended_at should return 409 if an active sleep already exists."""
+async def test_create_sleep_auto_closes_active_sleep(client, seed_baby_and_user):
+    """POST /sleeps with no ended_at should auto-close any existing active sleep."""
     baby_id, user_id = seed_baby_and_user
     # Start first active sleep
     payload = {"user_id": user_id, "type": "nap"}
-    await client.post(f"/api/v1/babies/{baby_id}/sleeps", json=payload)
+    first_resp = await client.post(f"/api/v1/babies/{baby_id}/sleeps", json=payload)
+    first_sleep_id = first_resp.json()["id"]
 
-    # Attempt second active sleep
+    # Start second active sleep — should auto-close the first
     resp = await client.post(f"/api/v1/babies/{baby_id}/sleeps", json=payload)
-    assert resp.status_code == 409
-    assert "already in progress" in resp.json()["detail"].lower()
+    assert resp.status_code == 201
+    data = resp.json()
+    assert any(item["id"] == first_sleep_id and item["type"] == "sleep" for item in data["auto_closed"])
 
 
 @pytest.mark.anyio
@@ -581,7 +583,7 @@ async def test_response_shape_contains_all_fields(client, seed_baby_and_user):
     )
     data = resp.json()
     expected_fields = {"id", "baby_id", "user_id", "type", "started_at",
-                       "ended_at", "notes", "created_at"}
+                       "ended_at", "notes", "created_at", "auto_closed"}
     assert expected_fields == set(data.keys())
 
 

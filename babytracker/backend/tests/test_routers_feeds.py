@@ -93,17 +93,19 @@ async def test_create_feed_as_active_timer(client, seed_baby_and_user):
 
 
 @pytest.mark.anyio
-async def test_create_feed_409_when_active_feed_exists(client, seed_baby_and_user):
-    """POST /feeds with no ended_at should return 409 if an active feed already exists."""
+async def test_create_feed_auto_closes_active_feed(client, seed_baby_and_user):
+    """POST /feeds with no ended_at should auto-close any existing active feed."""
     baby_id, user_id = seed_baby_and_user
     # Start first active feed
     payload = {"user_id": user_id, "type": "bottle"}
-    await client.post(f"/api/v1/babies/{baby_id}/feeds", json=payload)
+    first_resp = await client.post(f"/api/v1/babies/{baby_id}/feeds", json=payload)
+    first_feed_id = first_resp.json()["id"]
 
-    # Attempt second active feed
+    # Start second active feed — should auto-close the first
     resp = await client.post(f"/api/v1/babies/{baby_id}/feeds", json=payload)
-    assert resp.status_code == 409
-    assert "already in progress" in resp.json()["detail"].lower()
+    assert resp.status_code == 201
+    data = resp.json()
+    assert any(item["id"] == first_feed_id and item["type"] == "feed" for item in data["auto_closed"])
 
 
 @pytest.mark.anyio
@@ -579,5 +581,5 @@ async def test_response_shape_contains_all_fields(client, seed_baby_and_user):
     expected_fields = {"id", "baby_id", "user_id", "type", "started_at",
                        "ended_at", "amount_oz", "amount_ml",
                        "paused_seconds", "is_paused", "paused_at", "quality",
-                       "notes", "created_at"}
+                       "notes", "created_at", "auto_closed"}
     assert expected_fields == set(data.keys())
