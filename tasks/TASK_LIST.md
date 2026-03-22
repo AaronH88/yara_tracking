@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.3 — DEV
+→ NEXT: Task 2.3 — VERIFY
 
 ---
 
@@ -240,7 +240,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 2.3 — Burp Timer Router
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-2.3.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:
@@ -248,7 +248,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 2.3 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-2.3.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
