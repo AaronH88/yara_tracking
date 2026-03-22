@@ -23,6 +23,7 @@ from routers.settings import seed_settings
 from routers.users import seed_default_users
 from routers import (
     babies,
+    burps,
     calendar,
     diapers,
     feeds,
@@ -62,6 +63,7 @@ app.include_router(babies.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(feeds.router, prefix="/api/v1")
 app.include_router(sleeps.router, prefix="/api/v1")
+app.include_router(burps.router, prefix="/api/v1")
 app.include_router(diapers.router, prefix="/api/v1")
 app.include_router(pumps.router, prefix="/api/v1")
 app.include_router(measurements.router, prefix="/api/v1")

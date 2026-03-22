@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import FeedEvent, SleepEvent
+from models import BurpEvent, FeedEvent, SleepEvent
 
 
 async def close_active_timers(
@@ -13,6 +13,7 @@ async def close_active_timers(
     model_configs = [
         (FeedEvent, "feed"),
         (SleepEvent, "sleep"),
+        (BurpEvent, "burp"),
     ]
 
     now = datetime.now(timezone.utc)

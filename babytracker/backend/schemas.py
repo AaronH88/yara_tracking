@@ -186,6 +186,10 @@ class BurpEventResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class BurpEventCreateResponse(BurpEventResponse):
+    auto_closed: list[AutoClosedItem] = []
+
+
 class PumpEventCreate(BaseModel):
     user_id: int
     logged_at: datetime
