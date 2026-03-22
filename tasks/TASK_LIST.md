@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: FINAL JUDGE
+→ DONE
 
 ---
 
@@ -823,7 +823,7 @@ Spec files live in: `tasks/specs/`
 
 ## Final Judge
 
-- [ ] **FINAL JUDGE** — `persona: tasks/personas/judge.md`
+- [x] **FINAL JUDGE** — `persona: tasks/personas/judge.md`
   You are doing a final review of the entire project, not a single task.
 
   Read:
