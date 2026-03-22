@@ -8,6 +8,19 @@ const DIAPER_TYPES = [
   { value: "both", label: "Both" },
 ];
 
+const WET_AMOUNTS = [
+  { value: "small", label: "Small" },
+  { value: "medium", label: "Medium" },
+  { value: "heavy", label: "Heavy" },
+];
+
+const DIRTY_COLOURS = [
+  { value: "yellow", label: "Yellow", icon: "🟡" },
+  { value: "green", label: "Green", icon: "🟢" },
+  { value: "brown", label: "Brown", icon: "🟤" },
+  { value: "other", label: "Other", icon: "⚪" },
+];
+
 function toLocalDatetime(isoString) {
   if (!isoString) return "";
   const d = new Date(isoString);
@@ -28,11 +41,16 @@ export default function DiaperForm({ event, onSaved, onCancel }) {
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState(event?.user_id ?? persona?.id ?? "");
   const [diaperType, setDiaperType] = useState(event?.type ?? "wet");
+  const [wetAmount, setWetAmount] = useState(event?.wet_amount ?? null);
+  const [dirtyColour, setDirtyColour] = useState(event?.dirty_colour ?? null);
   const [loggedAt, setLoggedAt] = useState(
     toLocalDatetime(event?.logged_at ?? new Date().toISOString())
   );
   const [notes, setNotes] = useState(event?.notes ?? "");
   const [submitting, setSubmitting] = useState(false);
+
+  const showWetAmount = diaperType === "wet" || diaperType === "both";
+  const showDirtyColour = diaperType === "dirty" || diaperType === "both";
 
   useEffect(() => {
     fetch("/api/v1/users")
@@ -49,6 +67,8 @@ export default function DiaperForm({ event, onSaved, onCancel }) {
       const body = {
         user_id: Number(userId),
         type: diaperType,
+        wet_amount: showWetAmount ? wetAmount : null,
+        dirty_colour: showDirtyColour ? dirtyColour : null,
         logged_at: fromLocalDatetime(loggedAt),
         notes: notes.trim() || null,
       };
@@ -108,6 +128,55 @@ export default function DiaperForm({ event, onSaved, onCancel }) {
           ))}
         </select>
       </div>
+
+      {showWetAmount && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Wet Amount
+          </label>
+          <div className="mt-1 flex gap-2">
+            {WET_AMOUNTS.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setWetAmount(wetAmount === value ? null : value)}
+                className={`flex-1 min-h-[48px] rounded-lg border-2 py-2 text-sm font-medium transition-colors ${
+                  wetAmount === value
+                    ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showDirtyColour && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Colour
+          </label>
+          <div className="mt-1 flex gap-2">
+            {DIRTY_COLOURS.map(({ value, label, icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setDirtyColour(dirtyColour === value ? null : value)}
+                className={`flex-1 min-h-[48px] flex flex-col items-center justify-center rounded-lg border-2 py-2 text-sm font-medium transition-colors ${
+                  dirtyColour === value
+                    ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700"
+                }`}
+              >
+                <span className="text-lg">{icon}</span>
+                <span className="text-xs">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -56,6 +56,9 @@ const QUALITY_ICONS = {
   poor: "👎",
 };
 
+const WET_AMOUNT_LABELS = { small: "Small", medium: "Medium", heavy: "Heavy" };
+const DIRTY_COLOUR_LABELS = { yellow: "🟡 Yellow", green: "🟢 Green", brown: "🟤 Brown", other: "⚪ Other" };
+
 function formatTime(isoString) {
   if (!isoString) return "";
   return new Date(isoString).toLocaleTimeString([], {
@@ -269,13 +272,23 @@ export default function History() {
                       </span>
                     </div>
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2">
+                  <div className="mt-0.5 flex items-center gap-2 flex-wrap">
                     {(ev.eventType === "feed" || ev.eventType === "sleep" || ev.eventType === "burp") &&
                       ev.ended_at && (
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           {formatDuration(ev.started_at, ev.ended_at)}
                         </span>
                       )}
+                    {ev.eventType === "diaper" && ev.wet_amount && (
+                      <span className="text-xs text-blue-600 dark:text-blue-400">
+                        {WET_AMOUNT_LABELS[ev.wet_amount] || ev.wet_amount}
+                      </span>
+                    )}
+                    {ev.eventType === "diaper" && ev.dirty_colour && (
+                      <span className="text-xs text-orange-600 dark:text-orange-400">
+                        {DIRTY_COLOUR_LABELS[ev.dirty_colour] || ev.dirty_colour}
+                      </span>
+                    )}
                     {ev.user_id && (
                       <span className="text-xs text-gray-400 dark:text-gray-500">
                         {getUserName(ev.user_id)}

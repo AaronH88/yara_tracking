@@ -6,6 +6,7 @@ import FeedTimer from "../components/timers/FeedTimer";
 import SleepTimer from "../components/timers/SleepTimer";
 import BurpTimer from "../components/timers/BurpTimer";
 import LogPastEventModal from "../components/LogPastEventModal";
+import DiaperForm from "../components/forms/DiaperForm";
 
 const DIAPER_TYPES = [
   { type: "wet", label: "Wet" },
@@ -67,6 +68,8 @@ export default function Dashboard() {
   const [showSleepTimer, setShowSleepTimer] = useState(false);
   const [showBurpTimer, setShowBurpTimer] = useState(false);
   const [showLogPastEvent, setShowLogPastEvent] = useState(false);
+  const [lastLoggedDiaper, setLastLoggedDiaper] = useState(null);
+  const [editingDiaper, setEditingDiaper] = useState(null);
   const [sinceLastFeed, setSinceLastFeed] = useState(null);
 
   const fetchLastEvents = useCallback(async () => {
@@ -114,7 +117,7 @@ export default function Dashboard() {
     if (!selectedBaby?.id || !persona?.id) return;
     setLoggingDiaper(true);
     try {
-      await fetch(`/api/v1/babies/${selectedBaby.id}/diapers`, {
+      const response = await fetch(`/api/v1/babies/${selectedBaby.id}/diapers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -123,6 +126,10 @@ export default function Dashboard() {
           type: diaperType,
         }),
       });
+      if (response.ok) {
+        const created = await response.json();
+        setLastLoggedDiaper(created);
+      }
       await fetchLastEvents();
     } finally {
       setLoggingDiaper(false);
@@ -238,6 +245,29 @@ export default function Dashboard() {
             );
           })}
         </div>
+        {lastLoggedDiaper && (
+          <div className="mt-2 flex justify-center">
+            <div className="flex items-center gap-1 rounded-full bg-blue-100 px-4 py-2 dark:bg-blue-900/30">
+              <button
+                onClick={() => {
+                  setEditingDiaper(lastLoggedDiaper);
+                  setLastLoggedDiaper(null);
+                }}
+                className="text-sm font-medium text-blue-700 hover:text-blue-800
+                  dark:text-blue-300 dark:hover:text-blue-200 active:scale-95 transition-all"
+              >
+                Add details &rarr;
+              </button>
+              <button
+                onClick={() => setLastLoggedDiaper(null)}
+                className="ml-1 text-blue-400 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-300"
+                aria-label="Dismiss"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => setShowFeedTimer(true)}
@@ -346,6 +376,24 @@ export default function Dashboard() {
             if (saved) fetchLastEvents();
           }}
         />
+      )}
+
+      {editingDiaper && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Nappy Details
+            </h3>
+            <DiaperForm
+              event={editingDiaper}
+              onSaved={() => {
+                setEditingDiaper(null);
+                fetchLastEvents();
+              }}
+              onCancel={() => setEditingDiaper(null)}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
