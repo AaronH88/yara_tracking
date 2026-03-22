@@ -53,7 +53,7 @@ function AlertChip({ alert }) {
   const chipClass = isWarning
     ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
     : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300";
-  const icon = isWarning ? "\uD83D\uDEA8" : (alert.message.includes("\uD83C\uDF89") ? "" : "\u2139\uFE0F");
+  const icon = isWarning ? "🚨" : (alert.message.includes("🎉") ? "" : "ℹ️");
 
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${chipClass}`}>
@@ -117,18 +117,18 @@ export default function Insights() {
         Insights
       </h2>
       <div className="space-y-3">
-        <InsightCard title="Feeds" icon="\uD83C\uDF7C" borderColor="border-orange-200 dark:border-orange-700">
+        <InsightCard title="Feeds" icon="🍼" borderColor="border-orange-200 dark:border-orange-700">
           <p>Feeds since midnight: {feeds.count_since_midnight}</p>
           <p>This week avg: {feeds.average_per_day_this_week}/day</p>
         </InsightCard>
 
-        <InsightCard title="Sleep" icon="\uD83D\uDE34" borderColor="border-purple-200 dark:border-purple-700">
+        <InsightCard title="Sleep" icon="😴" borderColor="border-purple-200 dark:border-purple-700">
           <p>Sleep last 24h: {formatMinutes(sleep.total_last_24h_minutes)}</p>
           <p>Naps today: {sleep.nap_count_today}</p>
           <p>Longest stretch last night: {formatMinutes(sleep.longest_night_stretch_minutes)}</p>
         </InsightCard>
 
-        <InsightCard title="Nappies" icon="\uD83E\uDDF7" borderColor="border-blue-200 dark:border-blue-700">
+        <InsightCard title="Nappies" icon="🧷" borderColor="border-blue-200 dark:border-blue-700">
           <p>Wet nappies today: {nappies.wet_count_today} (avg: {nappies.average_wet_per_day_7day})</p>
           <p>
             Last dirty:{" "}
