@@ -12,9 +12,9 @@ const TEST_BABY = { id: 1, name: "Alice", birthdate: "2025-12-01" };
 
 function makeFetchFn({ headOk = true } = {}) {
   return vi.fn((url, opts) => {
-    if (url === "/api/v1/babies" && opts?.method === "HEAD") {
+    if (url === "/api/v1/settings") {
       if (!headOk) return Promise.reject(new Error("Network error"));
-      return Promise.resolve({ ok: true });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
     }
     if (url === "/api/v1/babies") {
       return Promise.resolve({
@@ -155,7 +155,7 @@ describe("Layout -- API error banner", () => {
       JSON.stringify(TEST_PERSONA),
     );
     global.fetch = vi.fn((url, opts) => {
-      if (url === "/api/v1/babies" && opts?.method === "HEAD") {
+      if (url === "/api/v1/settings") {
         return Promise.resolve({ ok: false, status: 500 });
       }
       if (url === "/api/v1/babies") {

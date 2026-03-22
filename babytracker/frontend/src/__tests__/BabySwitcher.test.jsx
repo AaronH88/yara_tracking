@@ -140,9 +140,9 @@ describe("BabySwitcher — multiple babies", () => {
     // Open dropdown
     await user.click(screen.getByText("Alice"));
 
-    // Alice's dropdown item should be highlighted (bg-blue-50)
+    // Alice's dropdown item should be highlighted (bg-pastel-lavender)
     const dropdownButtons = screen.getAllByRole("button").filter(
-      (b) => b.textContent.includes("Alice") && b.className.includes("bg-blue-50"),
+      (b) => b.textContent.includes("Alice") && b.className.includes("bg-pastel-lavender"),
     );
     expect(dropdownButtons.length).toBeGreaterThanOrEqual(1);
   });

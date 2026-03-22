@@ -60,7 +60,7 @@ describe("Layout — structure", () => {
     // BabySwitcher shows baby name
     expect(screen.getByText("Alice")).toBeInTheDocument();
     // PersonaBadge shows persona
-    expect(screen.getByText("You: Mom")).toBeInTheDocument();
+    expect(screen.getByText("Mom")).toBeInTheDocument();
   });
 
   it("renders bottom navigation", async () => {

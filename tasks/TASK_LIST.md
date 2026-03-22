@@ -399,15 +399,15 @@ Spec files live in: `tasks/specs/`
 
 ## Task 3.1 — Feed Timer Pause/Resume UI
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 2 of 3
   Read spec: `tasks/specs/task-3.1.md`
-  If retrying, read feedback: _(none yet)_
+  If retrying, read feedback: `tasks/feedback/task-3.1-verify.txt`
   Implement the task. When done:
   - Run `git add -A && git commit -m "dev: task 3.1"`
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.1 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
+- [ ] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 2 of 3
   Read spec: `tasks/specs/task-3.1.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
@@ -415,8 +415,8 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.1 — VERIFY`
 
-- [ ] **VERIFY** — attempt 1 of 3
-  Run: `cd babytracker/frontend && npm test -- --watchAll=false 2>&1 | tee ../../tasks/feedback/task-3.1-verify.txt`
+- [ ] **VERIFY** — attempt 2 of 3
+  Run: `cd babytracker/frontend && npm test 2>&1 | tee ../../tasks/feedback/task-3.1-verify.txt`
   If exit code 0 (tests pass):
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.1 — JUDGE`

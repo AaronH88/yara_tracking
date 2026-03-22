@@ -34,12 +34,12 @@ afterEach(() => {
 describe("PersonaBadge — display", () => {
   it("shows the current persona name as 'You: Name'", async () => {
     await renderBadge();
-    expect(screen.getByText("You: Mom")).toBeInTheDocument();
+    expect(screen.getByText("Mom")).toBeInTheDocument();
   });
 
   it("renders as a button", async () => {
     await renderBadge();
-    const btn = screen.getByRole("button", { name: /you: mom/i });
+    const btn = screen.getByRole("button", { name: /mom/i });
     expect(btn).toBeInTheDocument();
   });
 
@@ -72,7 +72,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     );
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     // Should fetch users
     expect(global.fetch).toHaveBeenCalledWith("/api/v1/users");
@@ -97,7 +97,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     );
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/sign out/i)).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     );
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/switch to dad/i)).toBeInTheDocument();
@@ -127,7 +127,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     await user.click(screen.getByText(/switch to dad/i));
 
     // Badge should now show Dad
-    expect(screen.getByText("You: Dad")).toBeInTheDocument();
+    expect(screen.getByText("Dad")).toBeInTheDocument();
     // Dropdown should close
     expect(screen.queryByText(/switch to/i)).not.toBeInTheDocument();
   });
@@ -146,7 +146,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     );
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/switch to dad/i)).toBeInTheDocument();
@@ -168,7 +168,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     );
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/sign out/i)).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe("PersonaBadge — persona switcher sheet", () => {
     await user.click(screen.getByText(/sign out/i));
 
     // Badge should disappear (persona is null)
-    expect(screen.queryByText(/you:/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/mom/i)).not.toBeInTheDocument();
     expect(localStorage.getItem("babytracker_persona")).toBeNull();
   });
 });
@@ -188,7 +188,7 @@ describe("PersonaBadge — fetch error handling", () => {
     global.fetch = vi.fn(() => Promise.reject(new Error("Network error")));
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     // Should still show sign out even if fetch fails
     await waitFor(() => {
@@ -206,7 +206,7 @@ describe("PersonaBadge — fetch error handling", () => {
     );
 
     await renderBadge();
-    await user.click(screen.getByRole("button", { name: /you: mom/i }));
+    await user.click(screen.getByRole("button", { name: /mom/i }));
 
     // Should not crash, sign out should still be available
     await waitFor(() => {

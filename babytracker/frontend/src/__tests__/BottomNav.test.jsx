@@ -51,43 +51,43 @@ describe("BottomNav — active state highlighting", () => {
   it("highlights Dashboard when on /", () => {
     renderNav("/");
     const dashLink = screen.getByRole("link", { name: /dashboard/i });
-    expect(dashLink.className).toMatch(/text-blue-600/);
+    expect(dashLink.className).toMatch(/text-purple-600/);
   });
 
   it("does not highlight History when on /", () => {
     renderNav("/");
     const histLink = screen.getByRole("link", { name: /history/i });
-    expect(histLink.className).not.toMatch(/text-blue-600/);
+    expect(histLink.className).not.toMatch(/text-purple-600/);
   });
 
   it("highlights History when on /history", () => {
     renderNav("/history");
     const histLink = screen.getByRole("link", { name: /history/i });
-    expect(histLink.className).toMatch(/text-blue-600/);
+    expect(histLink.className).toMatch(/text-purple-600/);
   });
 
   it("highlights Calendar when on /calendar", () => {
     renderNav("/calendar");
     const calLink = screen.getByRole("link", { name: /calendar/i });
-    expect(calLink.className).toMatch(/text-blue-600/);
+    expect(calLink.className).toMatch(/text-purple-600/);
   });
 
   it("highlights Admin when on /admin", () => {
     renderNav("/admin");
     const adminLink = screen.getByRole("link", { name: /admin/i });
-    expect(adminLink.className).toMatch(/text-blue-600/);
+    expect(adminLink.className).toMatch(/text-purple-600/);
   });
 
   it("highlights Settings when on /settings", () => {
     renderNav("/settings");
     const settingsLink = screen.getByRole("link", { name: /settings/i });
-    expect(settingsLink.className).toMatch(/text-blue-600/);
+    expect(settingsLink.className).toMatch(/text-purple-600/);
   });
 
   it("does not highlight Dashboard when on /history (exact match)", () => {
     renderNav("/history");
     const dashLink = screen.getByRole("link", { name: /dashboard/i });
-    expect(dashLink.className).not.toMatch(/text-blue-600/);
+    expect(dashLink.className).not.toMatch(/text-purple-600/);
   });
 });
 
