@@ -7,6 +7,7 @@ import SleepTimer from "../components/timers/SleepTimer";
 import BurpTimer from "../components/timers/BurpTimer";
 import LogPastEventModal from "../components/LogPastEventModal";
 import DiaperForm from "../components/forms/DiaperForm";
+import WakeWindow from "../components/WakeWindow";
 
 const DIAPER_TYPES = [
   { type: "wet", label: "Wet" },
@@ -210,6 +211,8 @@ export default function Dashboard() {
           )}
         </section>
       )}
+
+      <WakeWindow />
 
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">
