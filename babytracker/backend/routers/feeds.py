@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import FeedEvent
-from schemas import FeedEventCreate, FeedEventUpdate, FeedEventResponse
+from schemas import FeedEventCreate, FeedEventUpdate, FeedEventResponse, FeedEventCreateResponse
+from timer_helpers import close_active_timers
 
 router = APIRouter(tags=["feeds"])
 
@@ -35,28 +36,37 @@ async def list_feeds(
     return rows.scalars().all()
 
 
-@router.post("/babies/{baby_id}/feeds", response_model=FeedEventResponse, status_code=201)
+@router.post("/babies/{baby_id}/feeds", response_model=FeedEventCreateResponse, status_code=201)
 async def create_feed(
     baby_id: int,
     feed_in: FeedEventCreate,
     db: AsyncSession = Depends(get_db),
 ):
+    auto_closed = await close_active_timers(baby_id, db, exclude_model=FeedEvent)
     if feed_in.ended_at is None:
         active_query = select(FeedEvent).where(
             FeedEvent.baby_id == baby_id,
             FeedEvent.ended_at.is_(None),
         )
         active_row = await db.execute(active_query)
-        if active_row.scalar_one_or_none():
-            raise HTTPException(
-                status_code=409,
-                detail="A feed is already in progress for this baby.",
+        active_feed = active_row.scalar_one_or_none()
+        if active_feed:
+            now = datetime.now(timezone.utc)
+            active_feed.ended_at = now
+            auto_closed.append(
+                {
+                    "type": "feed",
+                    "id": active_feed.id,
+                    "started_at": active_feed.started_at.isoformat(),
+                }
             )
     feed = FeedEvent(baby_id=baby_id, **feed_in.model_dump())
     db.add(feed)
     await db.commit()
     await db.refresh(feed)
-    return feed
+    feed_dict = FeedEventResponse.model_validate(feed).model_dump()
+    feed_dict["auto_closed"] = auto_closed
+    return feed_dict
 
 
 @router.get("/babies/{baby_id}/feeds/active", response_model=FeedEventResponse | None)

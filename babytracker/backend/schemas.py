@@ -88,6 +88,16 @@ class FeedEventResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AutoClosedItem(BaseModel):
+    type: str
+    id: int
+    started_at: str
+
+
+class FeedEventCreateResponse(FeedEventResponse):
+    auto_closed: list[AutoClosedItem] = []
+
+
 class SleepEventCreate(BaseModel):
     user_id: int
     type: str
@@ -114,6 +124,10 @@ class SleepEventResponse(BaseModel):
     created_at: datetime | None
 
     model_config = {"from_attributes": True}
+
+
+class SleepEventCreateResponse(SleepEventResponse):
+    auto_closed: list[AutoClosedItem] = []
 
 
 class DiaperEventCreate(BaseModel):

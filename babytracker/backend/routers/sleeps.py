@@ -1,4 +1,4 @@
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import SleepEvent
-from schemas import SleepEventCreate, SleepEventUpdate, SleepEventResponse
+from schemas import SleepEventCreate, SleepEventUpdate, SleepEventResponse, SleepEventCreateResponse
+from timer_helpers import close_active_timers
 
 router = APIRouter(tags=["sleeps"])
 
@@ -35,28 +36,37 @@ async def list_sleeps(
     return rows.scalars().all()
 
 
-@router.post("/babies/{baby_id}/sleeps", response_model=SleepEventResponse, status_code=201)
+@router.post("/babies/{baby_id}/sleeps", response_model=SleepEventCreateResponse, status_code=201)
 async def create_sleep(
     baby_id: int,
     sleep_in: SleepEventCreate,
     db: AsyncSession = Depends(get_db),
 ):
+    auto_closed = await close_active_timers(baby_id, db, exclude_model=SleepEvent)
     if sleep_in.ended_at is None:
         active_query = select(SleepEvent).where(
             SleepEvent.baby_id == baby_id,
             SleepEvent.ended_at.is_(None),
         )
         active_row = await db.execute(active_query)
-        if active_row.scalar_one_or_none():
-            raise HTTPException(
-                status_code=409,
-                detail="A sleep is already in progress for this baby.",
+        active_sleep = active_row.scalar_one_or_none()
+        if active_sleep:
+            now = datetime.now(timezone.utc)
+            active_sleep.ended_at = now
+            auto_closed.append(
+                {
+                    "type": "sleep",
+                    "id": active_sleep.id,
+                    "started_at": active_sleep.started_at.isoformat(),
+                }
             )
     sleep = SleepEvent(baby_id=baby_id, **sleep_in.model_dump())
     db.add(sleep)
     await db.commit()
     await db.refresh(sleep)
-    return sleep
+    sleep_dict = SleepEventResponse.model_validate(sleep).model_dump()
+    sleep_dict["auto_closed"] = auto_closed
+    return sleep_dict
 
 
 @router.get("/babies/{baby_id}/sleeps/active", response_model=SleepEventResponse | None)
