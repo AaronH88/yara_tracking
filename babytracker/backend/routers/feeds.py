@@ -136,7 +136,8 @@ async def resume_feed(
     if not feed.is_paused:
         raise HTTPException(status_code=409, detail="Feed is not paused")
     now = datetime.now(timezone.utc)
-    pause_duration = int((now - feed.paused_at).total_seconds())
+    paused_at_aware = feed.paused_at.replace(tzinfo=timezone.utc)
+    pause_duration = int((now - paused_at_aware).total_seconds())
     feed.paused_seconds = (feed.paused_seconds or 0) + pause_duration
     feed.is_paused = False
     feed.paused_at = None
