@@ -299,3 +299,34 @@ class SettingResponse(BaseModel):
 class SettingUpdate(BaseModel):
     key: str
     value: str | None = None
+
+
+class InsightAlert(BaseModel):
+    type: str
+    message: str
+
+
+class FeedInsights(BaseModel):
+    count_since_midnight: int
+    average_per_day_this_week: float
+
+
+class SleepInsights(BaseModel):
+    total_last_24h_minutes: int
+    average_per_day_7day_minutes: int
+    nap_count_today: int
+    longest_night_stretch_minutes: int
+
+
+class NappyInsights(BaseModel):
+    wet_count_today: int
+    average_wet_per_day_7day: float
+    days_since_dirty: int
+
+
+class InsightsResponse(BaseModel):
+    has_enough_data: bool
+    feeds: FeedInsights
+    sleep: SleepInsights
+    nappies: NappyInsights
+    alerts: list[InsightAlert]

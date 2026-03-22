@@ -27,6 +27,7 @@ from routers import (
     calendar,
     diapers,
     feeds,
+    insights,
     measurements,
     milestones,
     pumps,
@@ -72,6 +73,7 @@ app.include_router(milestones.router, prefix="/api/v1")
 app.include_router(calendar.router, prefix="/api/v1")
 app.include_router(settings.router, prefix="/api/v1")
 app.include_router(wake_window.router, prefix="/api/v1")
+app.include_router(insights.router, prefix="/api/v1")
 
 if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="static")
