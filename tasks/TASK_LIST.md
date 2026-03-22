@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 6.1 — DEV
+→ NEXT: Task 6.1 — TEST
 
 ---
 
@@ -717,7 +717,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 6.1 — Wake Window Component
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-6.1.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:
