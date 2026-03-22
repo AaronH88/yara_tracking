@@ -80,7 +80,9 @@ def test_all_routers_registered_under_api_v1():
 async def test_lifespan_calls_create_tables():
     """Lifespan startup should call create_tables()."""
     with patch("main.create_tables", new_callable=AsyncMock) as mock_create, \
-         patch("main.seed_settings", new_callable=AsyncMock):
+         patch("main.seed_settings", new_callable=AsyncMock), \
+         patch("main.seed_default_users", new_callable=AsyncMock), \
+         patch("main.migrate_feed_event_v2", new_callable=AsyncMock):
         async with lifespan(app):
             mock_create.assert_awaited_once()
 

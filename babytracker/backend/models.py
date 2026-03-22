@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, Float, Date, DateTime, ForeignKey, func
+from sqlalchemy import Boolean, Column, Integer, Text, Float, Date, DateTime, ForeignKey, func
 
 from database import Base
 
@@ -32,6 +32,10 @@ class FeedEvent(Base):
     ended_at = Column(DateTime(timezone=True))
     amount_oz = Column(Float)
     amount_ml = Column(Float)
+    paused_seconds = Column(Integer, nullable=False, default=0, server_default="0")
+    is_paused = Column(Boolean, nullable=False, default=False, server_default="0")
+    paused_at = Column(DateTime(timezone=True))
+    quality = Column(Text)
     notes = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

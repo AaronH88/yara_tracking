@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from database import get_db
+from database import engine, get_db
+from migrations import migrate_feed_event_v2
 from models import create_tables
 
 CORS_ORIGINS = [
@@ -38,6 +39,7 @@ FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await migrate_feed_event_v2(engine)
     await create_tables()
     async for db in get_db():
         await seed_settings(db)

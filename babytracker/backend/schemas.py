@@ -48,6 +48,10 @@ class FeedEventCreate(BaseModel):
     ended_at: datetime | None = None
     amount_oz: float | None = None
     amount_ml: float | None = None
+    paused_seconds: int | None = None
+    is_paused: bool | None = None
+    paused_at: datetime | None = None
+    quality: str | None = None
     notes: str | None = None
 
 
@@ -58,6 +62,10 @@ class FeedEventUpdate(BaseModel):
     ended_at: datetime | None = None
     amount_oz: float | None = None
     amount_ml: float | None = None
+    paused_seconds: int | None = None
+    is_paused: bool | None = None
+    paused_at: datetime | None = None
+    quality: str | None = None
     notes: str | None = None
 
 
@@ -70,6 +78,10 @@ class FeedEventResponse(BaseModel):
     ended_at: datetime | None
     amount_oz: float | None
     amount_ml: float | None
+    paused_seconds: int | None
+    is_paused: bool | None
+    paused_at: datetime | None
+    quality: str | None
     notes: str | None
     created_at: datetime | None
 

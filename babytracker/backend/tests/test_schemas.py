@@ -224,6 +224,7 @@ class TestFeedEventResponse:
             id=1, baby_id=1, user_id=2, type="bottle",
             started_at=datetime(2024, 1, 1),
             ended_at=None, amount_oz=4.0, amount_ml=None,
+            paused_seconds=0, is_paused=False, paused_at=None, quality=None,
             notes=None, created_at=None,
         )
         assert f.id == 1

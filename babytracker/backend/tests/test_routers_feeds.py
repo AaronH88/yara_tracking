@@ -577,5 +577,7 @@ async def test_response_shape_contains_all_fields(client, seed_baby_and_user):
     )
     data = resp.json()
     expected_fields = {"id", "baby_id", "user_id", "type", "started_at",
-                       "ended_at", "amount_oz", "amount_ml", "notes", "created_at"}
+                       "ended_at", "amount_oz", "amount_ml",
+                       "paused_seconds", "is_paused", "paused_at", "quality",
+                       "notes", "created_at"}
     assert expected_fields == set(data.keys())
