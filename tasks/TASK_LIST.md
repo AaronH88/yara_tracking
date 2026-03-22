@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 3.1 — DEV
+→ NEXT: Task 3.2 — DEV
 
 ---
 
@@ -399,7 +399,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 3.1 — Feed Timer Pause/Resume UI
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 2 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 2 of 3
   Read spec: `tasks/specs/task-3.1.md`
   If retrying, read feedback: `tasks/feedback/task-3.1-verify.txt`
   Implement the task. When done:
@@ -407,7 +407,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.1 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 2 of 3
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 2 of 3
   Read spec: `tasks/specs/task-3.1.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
@@ -415,7 +415,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.1 — VERIFY`
 
-- [ ] **VERIFY** — attempt 2 of 3
+- [x] **VERIFY** — attempt 2 of 3
   Run: `cd babytracker/frontend && npm test 2>&1 | tee ../../tasks/feedback/task-3.1-verify.txt`
   If exit code 0 (tests pass):
   - Check this box
@@ -427,7 +427,7 @@ Spec files live in: `tasks/specs/`
   - If attempt number would exceed 3: replace checkbox with `[BLOCKED]` and stop
   - Set cursor to: `→ NEXT: Task 3.1 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` — attempt 1 of 3
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-3.1.md`
   Read diff: `git diff HEAD~2`
   Read verify output: `tasks/feedback/task-3.1-verify.txt`
