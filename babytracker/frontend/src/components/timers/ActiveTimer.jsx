@@ -15,8 +15,8 @@ function formatStartTime(isoString, timeFormat) {
   return `${hours}:${minutes}`;
 }
 
-export default function ActiveTimer({ startedAt }) {
-  const { elapsed } = useTimer(startedAt);
+export default function ActiveTimer({ startedAt, pausedSeconds = 0, isPaused = false, pausedAt = null }) {
+  const { elapsed } = useTimer(startedAt, { pausedSeconds, pausedAt });
   const { settings } = useSettings();
 
   return (
@@ -27,6 +27,11 @@ export default function ActiveTimer({ startedAt }) {
       >
         {elapsed ?? "0s"}
       </p>
+      {isPaused && (
+        <span className="mt-2 inline-block rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+          PAUSED
+        </span>
+      )}
       <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
         Started {formatStartTime(startedAt, settings.time_format)}
       </p>

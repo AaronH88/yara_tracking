@@ -22,12 +22,17 @@ function formatElapsed(milliseconds) {
   return `${minutes}m`;
 }
 
-export function useTimer(startedAt) {
+export function useTimer(startedAt, { pausedSeconds = 0, pausedAt = null } = {}) {
   const isRunning = startedAt != null;
 
   const [elapsed, setElapsed] = useState(() => {
     if (!isRunning) return null;
-    return formatElapsed(Date.now() - new Date(startedAt).getTime());
+    const pauseOffsetMs = (pausedSeconds || 0) * 1000;
+    if (pausedAt) {
+      const ms = new Date(pausedAt).getTime() - new Date(startedAt).getTime() - pauseOffsetMs;
+      return formatElapsed(Math.max(0, ms));
+    }
+    return formatElapsed(Math.max(0, Date.now() - new Date(startedAt).getTime() - pauseOffsetMs));
   });
 
   useEffect(() => {
@@ -36,15 +41,23 @@ export function useTimer(startedAt) {
       return;
     }
 
+    const pauseOffsetMs = (pausedSeconds || 0) * 1000;
+
     function tick() {
-      const ms = Date.now() - new Date(startedAt).getTime();
-      setElapsed(formatElapsed(Math.max(0, ms)));
+      if (pausedAt) {
+        const ms = new Date(pausedAt).getTime() - new Date(startedAt).getTime() - pauseOffsetMs;
+        setElapsed(formatElapsed(Math.max(0, ms)));
+      } else {
+        const ms = Date.now() - new Date(startedAt).getTime() - pauseOffsetMs;
+        setElapsed(formatElapsed(Math.max(0, ms)));
+      }
     }
 
     tick();
+    if (pausedAt) return;
     const intervalId = setInterval(tick, 1000);
     return () => clearInterval(intervalId);
-  }, [startedAt, isRunning]);
+  }, [startedAt, isRunning, pausedSeconds, pausedAt]);
 
   return { elapsed, isRunning };
 }

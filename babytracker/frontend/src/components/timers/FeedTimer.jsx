@@ -45,7 +45,11 @@ export default function FeedTimer() {
   const { selectedBaby } = useBaby();
   const { persona } = usePersona();
   const { activeFeed, refetch } = useActiveEvents(selectedBaby?.id);
-  const { elapsed } = useTimer(activeFeed?.started_at);
+  const isPaused = activeFeed?.is_paused ?? false;
+  const { elapsed } = useTimer(activeFeed?.started_at, {
+    pausedSeconds: activeFeed?.paused_seconds ?? 0,
+    pausedAt: activeFeed?.paused_at ?? null,
+  });
   const [stoppedFeed, setStoppedFeed] = useState(null);
   const [formAmount, setFormAmount] = useState("");
   const [formNotes, setFormNotes] = useState("");
@@ -92,6 +96,38 @@ export default function FeedTimer() {
         setStoppedFeed(stopped);
         setFormAmount("");
         setFormNotes("");
+        await refetch();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function pauseFeed() {
+    if (!activeFeed) return;
+    setSubmitting(true);
+    try {
+      const response = await fetch(
+        `/api/v1/babies/${selectedBaby.id}/feeds/${activeFeed.id}/pause`,
+        { method: "POST" }
+      );
+      if (response.ok) {
+        await refetch();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function resumeFeed() {
+    if (!activeFeed) return;
+    setSubmitting(true);
+    try {
+      const response = await fetch(
+        `/api/v1/babies/${selectedBaby.id}/feeds/${activeFeed.id}/resume`,
+        { method: "POST" }
+      );
+      if (response.ok) {
         await refetch();
       }
     } finally {
@@ -202,13 +238,22 @@ export default function FeedTimer() {
   }
 
   if (activeFeed) {
+    const isBreast = ["breast_left", "breast_right", "both_sides"].includes(activeFeed.type);
+
     return (
       <div className="space-y-4 text-center">
         <div className="flex items-center justify-between mb-3">
           <span className="text-2xl">🍼</span>
-          <span className="text-xs font-semibold text-orange-700 bg-white/60 rounded-full px-3 py-1 dark:text-orange-300 dark:bg-white/20">
-            {FEED_TYPE_LABELS[activeFeed.type] || activeFeed.type}
-          </span>
+          <div className="flex items-center gap-2">
+            {isPaused && (
+              <span className="text-xs font-bold text-yellow-800 bg-yellow-100 rounded-full px-3 py-1 dark:text-yellow-200 dark:bg-yellow-900">
+                PAUSED
+              </span>
+            )}
+            <span className="text-xs font-semibold text-orange-700 bg-white/60 rounded-full px-3 py-1 dark:text-orange-300 dark:bg-white/20">
+              {FEED_TYPE_LABELS[activeFeed.type] || activeFeed.type}
+            </span>
+          </div>
         </div>
         <p className="text-5xl font-bold text-orange-800 dark:text-orange-300">
           {elapsed ?? "0s"}
@@ -216,14 +261,58 @@ export default function FeedTimer() {
         <div className="text-sm text-orange-600 dark:text-orange-400 mb-4">
           Started {elapsed ?? "just now"} ago
         </div>
-        <button
-          onClick={stopFeed}
-          disabled={submitting}
-          className="w-full rounded-2xl bg-orange-600 py-3 text-white font-semibold
-            hover:bg-orange-700 disabled:opacity-50 shadow-md active:scale-95 transition-all"
-        >
-          Stop Feed
-        </button>
+        <div className="flex gap-3">
+          {isPaused ? (
+            <button
+              onClick={resumeFeed}
+              disabled={submitting}
+              className="flex-1 rounded-2xl bg-green-600 py-3 text-white font-semibold
+                hover:bg-green-700 disabled:opacity-50 shadow-md active:scale-95 transition-all min-h-12"
+            >
+              ▶ Resume
+            </button>
+          ) : (
+            <button
+              onClick={pauseFeed}
+              disabled={submitting}
+              className="flex-1 rounded-2xl bg-yellow-500 py-3 text-white font-semibold
+                hover:bg-yellow-600 disabled:opacity-50 shadow-md active:scale-95 transition-all min-h-12"
+            >
+              ⏸ Pause
+            </button>
+          )}
+          <button
+            onClick={stopFeed}
+            disabled={submitting}
+            className="flex-1 rounded-2xl bg-orange-600 py-3 text-white font-semibold
+              hover:bg-orange-700 disabled:opacity-50 shadow-md active:scale-95 transition-all min-h-12"
+          >
+            ⏹ Stop
+          </button>
+          {isBreast && !isPaused && (
+            <button
+              onClick={() => {
+                const nextSide = activeFeed.type === "breast_left" ? "breast_right" : "breast_left";
+                fetch(`/api/v1/babies/${selectedBaby.id}/feeds/${activeFeed.id}`, {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ type: nextSide }),
+                }).then((r) => {
+                  if (r.ok) {
+                    saveLastSide(selectedBaby.id, nextSide);
+                    refetch();
+                  }
+                });
+              }}
+              disabled={submitting}
+              className="flex-1 rounded-2xl border-2 border-orange-200 py-3 text-orange-700 font-semibold
+                hover:bg-pastel-peach dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700
+                disabled:opacity-50 shadow-md active:scale-95 transition-all min-h-12"
+            >
+              Switch →
+            </button>
+          )}
+        </div>
       </div>
     );
   }
