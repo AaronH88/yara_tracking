@@ -35,12 +35,12 @@ describe("ActiveTimer — rendering", () => {
     expect(screen.getByText("3m 45s")).toBeInTheDocument();
   });
 
-  it("passes startedAt prop to useTimer", () => {
+  it("passes startedAt and pause options to useTimer", () => {
     const startedAt = "2026-03-14T10:00:00Z";
     setup({ startedAt });
     render(<ActiveTimer startedAt={startedAt} />);
 
-    expect(useTimer).toHaveBeenCalledWith(startedAt);
+    expect(useTimer).toHaveBeenCalledWith(startedAt, { pausedSeconds: 0, pausedAt: null });
   });
 
   it("shows fallback 0s when elapsed is null", () => {
@@ -162,6 +162,58 @@ describe("ActiveTimer — 12h time format", () => {
     render(<ActiveTimer startedAt={startedAt} />);
 
     expect(screen.getByText(/Started 3:03 PM/)).toBeInTheDocument();
+  });
+});
+
+// ---- Paused state ----
+
+describe("ActiveTimer — paused state", () => {
+  it("shows PAUSED badge when isPaused is true", () => {
+    const { startedAt } = setup({ elapsed: "3m" });
+    render(<ActiveTimer startedAt={startedAt} isPaused={true} />);
+
+    expect(screen.getByText("PAUSED")).toBeInTheDocument();
+  });
+
+  it("does not show PAUSED badge when isPaused is false", () => {
+    const { startedAt } = setup({ elapsed: "3m" });
+    render(<ActiveTimer startedAt={startedAt} isPaused={false} />);
+
+    expect(screen.queryByText("PAUSED")).not.toBeInTheDocument();
+  });
+
+  it("does not show PAUSED badge by default (no isPaused prop)", () => {
+    const { startedAt } = setup({ elapsed: "3m" });
+    render(<ActiveTimer startedAt={startedAt} />);
+
+    expect(screen.queryByText("PAUSED")).not.toBeInTheDocument();
+  });
+
+  it("passes pausedSeconds and pausedAt to useTimer", () => {
+    const startedAt = "2026-03-14T10:00:00Z";
+    setup({ startedAt });
+    render(
+      <ActiveTimer
+        startedAt={startedAt}
+        pausedSeconds={60}
+        isPaused={true}
+        pausedAt="2026-03-14T10:03:00Z"
+      />
+    );
+
+    expect(useTimer).toHaveBeenCalledWith(startedAt, {
+      pausedSeconds: 60,
+      pausedAt: "2026-03-14T10:03:00Z",
+    });
+  });
+
+  it("PAUSED badge has accessible styling (visible text)", () => {
+    const { startedAt } = setup({ elapsed: "2m" });
+    render(<ActiveTimer startedAt={startedAt} isPaused={true} />);
+
+    const badge = screen.getByText("PAUSED");
+    expect(badge.tagName.toLowerCase()).toBe("span");
+    expect(badge.className).toContain("font-bold");
   });
 });
 

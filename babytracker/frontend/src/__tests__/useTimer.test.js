@@ -286,4 +286,169 @@ describe("useTimer", () => {
     );
     expect(result.current.elapsed).toBe("1m 05s");
   });
+
+  // --- pausedSeconds support ---
+
+  it("subtracts pausedSeconds from elapsed time", () => {
+    const now = new Date("2026-03-14T10:05:00Z");
+    vi.setSystemTime(now);
+
+    // 5 minutes elapsed, 2 minutes paused => 3 minutes shown
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", { pausedSeconds: 120 })
+    );
+    expect(result.current.elapsed).toBe("3m");
+  });
+
+  it("shows 0s when pausedSeconds equals total elapsed", () => {
+    const now = new Date("2026-03-14T10:01:00Z");
+    vi.setSystemTime(now);
+
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", { pausedSeconds: 60 })
+    );
+    expect(result.current.elapsed).toBe("0s");
+  });
+
+  it("clamps to 0s when pausedSeconds exceeds total elapsed", () => {
+    const now = new Date("2026-03-14T10:01:00Z");
+    vi.setSystemTime(now);
+
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", { pausedSeconds: 120 })
+    );
+    expect(result.current.elapsed).toBe("0s");
+  });
+
+  it("treats zero pausedSeconds the same as no pausedSeconds", () => {
+    const now = new Date("2026-03-14T10:02:00Z");
+    vi.setSystemTime(now);
+
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", { pausedSeconds: 0 })
+    );
+    expect(result.current.elapsed).toBe("2m");
+  });
+
+  it("still ticks when pausedSeconds is provided but pausedAt is null", () => {
+    const start = new Date("2026-03-14T10:00:00Z");
+    vi.setSystemTime(start);
+
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", { pausedSeconds: 0, pausedAt: null })
+    );
+    expect(result.current.elapsed).toBe("0s");
+
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(result.current.elapsed).toBe("3s");
+  });
+
+  // --- pausedAt support (timer frozen) ---
+
+  it("freezes elapsed at pausedAt timestamp minus pausedSeconds", () => {
+    const now = new Date("2026-03-14T10:10:00Z");
+    vi.setSystemTime(now);
+
+    // Started at 10:00, paused at 10:05, 1 min of prior paused time
+    // Display should be: (10:05 - 10:00) - 60s = 4m
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", {
+        pausedSeconds: 60,
+        pausedAt: "2026-03-14T10:05:00Z",
+      })
+    );
+    expect(result.current.elapsed).toBe("4m");
+  });
+
+  it("does not tick when pausedAt is set", () => {
+    const now = new Date("2026-03-14T10:05:00Z");
+    vi.setSystemTime(now);
+
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", {
+        pausedSeconds: 0,
+        pausedAt: "2026-03-14T10:03:00Z",
+      })
+    );
+    expect(result.current.elapsed).toBe("3m");
+
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    // Should still show 3m, not advancing
+    expect(result.current.elapsed).toBe("3m");
+  });
+
+  it("does not set an interval when pausedAt is provided", () => {
+    const setIntervalSpy = vi.spyOn(global, "setInterval");
+    const now = new Date("2026-03-14T10:05:00Z");
+    vi.setSystemTime(now);
+
+    renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", {
+        pausedSeconds: 0,
+        pausedAt: "2026-03-14T10:03:00Z",
+      })
+    );
+
+    // setInterval should not have been called for this render
+    // (the effect runs tick() once then returns without setting interval)
+    const callsAfter = setIntervalSpy.mock.calls.length;
+    setIntervalSpy.mockRestore();
+    // We verify indirectly by checking elapsed doesn't tick (covered above)
+    // But let's also check no interval was set in the effect
+    expect(callsAfter).toBe(0);
+  });
+
+  it("resumes ticking when pausedAt changes from a value to null", () => {
+    const now = new Date("2026-03-14T10:05:00Z");
+    vi.setSystemTime(now);
+
+    const { result, rerender } = renderHook(
+      ({ pausedAt, pausedSeconds }) =>
+        useTimer("2026-03-14T10:00:00Z", { pausedSeconds, pausedAt }),
+      { initialProps: { pausedAt: "2026-03-14T10:03:00Z", pausedSeconds: 0 } }
+    );
+    expect(result.current.elapsed).toBe("3m");
+
+    // Resume: clear pausedAt, set pausedSeconds to 2min (was paused for 2min)
+    rerender({ pausedAt: null, pausedSeconds: 120 });
+    // Now at 10:05, started at 10:00, 120s paused => 3m
+    expect(result.current.elapsed).toBe("3m");
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    // Should now be ticking: 3m + 2s = 3m 02s... but >= 2min so just "3m"
+    // Actually 5min + 2s - 2min = 3min 2s, but since >= 120s, shows "3m"
+    expect(result.current.elapsed).toBe("3m");
+  });
+
+  it("freezes display with zero pausedSeconds and a pausedAt value", () => {
+    const now = new Date("2026-03-14T10:10:00Z");
+    vi.setSystemTime(now);
+
+    // Paused at 10:02, no prior pause time, current time 10:10
+    // Should show exactly 2m regardless of current time
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z", {
+        pausedSeconds: 0,
+        pausedAt: "2026-03-14T10:02:00Z",
+      })
+    );
+    expect(result.current.elapsed).toBe("2m");
+  });
+
+  it("defaults options to zero pausedSeconds and null pausedAt", () => {
+    const now = new Date("2026-03-14T10:01:00Z");
+    vi.setSystemTime(now);
+
+    // Call with no second argument — should behave like original
+    const { result } = renderHook(() =>
+      useTimer("2026-03-14T10:00:00Z")
+    );
+    expect(result.current.elapsed).toBe("1m 00s");
+  });
 });

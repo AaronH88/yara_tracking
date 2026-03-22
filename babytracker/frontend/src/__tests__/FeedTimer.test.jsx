@@ -61,7 +61,7 @@ describe("FeedTimer — idle state (no active feed)", () => {
   it("does not show 'Stop Feed' button when idle", () => {
     setupDefaults();
     render(<FeedTimer />);
-    expect(screen.queryByRole("button", { name: /stop feed/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /stop/i })).not.toBeInTheDocument();
   });
 
   it("does not show the form when idle", () => {
@@ -198,7 +198,7 @@ describe("FeedTimer — active feed", () => {
     });
     render(<FeedTimer />);
 
-    expect(screen.getByRole("button", { name: /stop feed/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /stop/i })).toBeInTheDocument();
   });
 
   it("does not show the four start buttons when a feed is active", () => {
@@ -212,7 +212,7 @@ describe("FeedTimer — active feed", () => {
     expect(screen.queryByRole("button", { name: /bottle/i })).not.toBeInTheDocument();
   });
 
-  it("passes activeFeed.started_at to useTimer", () => {
+  it("passes activeFeed.started_at and pause options to useTimer", () => {
     const startedAt = "2026-03-14T10:00:00Z";
     setupDefaults({
       activeFeed: { id: 10, type: "bottle", started_at: startedAt },
@@ -220,7 +220,10 @@ describe("FeedTimer — active feed", () => {
     });
     render(<FeedTimer />);
 
-    expect(useTimer).toHaveBeenCalledWith(startedAt);
+    expect(useTimer).toHaveBeenCalledWith(startedAt, {
+      pausedSeconds: 0,
+      pausedAt: null,
+    });
   });
 
   it("shows correct label for both_sides type", () => {
@@ -266,7 +269,7 @@ describe("FeedTimer — stopping a feed", () => {
     const user = userEvent.setup();
     render(<FeedTimer />);
 
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
 
     expect(global.fetch).toHaveBeenCalledWith(
       `/api/v1/babies/${BABY.id}/feeds/${activeFeed.id}`,
@@ -293,7 +296,7 @@ describe("FeedTimer — stopping a feed", () => {
     const user = userEvent.setup();
     render(<FeedTimer />);
 
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/feed details/i)).toBeInTheDocument();
@@ -329,7 +332,7 @@ describe("FeedTimer — feed details form", () => {
     const user = userEvent.setup();
 
     // Stop the feed first
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
 
     await waitFor(() => {
       expect(screen.getByLabelText(/amount/i)).toBeInTheDocument();
@@ -360,7 +363,7 @@ describe("FeedTimer — feed details form", () => {
     renderWithForm();
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
     await waitFor(() => {
       expect(screen.getByLabelText(/amount/i)).toBeInTheDocument();
     });
@@ -380,7 +383,7 @@ describe("FeedTimer — feed details form", () => {
     renderWithForm();
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
     await waitFor(() => {
       expect(screen.getByText(/feed details/i)).toBeInTheDocument();
     });
@@ -394,7 +397,7 @@ describe("FeedTimer — feed details form", () => {
     renderWithForm();
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/breast — left/i)).toBeInTheDocument();
@@ -466,6 +469,316 @@ describe("FeedTimer — last side tracking", () => {
   });
 });
 
+// ---- Pause/Resume buttons ----
+
+describe("FeedTimer — pause/resume buttons", () => {
+  it("shows Pause button when feed is active and running", () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /resume/i })).not.toBeInTheDocument();
+  });
+
+  it("shows Resume button when feed is paused", () => {
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 30,
+        paused_at: "2026-03-14T10:02:00Z",
+      },
+      elapsed: "1m 30s",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.getByRole("button", { name: /resume/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /pause/i })).not.toBeInTheDocument();
+  });
+
+  it("shows Stop button in both running and paused states", () => {
+    // Running
+    setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "1m",
+    });
+    const { unmount } = render(<FeedTimer />);
+    expect(screen.getByRole("button", { name: /stop/i })).toBeInTheDocument();
+    unmount();
+
+    // Paused
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 10,
+        paused_at: "2026-03-14T10:01:00Z",
+      },
+      elapsed: "50s",
+    });
+    render(<FeedTimer />);
+    expect(screen.getByRole("button", { name: /stop/i })).toBeInTheDocument();
+  });
+
+  it("calls POST pause endpoint when Pause is clicked", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /pause/i }));
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      `/api/v1/babies/${BABY.id}/feeds/10/pause`,
+      expect.objectContaining({ method: "POST" })
+    );
+  });
+
+  it("calls refetch after successful pause", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /pause/i }));
+
+    await waitFor(() => {
+      expect(refetch).toHaveBeenCalled();
+    });
+  });
+
+  it("does not call refetch when pause POST fails", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    global.fetch = vi.fn(() => Promise.resolve({ ok: false, status: 409 }));
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /pause/i }));
+
+    await waitFor(() => {
+      expect(refetch).not.toHaveBeenCalled();
+    });
+  });
+
+  it("calls POST resume endpoint when Resume is clicked", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 30,
+        paused_at: "2026-03-14T10:02:00Z",
+      },
+      elapsed: "1m 30s",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /resume/i }));
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      `/api/v1/babies/${BABY.id}/feeds/10/resume`,
+      expect.objectContaining({ method: "POST" })
+    );
+  });
+
+  it("calls refetch after successful resume", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 30,
+        paused_at: "2026-03-14T10:02:00Z",
+      },
+      elapsed: "1m 30s",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /resume/i }));
+
+    await waitFor(() => {
+      expect(refetch).toHaveBeenCalled();
+    });
+  });
+
+  it("does not call refetch when resume POST fails", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 30,
+        paused_at: "2026-03-14T10:02:00Z",
+      },
+      elapsed: "1m 30s",
+    });
+    global.fetch = vi.fn(() => Promise.resolve({ ok: false, status: 500 }));
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /resume/i }));
+
+    await waitFor(() => {
+      expect(refetch).not.toHaveBeenCalled();
+    });
+  });
+
+  it("passes paused_seconds and paused_at from activeFeed to useTimer", () => {
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        paused_seconds: 45,
+        paused_at: "2026-03-14T10:03:00Z",
+        is_paused: true,
+      },
+      elapsed: "2m 15s",
+    });
+    render(<FeedTimer />);
+
+    expect(useTimer).toHaveBeenCalledWith("2026-03-14T10:00:00Z", {
+      pausedSeconds: 45,
+      pausedAt: "2026-03-14T10:03:00Z",
+    });
+  });
+});
+
+// ---- Switch button visibility with pause ----
+
+describe("FeedTimer — switch button and pause interaction", () => {
+  it("shows Switch button for breast feed when running", () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "breast_left", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.getByRole("button", { name: /switch/i })).toBeInTheDocument();
+  });
+
+  it("hides Switch button for breast feed when paused", () => {
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "breast_left",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 10,
+        paused_at: "2026-03-14T10:01:00Z",
+      },
+      elapsed: "50s",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.queryByRole("button", { name: /switch/i })).not.toBeInTheDocument();
+  });
+
+  it("does not show Switch button for bottle feed even when running", () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.queryByRole("button", { name: /switch/i })).not.toBeInTheDocument();
+  });
+
+  it("shows Switch button for breast_right when running", () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "breast_right", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "1m",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.getByRole("button", { name: /switch/i })).toBeInTheDocument();
+  });
+
+  it("shows Switch button for both_sides when running", () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "both_sides", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "1m",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.getByRole("button", { name: /switch/i })).toBeInTheDocument();
+  });
+
+  it("hides Switch button for both_sides when paused", () => {
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "both_sides",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 5,
+        paused_at: "2026-03-14T10:01:00Z",
+      },
+      elapsed: "55s",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.queryByRole("button", { name: /switch/i })).not.toBeInTheDocument();
+  });
+});
+
+// ---- PAUSED badge in FeedTimer ----
+
+describe("FeedTimer — PAUSED badge display", () => {
+  it("shows PAUSED badge when feed is paused", () => {
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "bottle",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 10,
+        paused_at: "2026-03-14T10:01:00Z",
+      },
+      elapsed: "50s",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.getByText("PAUSED")).toBeInTheDocument();
+  });
+
+  it("does not show PAUSED badge when feed is running", () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "bottle", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.queryByText("PAUSED")).not.toBeInTheDocument();
+  });
+
+  it("does not show PAUSED badge when there is no active feed", () => {
+    setupDefaults();
+    render(<FeedTimer />);
+
+    expect(screen.queryByText("PAUSED")).not.toBeInTheDocument();
+  });
+});
+
 // ---- Edge cases ----
 
 describe("FeedTimer — edge cases", () => {
@@ -474,7 +787,7 @@ describe("FeedTimer — edge cases", () => {
     setupDefaults();
     render(<FeedTimer />);
 
-    expect(screen.queryByRole("button", { name: /stop feed/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /stop/i })).not.toBeInTheDocument();
   });
 
   it("handles unknown feed type gracefully in active view", () => {
@@ -500,7 +813,7 @@ describe("FeedTimer — edge cases", () => {
     const user = userEvent.setup();
     render(<FeedTimer />);
 
-    await user.click(screen.getByRole("button", { name: /stop feed/i }));
+    await user.click(screen.getByRole("button", { name: /stop/i }));
 
     await waitFor(() => {
       expect(screen.getByText("unknown_type")).toBeInTheDocument();
