@@ -4,6 +4,7 @@ import { usePersona } from "../context/PersonaContext";
 import { useActiveEvents } from "../hooks/useActiveEvents";
 import FeedTimer from "../components/timers/FeedTimer";
 import SleepTimer from "../components/timers/SleepTimer";
+import BurpTimer from "../components/timers/BurpTimer";
 import LogPastEventModal from "../components/LogPastEventModal";
 
 const DIAPER_TYPES = [
@@ -55,7 +56,7 @@ const SLEEP_TYPE_LABELS = {
 export default function Dashboard() {
   const { selectedBaby } = useBaby();
   const { persona } = usePersona();
-  const { activeFeed, activeSleep, refetch } = useActiveEvents(
+  const { activeFeed, activeSleep, activeBurp, refetch } = useActiveEvents(
     selectedBaby?.id
   );
   const [lastFeed, setLastFeed] = useState(null);
@@ -64,6 +65,7 @@ export default function Dashboard() {
   const [loggingDiaper, setLoggingDiaper] = useState(false);
   const [showFeedTimer, setShowFeedTimer] = useState(false);
   const [showSleepTimer, setShowSleepTimer] = useState(false);
+  const [showBurpTimer, setShowBurpTimer] = useState(false);
   const [showLogPastEvent, setShowLogPastEvent] = useState(false);
   const [sinceLastFeed, setSinceLastFeed] = useState(null);
 
@@ -163,9 +165,23 @@ export default function Dashboard() {
     );
   }
 
+  if (showBurpTimer) {
+    return (
+      <div className="space-y-4 p-4">
+        <button
+          onClick={() => setShowBurpTimer(false)}
+          className="min-h-[48px] rounded-lg px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30"
+        >
+          &larr; Back to Dashboard
+        </button>
+        <BurpTimer />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 p-4">
-      {(activeFeed || activeSleep) && (
+      {(activeFeed || activeSleep || activeBurp) && (
         <section>
           <h2 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">
             Active Timers
@@ -178,6 +194,11 @@ export default function Dashboard() {
           {activeSleep && (
             <div className="rounded-3xl border-2 border-purple-200 bg-gradient-to-r from-pastel-lavender to-purple-200 p-5 shadow-lg mt-3 dark:border-purple-700 dark:bg-gradient-to-r dark:from-purple-900/30 dark:to-indigo-900/30">
               <SleepTimer />
+            </div>
+          )}
+          {activeBurp && (
+            <div className="rounded-3xl border-2 border-green-200 bg-gradient-to-r from-green-100 to-emerald-100 p-5 shadow-lg mt-3 dark:border-green-700 dark:bg-gradient-to-r dark:from-green-900/30 dark:to-emerald-900/30">
+              <BurpTimer />
             </div>
           )}
         </section>
@@ -217,7 +238,7 @@ export default function Dashboard() {
             );
           })}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => setShowFeedTimer(true)}
             className="flex items-center justify-center rounded-2xl border-2
@@ -227,7 +248,7 @@ export default function Dashboard() {
               dark:hover:border-orange-500 dark:hover:bg-gray-700
               active:scale-95 transition-all"
           >
-            🍼 Log Feed
+            🍼 Feed
           </button>
           <button
             onClick={() => setShowSleepTimer(true)}
@@ -238,7 +259,18 @@ export default function Dashboard() {
               dark:hover:border-purple-500 dark:hover:bg-gray-700
               active:scale-95 transition-all"
           >
-            😴 Log Sleep
+            😴 Sleep
+          </button>
+          <button
+            onClick={() => setShowBurpTimer(true)}
+            className="flex items-center justify-center rounded-2xl border-2
+              border-green-300 bg-gradient-to-br from-green-100 to-emerald-100 py-4 text-sm font-semibold text-green-800
+              hover:shadow-lg shadow-md
+              dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200
+              dark:hover:border-green-500 dark:hover:bg-gray-700
+              active:scale-95 transition-all"
+          >
+            🫧 Burp
           </button>
         </div>
         <button

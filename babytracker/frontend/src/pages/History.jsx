@@ -5,11 +5,13 @@ import SleepForm from "../components/forms/SleepForm";
 import DiaperForm from "../components/forms/DiaperForm";
 import PumpForm from "../components/forms/PumpForm";
 import MilestoneForm from "../components/forms/MilestoneForm";
+import BurpForm from "../components/forms/BurpForm";
 
 const TYPE_FILTERS = [
   { key: "all", label: "All" },
   { key: "feed", label: "Feeds" },
   { key: "sleep", label: "Sleeps" },
+  { key: "burp", label: "Burps" },
   { key: "diaper", label: "Nappies" },
   { key: "pump", label: "Pumps" },
   { key: "milestone", label: "Milestones" },
@@ -33,6 +35,7 @@ const SLEEP_LABELS = { nap: "Nap", night: "Night" };
 const FORM_BY_TYPE = {
   feed: FeedForm,
   sleep: SleepForm,
+  burp: BurpForm,
   diaper: DiaperForm,
   pump: PumpForm,
   milestone: MilestoneForm,
@@ -41,6 +44,7 @@ const FORM_BY_TYPE = {
 const ICON_BY_TYPE = {
   feed: "🍼",
   sleep: "😴",
+  burp: "🫧",
   diaper: "🧷",
   pump: "🧴",
   milestone: "⭐",
@@ -82,6 +86,8 @@ function eventDetail(ev) {
       return FEED_LABELS[ev.type] || ev.type;
     case "sleep":
       return SLEEP_LABELS[ev.type] || ev.type;
+    case "burp":
+      return "Burp";
     case "diaper":
       return DIAPER_LABELS[ev.type] || ev.type;
     case "pump": {
@@ -120,6 +126,7 @@ export default function History() {
       const responses = await Promise.all([
         fetch(`/api/v1/babies/${babyId}/feeds?limit=${limit}`),
         fetch(`/api/v1/babies/${babyId}/sleeps?limit=${limit}`),
+        fetch(`/api/v1/babies/${babyId}/burps?limit=${limit}`),
         fetch(`/api/v1/babies/${babyId}/diapers?limit=${limit}`),
         fetch(`/api/v1/pumps?limit=${limit}`),
         fetch(`/api/v1/babies/${babyId}/milestones?limit=${limit}`),
@@ -137,14 +144,15 @@ export default function History() {
 
       await tagAndPush(responses[0], "feed", "started_at");
       await tagAndPush(responses[1], "sleep", "started_at");
-      await tagAndPush(responses[2], "diaper", "logged_at");
-      await tagAndPush(responses[3], "pump", "logged_at");
-      await tagAndPush(responses[4], "milestone", "occurred_at");
+      await tagAndPush(responses[2], "burp", "started_at");
+      await tagAndPush(responses[3], "diaper", "logged_at");
+      await tagAndPush(responses[4], "pump", "logged_at");
+      await tagAndPush(responses[5], "milestone", "occurred_at");
 
       merged.sort((a, b) => new Date(b.sortTime) - new Date(a.sortTime));
       setEvents(merged);
 
-      if (responses[5].ok) setUsers(await responses[5].json());
+      if (responses[6].ok) setUsers(await responses[6].json());
     } finally {
       setLoading(false);
     }
@@ -262,7 +270,7 @@ export default function History() {
                     </div>
                   </div>
                   <div className="mt-0.5 flex items-center gap-2">
-                    {(ev.eventType === "feed" || ev.eventType === "sleep") &&
+                    {(ev.eventType === "feed" || ev.eventType === "sleep" || ev.eventType === "burp") &&
                       ev.ended_at && (
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           {formatDuration(ev.started_at, ev.ended_at)}
