@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 3.2 — TEST
+→ NEXT: Task 3.3 — TEST
 
 ---
 
@@ -460,7 +460,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.2 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-3.2.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
@@ -468,7 +468,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 3.2 — VERIFY`
 
-- [ ] **VERIFY** — attempt 1 of 3
+- [x] **VERIFY** — attempt 1 of 3
   Run: `cd babytracker/frontend && npm test -- --watchAll=false 2>&1 | tee ../../tasks/feedback/task-3.2-verify.txt`
   If exit code 0 (tests pass):
   - Check this box
@@ -480,7 +480,7 @@ Spec files live in: `tasks/specs/`
   - If attempt number would exceed 3: replace checkbox with `[BLOCKED]` and stop
   - Set cursor to: `→ NEXT: Task 3.2 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` — attempt 1 of 3
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-3.2.md`
   Read diff: `git diff HEAD~2`
   Read verify output: `tasks/feedback/task-3.2-verify.txt`
@@ -505,7 +505,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 3.3 — Feed Quality Rating UI
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-3.3.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:

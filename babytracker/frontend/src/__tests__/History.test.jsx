@@ -333,6 +333,79 @@ describe("History — event display", () => {
   });
 });
 
+// ---- Quality icon display ----
+
+describe("History — quality icon display", () => {
+  it("shows quality icon for feed events with quality set to good", async () => {
+    global.fetch = mockFetch({
+      feeds: [makeFeed({ quality: "good" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Bottle")).toBeInTheDocument();
+    });
+    expect(screen.getByTitle("good")).toBeInTheDocument();
+    expect(screen.getByTitle("good").textContent).toBe("👍");
+  });
+
+  it("shows quality icon for feed events with quality set to okay", async () => {
+    global.fetch = mockFetch({
+      feeds: [makeFeed({ quality: "okay" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByTitle("okay")).toBeInTheDocument();
+    });
+    expect(screen.getByTitle("okay").textContent).toBe("😐");
+  });
+
+  it("shows quality icon for feed events with quality set to poor", async () => {
+    global.fetch = mockFetch({
+      feeds: [makeFeed({ quality: "poor" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByTitle("poor")).toBeInTheDocument();
+    });
+    expect(screen.getByTitle("poor").textContent).toBe("👎");
+  });
+
+  it("does not show quality icon for feed events without quality", async () => {
+    global.fetch = mockFetch({
+      feeds: [makeFeed({ quality: null })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Bottle")).toBeInTheDocument();
+    });
+    expect(screen.queryByTitle("good")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("okay")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("poor")).not.toBeInTheDocument();
+  });
+
+  it("does not show quality icon for non-feed events even if quality field exists", async () => {
+    global.fetch = mockFetch({
+      sleeps: [makeSleep({ quality: "good" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Nap")).toBeInTheDocument();
+    });
+    expect(screen.queryByTitle("good")).not.toBeInTheDocument();
+  });
+
+  it("does not show quality icon for unknown quality values", async () => {
+    global.fetch = mockFetch({
+      feeds: [makeFeed({ quality: "excellent" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Bottle")).toBeInTheDocument();
+    });
+    expect(screen.queryByTitle("excellent")).not.toBeInTheDocument();
+  });
+});
+
 // ---- Type filtering ----
 
 describe("History — type filter", () => {

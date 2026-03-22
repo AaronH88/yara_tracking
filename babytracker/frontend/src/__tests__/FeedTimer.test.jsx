@@ -926,6 +926,117 @@ describe("FeedTimer — switch breast API flow", () => {
   });
 });
 
+// ---- Quality selector in feed details form ----
+
+describe("FeedTimer — quality selector in details form", () => {
+  function renderAndStopFeed() {
+    const activeFeed = { id: 10, type: "breast_left", started_at: "2026-03-14T10:00:00Z" };
+    const stoppedFeed = { ...activeFeed, ended_at: "2026-03-14T10:05:00Z" };
+    const { refetch } = setupDefaults({ activeFeed, elapsed: "5m" });
+
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(stoppedFeed),
+      })
+    );
+
+    const utils = render(<FeedTimer />);
+    return { ...utils, stoppedFeed, refetch };
+  }
+
+  it("shows quality selector in post-feed details form", async () => {
+    renderAndStopFeed();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /stop/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText("How did the feed go?")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Good")).toBeInTheDocument();
+    expect(screen.getByText("Okay")).toBeInTheDocument();
+    expect(screen.getByText("Poor")).toBeInTheDocument();
+  });
+
+  it("highlights selected quality and deselects on re-tap", async () => {
+    renderAndStopFeed();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /stop/i }));
+    await waitFor(() => expect(screen.getByText("Good")).toBeInTheDocument());
+
+    const goodBtn = screen.getByText("Good").closest("button");
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+
+    await user.click(goodBtn);
+    expect(goodBtn.className).toMatch(/ring-2/);
+
+    await user.click(goodBtn);
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+  });
+
+  it("includes quality in PATCH when Save is clicked with quality selected", async () => {
+    const { stoppedFeed } = renderAndStopFeed();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /stop/i }));
+    await waitFor(() => expect(screen.getByText("Good")).toBeInTheDocument());
+
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+
+    await user.click(screen.getByText("Good").closest("button"));
+    await user.type(screen.getByLabelText(/amount/i), "3");
+    await user.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        `/api/v1/babies/${BABY.id}/feeds/${stoppedFeed.id}`,
+        expect.objectContaining({ method: "PATCH" })
+      );
+    });
+
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(body.quality).toBe("good");
+  });
+
+  it("does not include quality in PATCH when no quality is selected", async () => {
+    renderAndStopFeed();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /stop/i }));
+    await waitFor(() => expect(screen.getByLabelText(/amount/i)).toBeInTheDocument());
+
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+
+    await user.type(screen.getByLabelText(/amount/i), "4");
+    await user.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(body.quality).toBeUndefined();
+  });
+
+  it("resets quality when a new feed is stopped", async () => {
+    renderAndStopFeed();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /stop/i }));
+    await waitFor(() => expect(screen.getByText("Good")).toBeInTheDocument());
+
+    // All quality buttons should be unselected (no ring)
+    const goodBtn = screen.getByText("Good").closest("button");
+    const okayBtn = screen.getByText("Okay").closest("button");
+    const poorBtn = screen.getByText("Poor").closest("button");
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+    expect(okayBtn.className).not.toMatch(/ring-2/);
+    expect(poorBtn.className).not.toMatch(/ring-2/);
+  });
+});
+
 // ---- PAUSED badge in FeedTimer ----
 
 describe("FeedTimer — PAUSED badge display", () => {

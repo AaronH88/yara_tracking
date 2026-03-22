@@ -185,6 +185,108 @@ describe("FeedForm", () => {
     expect(screen.getByText("Bottle")).toBeInTheDocument();
   });
 
+  it("renders quality selector with three options", async () => {
+    render(<FeedForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByText("How did the feed go?")).toBeInTheDocument());
+    expect(screen.getByText("Good")).toBeInTheDocument();
+    expect(screen.getByText("Okay")).toBeInTheDocument();
+    expect(screen.getByText("Poor")).toBeInTheDocument();
+  });
+
+  it("highlights selected quality button with ring class", async () => {
+    const user = userEvent.setup();
+    render(<FeedForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByText("Good")).toBeInTheDocument());
+
+    const goodBtn = screen.getByText("Good").closest("button");
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+
+    await user.click(goodBtn);
+
+    expect(goodBtn.className).toMatch(/ring-2/);
+  });
+
+  it("deselects quality when the same button is tapped again", async () => {
+    const user = userEvent.setup();
+    render(<FeedForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByText("Good")).toBeInTheDocument());
+
+    const goodBtn = screen.getByText("Good").closest("button");
+    await user.click(goodBtn);
+    expect(goodBtn.className).toMatch(/ring-2/);
+
+    await user.click(goodBtn);
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+  });
+
+  it("switches selection when a different quality button is clicked", async () => {
+    const user = userEvent.setup();
+    render(<FeedForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByText("Good")).toBeInTheDocument());
+
+    const goodBtn = screen.getByText("Good").closest("button");
+    const poorBtn = screen.getByText("Poor").closest("button");
+
+    await user.click(goodBtn);
+    expect(goodBtn.className).toMatch(/ring-2/);
+    expect(poorBtn.className).not.toMatch(/ring-2/);
+
+    await user.click(poorBtn);
+    expect(poorBtn.className).toMatch(/ring-2/);
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+  });
+
+  it("includes quality in PATCH when editing an existing feed", async () => {
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    const event = { id: 5, user_id: 2, type: "bottle", started_at: "2024-01-15T10:00:00Z" };
+    render(<FeedForm event={event} onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument());
+
+    await user.click(screen.getByText("Poor").closest("button"));
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    await waitFor(() => {
+      const patchCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "PATCH"
+      );
+      expect(patchCall).toBeTruthy();
+      const body = JSON.parse(patchCall[1].body);
+      expect(body.quality).toBe("poor");
+    });
+  });
+
+  it("sends quality as null when no quality is selected", async () => {
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    render(<FeedForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByText("Logged by")).toBeInTheDocument());
+
+    // Don't select any quality
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      expect(postCall).toBeTruthy();
+      const body = JSON.parse(postCall[1].body);
+      expect(body.quality).toBeNull();
+    });
+  });
+
+  it("pre-selects quality when editing a feed with existing quality", async () => {
+    const event = { id: 1, user_id: 2, type: "bottle", started_at: "2024-01-15T10:00:00Z", quality: "okay" };
+    render(<FeedForm event={event} onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByText("Okay")).toBeInTheDocument());
+
+    const okayBtn = screen.getByText("Okay").closest("button");
+    expect(okayBtn.className).toMatch(/ring-2/);
+
+    const goodBtn = screen.getByText("Good").closest("button");
+    expect(goodBtn.className).not.toMatch(/ring-2/);
+  });
+
   it("renders cancel button only when onCancel provided", async () => {
     const { unmount } = render(<FeedForm onSaved={vi.fn()} />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument());
