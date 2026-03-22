@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 1.2 — DEV
+→ NEXT: Task 1.2 — TEST
 
 ---
 
@@ -81,7 +81,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 1.2 — Migrate DiaperEvent Table and Create BurpEvent Table
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-1.2.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:

@@ -346,7 +346,8 @@ class TestDiaperEventResponse:
     def test_valid_response(self):
         d = DiaperEventResponse(
             id=1, baby_id=1, user_id=1, logged_at=datetime(2024, 1, 1),
-            type="wet", notes=None, created_at=None,
+            type="wet", wet_amount=None, dirty_colour=None,
+            notes=None, created_at=None,
         )
         assert d.id == 1
 
