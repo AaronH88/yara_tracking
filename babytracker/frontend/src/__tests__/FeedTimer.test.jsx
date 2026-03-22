@@ -739,6 +739,128 @@ describe("FeedTimer — switch button and pause interaction", () => {
 
     expect(screen.queryByRole("button", { name: /switch/i })).not.toBeInTheDocument();
   });
+
+  it("hides Switch button for breast_right when paused", () => {
+    setupDefaults({
+      activeFeed: {
+        id: 10,
+        type: "breast_right",
+        started_at: "2026-03-14T10:00:00Z",
+        is_paused: true,
+        paused_seconds: 10,
+        paused_at: "2026-03-14T10:01:00Z",
+      },
+      elapsed: "50s",
+    });
+    render(<FeedTimer />);
+
+    expect(screen.queryByRole("button", { name: /switch/i })).not.toBeInTheDocument();
+  });
+});
+
+// ---- Switch button PATCH behavior ----
+
+describe("FeedTimer — switch button PATCH behavior", () => {
+  it("PATCHes type from breast_left to breast_right when Switch is clicked", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: { id: 10, type: "breast_left", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /switch/i }));
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      `/api/v1/babies/${BABY.id}/feeds/10`,
+      expect.objectContaining({
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(body.type).toBe("breast_right");
+  });
+
+  it("PATCHes type from breast_right to breast_left when Switch is clicked", async () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "breast_right", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /switch/i }));
+
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(body.type).toBe("breast_left");
+  });
+
+  it("PATCHes type from both_sides to breast_left when Switch is clicked", async () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "both_sides", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /switch/i }));
+
+    // both_sides is not "breast_left", so the ternary picks breast_right... wait let me check
+    // const nextSide = activeFeed.type === "breast_left" ? "breast_right" : "breast_left";
+    // both_sides !== "breast_left" => breast_left
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(body.type).toBe("breast_left");
+  });
+
+  it("calls refetch after successful switch PATCH", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: { id: 10, type: "breast_left", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /switch/i }));
+
+    await waitFor(() => {
+      expect(refetch).toHaveBeenCalled();
+    });
+  });
+
+  it("saves switched side to localStorage after successful PATCH", async () => {
+    setupDefaults({
+      activeFeed: { id: 10, type: "breast_left", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /switch/i }));
+
+    await waitFor(() => {
+      expect(localStorage.getItem(`feedTimer_lastSide_${BABY.id}`)).toBe("breast_right");
+    });
+  });
+
+  it("does not call refetch or save side when switch PATCH fails", async () => {
+    const { refetch } = setupDefaults({
+      activeFeed: { id: 10, type: "breast_left", started_at: "2026-03-14T10:00:00Z" },
+      elapsed: "2m",
+    });
+    global.fetch = vi.fn(() => Promise.resolve({ ok: false, status: 500 }));
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /switch/i }));
+
+    // Wait for the fetch promise to resolve
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+    expect(refetch).not.toHaveBeenCalled();
+    expect(localStorage.getItem(`feedTimer_lastSide_${BABY.id}`)).toBeNull();
+  });
 });
 
 // ---- PAUSED badge in FeedTimer ----
