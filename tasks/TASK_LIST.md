@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 3.2 — DEV
+→ NEXT: Task 3.2 — TEST
 
 ---
 
@@ -452,7 +452,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 3.2 — Feed Timer Quick Switch Breast
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-3.2.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:
