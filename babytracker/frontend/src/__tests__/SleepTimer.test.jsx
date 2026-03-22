@@ -381,6 +381,153 @@ describe("SleepTimer — sleep details form", () => {
   });
 });
 
+// ---- Auto-close toast notification ----
+
+describe("SleepTimer — auto-close toast notification", () => {
+  it("shows toast when POST response contains non-empty auto_closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 200,
+            type: "nap",
+            auto_closed: [{ id: 50, type: "feed" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<SleepTimer />);
+
+    await user.click(screen.getByRole("button", { name: /nap/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+    expect(screen.getByText(/feed timer automatically stopped/i)).toBeInTheDocument();
+  });
+
+  it("shows correct message when a sleep timer was auto-closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 200,
+            type: "night",
+            auto_closed: [{ id: 51, type: "sleep" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<SleepTimer />);
+
+    await user.click(screen.getByRole("button", { name: /night sleep/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/sleep timer automatically stopped/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows plural message when multiple timer types were auto-closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 200,
+            type: "nap",
+            auto_closed: [
+              { id: 50, type: "feed" },
+              { id: 51, type: "sleep" },
+            ],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<SleepTimer />);
+
+    await user.click(screen.getByRole("button", { name: /nap/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/timers automatically stopped/i)).toBeInTheDocument();
+    });
+  });
+
+  it("does not show toast when auto_closed is empty array", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 200,
+            type: "nap",
+            auto_closed: [],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<SleepTimer />);
+
+    await user.click(screen.getByRole("button", { name: /nap/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("does not show toast when auto_closed is missing from response", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 200, type: "nap" }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<SleepTimer />);
+
+    await user.click(screen.getByRole("button", { name: /nap/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("toast is dismissable by clicking", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 200,
+            type: "nap",
+            auto_closed: [{ id: 50, type: "feed" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<SleepTimer />);
+
+    await user.click(screen.getByRole("button", { name: /nap/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("status"));
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+});
+
 // ---- Edge cases ----
 
 describe("SleepTimer — edge cases", () => {

@@ -1075,6 +1075,203 @@ describe("FeedTimer — PAUSED badge display", () => {
   });
 });
 
+// ---- Auto-close toast notification ----
+
+describe("FeedTimer — auto-close toast notification", () => {
+  it("shows toast when POST response contains non-empty auto_closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "bottle",
+            auto_closed: [{ id: 50, type: "sleep" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+    expect(screen.getByText(/sleep timer automatically stopped/i)).toBeInTheDocument();
+  });
+
+  it("shows correct message when a feed timer was auto-closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "breast_left",
+            auto_closed: [{ id: 51, type: "feed" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /breast l/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/feed timer automatically stopped/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows plural message when multiple timer types were auto-closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "bottle",
+            auto_closed: [
+              { id: 50, type: "sleep" },
+              { id: 51, type: "feed" },
+            ],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/timers automatically stopped/i)).toBeInTheDocument();
+    });
+  });
+
+  it("does not show toast when auto_closed is empty array", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "bottle",
+            auto_closed: [],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("does not show toast when auto_closed is missing from response", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 100, type: "bottle" }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows toast with burp type label when burp timer was auto-closed", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "bottle",
+            auto_closed: [{ id: 52, type: "burp" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/burp timer automatically stopped/i)).toBeInTheDocument();
+    });
+  });
+
+  it("deduplicates multiple auto-closed timers of the same type", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "bottle",
+            auto_closed: [
+              { id: 50, type: "feed" },
+              { id: 51, type: "feed" },
+            ],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      // Should say "Feed timer" (singular), not "Feed and Feed timers"
+      expect(screen.getByText(/feed timer automatically stopped/i)).toBeInTheDocument();
+    });
+  });
+
+  it("toast is dismissable by clicking", async () => {
+    setupDefaults();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 100,
+            type: "bottle",
+            auto_closed: [{ id: 50, type: "sleep" }],
+          }),
+      })
+    );
+    const user = userEvent.setup();
+    render(<FeedTimer />);
+
+    await user.click(screen.getByRole("button", { name: /bottle/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("status"));
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+});
+
 // ---- Edge cases ----
 
 describe("FeedTimer — edge cases", () => {

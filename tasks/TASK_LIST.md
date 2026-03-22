@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 3.4 — DEV
+→ NEXT: Task 3.4 — TEST
 
 ---
 
@@ -558,7 +558,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 3.4 — Auto-Close Toast Notification
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-3.4.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:
