@@ -21,3 +21,8 @@ babytracker/frontend/dist/
 
 # Task feedback (runtime generated)
 tasks/feedback/
+# Claude local settings
+.claude/settings.local.json
+# Test files
+hello.txt
+tasks/hello.md
