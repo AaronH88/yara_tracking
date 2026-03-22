@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useBaby } from "../../context/BabyContext";
 import { usePersona } from "../../context/PersonaContext";
 import { useActiveEvents } from "../../hooks/useActiveEvents";
 import { useTimer } from "../../hooks/useTimer";
+import Toast from "../Toast";
 
 const FEED_TYPES = [
   { type: "breast_left", label: "Breast L" },
@@ -55,6 +56,8 @@ export default function FeedTimer() {
   const [formNotes, setFormNotes] = useState("");
   const [formQuality, setFormQuality] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const dismissToast = useCallback(() => setToastMessage(null), []);
 
   async function startFeed(feedType) {
     setSubmitting(true);
@@ -72,6 +75,16 @@ export default function FeedTimer() {
         }
       );
       if (response.ok) {
+        const created = await response.json();
+        if (created.auto_closed?.length > 0) {
+          const closedTypes = created.auto_closed.map((item) =>
+            item.type === "sleep" ? "Sleep" : item.type === "feed" ? "Feed" : "Burp"
+          );
+          const uniqueTypes = [...new Set(closedTypes)];
+          setToastMessage(
+            `${uniqueTypes.join(" and ")} timer${uniqueTypes.length > 1 ? "s" : ""} automatically stopped`
+          );
+        }
         saveLastSide(selectedBaby.id, feedType);
         await refetch();
       }
@@ -208,9 +221,14 @@ export default function FeedTimer() {
     setStoppedFeed(null);
   }
 
+  const toastElement = toastMessage ? (
+    <Toast message={toastMessage} onDismiss={dismissToast} />
+  ) : null;
+
   if (stoppedFeed) {
     return (
       <div className="space-y-4">
+        {toastElement}
         <h3 className="text-lg font-semibold text-orange-800 dark:text-orange-300">
           Feed Details
         </h3>
@@ -312,6 +330,7 @@ export default function FeedTimer() {
   if (activeFeed) {
     return (
       <div className="space-y-4 text-center">
+        {toastElement}
         <div className="flex items-center justify-between mb-3">
           <span className="text-2xl">🍼</span>
           <div className="flex items-center gap-2">
@@ -379,6 +398,7 @@ export default function FeedTimer() {
 
   return (
     <div className="grid grid-cols-2 gap-3">
+      {toastElement}
       {FEED_TYPES.map(({ type, label }) => (
         <button
           key={type}

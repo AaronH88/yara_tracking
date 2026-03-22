@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useBaby } from "../../context/BabyContext";
 import { usePersona } from "../../context/PersonaContext";
 import { useActiveEvents } from "../../hooks/useActiveEvents";
 import { useTimer } from "../../hooks/useTimer";
+import Toast from "../Toast";
 
 const SLEEP_TYPES = [
   { type: "nap", label: "Nap" },
@@ -22,6 +23,8 @@ export default function SleepTimer() {
   const [stoppedSleep, setStoppedSleep] = useState(null);
   const [formNotes, setFormNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const dismissToast = useCallback(() => setToastMessage(null), []);
 
   async function startSleep(sleepType) {
     setSubmitting(true);
@@ -39,6 +42,16 @@ export default function SleepTimer() {
         }
       );
       if (response.ok) {
+        const created = await response.json();
+        if (created.auto_closed?.length > 0) {
+          const closedTypes = created.auto_closed.map((item) =>
+            item.type === "sleep" ? "Sleep" : item.type === "feed" ? "Feed" : "Burp"
+          );
+          const uniqueTypes = [...new Set(closedTypes)];
+          setToastMessage(
+            `${uniqueTypes.join(" and ")} timer${uniqueTypes.length > 1 ? "s" : ""} automatically stopped`
+          );
+        }
         await refetch();
       }
     } finally {
@@ -94,9 +107,14 @@ export default function SleepTimer() {
     setStoppedSleep(null);
   }
 
+  const toastElement = toastMessage ? (
+    <Toast message={toastMessage} onDismiss={dismissToast} />
+  ) : null;
+
   if (stoppedSleep) {
     return (
       <div className="space-y-4">
+        {toastElement}
         <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
           Sleep Details
         </h3>
@@ -148,6 +166,7 @@ export default function SleepTimer() {
   if (activeSleep) {
     return (
       <div className="space-y-4 text-center">
+        {toastElement}
         <div className="flex items-center justify-between mb-3">
           <span className="text-2xl">😴</span>
           <span className="text-xs font-semibold text-purple-700 bg-white/60 rounded-full px-3 py-1 dark:text-purple-300 dark:bg-white/20">
@@ -174,6 +193,7 @@ export default function SleepTimer() {
 
   return (
     <div className="grid grid-cols-2 gap-3">
+      {toastElement}
       {SLEEP_TYPES.map(({ type, label }) => (
         <button
           key={type}
