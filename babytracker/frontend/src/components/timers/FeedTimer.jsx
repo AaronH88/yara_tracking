@@ -53,6 +53,7 @@ export default function FeedTimer() {
   const [stoppedFeed, setStoppedFeed] = useState(null);
   const [formAmount, setFormAmount] = useState("");
   const [formNotes, setFormNotes] = useState("");
+  const [formQuality, setFormQuality] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function startFeed(feedType) {
@@ -96,6 +97,7 @@ export default function FeedTimer() {
         setStoppedFeed(stopped);
         setFormAmount("");
         setFormNotes("");
+        setFormQuality(null);
         await refetch();
       }
     } finally {
@@ -183,6 +185,9 @@ export default function FeedTimer() {
       if (formNotes.trim()) {
         updates.notes = formNotes.trim();
       }
+      if (formQuality) {
+        updates.quality = formQuality;
+      }
       if (Object.keys(updates).length > 0) {
         await fetch(
           `/api/v1/babies/${selectedBaby.id}/feeds/${stoppedFeed.id}`,
@@ -248,6 +253,37 @@ export default function FeedTimer() {
                 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               placeholder="Optional notes..."
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              How did the feed go?
+            </label>
+            <div className="mt-1 flex gap-3">
+              {[
+                { value: "good", emoji: "\ud83d\udc4d", label: "Good" },
+                { value: "okay", emoji: "\ud83d\ude10", label: "Okay" },
+                { value: "poor", emoji: "\ud83d\udc4e", label: "Poor" },
+              ].map(({ value, emoji, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() =>
+                    setFormQuality(formQuality === value ? null : value)
+                  }
+                  className={`flex-1 flex flex-col items-center justify-center rounded-xl py-3 min-h-12 text-lg font-semibold transition-all
+                    ${
+                      formQuality === value
+                        ? "ring-2 ring-orange-500 bg-orange-50 dark:bg-orange-900/30"
+                        : "bg-gray-100 dark:bg-gray-700"
+                    }`}
+                >
+                  <span className="text-2xl">{emoji}</span>
+                  <span className="text-xs mt-1 text-gray-600 dark:text-gray-300">
+                    {label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex gap-3">
             <button

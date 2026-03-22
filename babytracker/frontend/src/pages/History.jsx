@@ -46,6 +46,12 @@ const ICON_BY_TYPE = {
   milestone: "⭐",
 };
 
+const QUALITY_ICONS = {
+  good: "👍",
+  okay: "😐",
+  poor: "👎",
+};
+
 function formatTime(isoString) {
   if (!isoString) return "";
   return new Date(isoString).toLocaleTimeString([], {
@@ -244,9 +250,16 @@ export default function History() {
                     <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                       {eventDetail(ev)}
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {formatTime(ev.sortTime)}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {ev.eventType === "feed" && ev.quality && QUALITY_ICONS[ev.quality] && (
+                        <span className="text-sm" title={ev.quality}>
+                          {QUALITY_ICONS[ev.quality]}
+                        </span>
+                      )}
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {formatTime(ev.sortTime)}
+                      </span>
+                    </div>
                   </div>
                   <div className="mt-0.5 flex items-center gap-2">
                     {(ev.eventType === "feed" || ev.eventType === "sleep") &&

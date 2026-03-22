@@ -44,6 +44,7 @@ export default function FeedForm({ event, onSaved, onCancel }) {
     return event.amount_oz ?? "";
   });
   const [notes, setNotes] = useState(event?.notes ?? "");
+  const [quality, setQuality] = useState(event?.quality ?? null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function FeedForm({ event, onSaved, onCancel }) {
         started_at: fromLocalDatetime(startedAt),
         ended_at: endedAt ? fromLocalDatetime(endedAt) : null,
         notes: notes.trim() || null,
+        quality: quality || null,
       };
       const parsedAmount = parseFloat(amount);
       if (!isNaN(parsedAmount) && parsedAmount > 0) {
@@ -183,6 +185,36 @@ export default function FeedForm({ event, onSaved, onCancel }) {
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2
             dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          How did the feed go?
+        </label>
+        <div className="mt-1 flex gap-3">
+          {[
+            { value: "good", emoji: "\ud83d\udc4d", label: "Good" },
+            { value: "okay", emoji: "\ud83d\ude10", label: "Okay" },
+            { value: "poor", emoji: "\ud83d\udc4e", label: "Poor" },
+          ].map(({ value, emoji, label }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setQuality(quality === value ? null : value)}
+              className={`flex-1 flex flex-col items-center justify-center rounded-xl py-3 min-h-12 text-lg font-semibold transition-all
+                ${
+                  quality === value
+                    ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                    : "bg-gray-100 dark:bg-gray-700"
+                }`}
+            >
+              <span className="text-2xl">{emoji}</span>
+              <span className="text-xs mt-1 text-gray-600 dark:text-gray-300">
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex gap-3">
