@@ -135,6 +135,42 @@ export default function FeedTimer() {
     }
   }
 
+  async function switchBreast() {
+    if (!activeFeed) return;
+    const oppositeType = activeFeed.type === "breast_left" ? "breast_right" : "breast_left";
+    setSubmitting(true);
+    try {
+      const now = new Date().toISOString();
+      const stopResponse = await fetch(
+        `/api/v1/babies/${selectedBaby.id}/feeds/${activeFeed.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ended_at: now }),
+        }
+      );
+      if (!stopResponse.ok) return;
+      const startResponse = await fetch(
+        `/api/v1/babies/${selectedBaby.id}/feeds`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: persona.id,
+            type: oppositeType,
+            started_at: now,
+          }),
+        }
+      );
+      if (startResponse.ok) {
+        saveLastSide(selectedBaby.id, oppositeType);
+        await refetch();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   async function saveDetails(e) {
     e.preventDefault();
     if (!stoppedFeed) return;
@@ -238,8 +274,6 @@ export default function FeedTimer() {
   }
 
   if (activeFeed) {
-    const isBreast = ["breast_left", "breast_right", "both_sides"].includes(activeFeed.type);
-
     return (
       <div className="space-y-4 text-center">
         <div className="flex items-center justify-between mb-3">
@@ -289,27 +323,15 @@ export default function FeedTimer() {
           >
             ⏹ Stop
           </button>
-          {isBreast && !isPaused && (
+          {(activeFeed.type === "breast_left" || activeFeed.type === "breast_right") && !isPaused && (
             <button
-              onClick={() => {
-                const nextSide = activeFeed.type === "breast_left" ? "breast_right" : "breast_left";
-                fetch(`/api/v1/babies/${selectedBaby.id}/feeds/${activeFeed.id}`, {
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ type: nextSide }),
-                }).then((r) => {
-                  if (r.ok) {
-                    saveLastSide(selectedBaby.id, nextSide);
-                    refetch();
-                  }
-                });
-              }}
+              onClick={() => switchBreast()}
               disabled={submitting}
               className="flex-1 rounded-2xl border-2 border-orange-200 py-3 text-orange-700 font-semibold
                 hover:bg-pastel-peach dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700
                 disabled:opacity-50 shadow-md active:scale-95 transition-all min-h-12"
             >
-              Switch →
+              → {activeFeed.type === "breast_left" ? "Right" : "Left"}
             </button>
           )}
         </div>
