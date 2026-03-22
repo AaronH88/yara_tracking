@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.3 — VERIFY
+→ NEXT: Task 2.3 — JUDGE
 
 ---
 
@@ -256,7 +256,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 2.3 — VERIFY`
 
-- [ ] **VERIFY** — attempt 1 of 3
+- [x] **VERIFY** — attempt 1 of 3
   Run: `cd babytracker/backend && python -m pytest -v 2>&1 | tee ../../tasks/feedback/task-2.3-verify.txt`
   If exit code 0 (tests pass):
   - Check this box
