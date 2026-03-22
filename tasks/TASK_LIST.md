@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.4 — JUDGE
+→ NEXT: Task 2.5 — DEV
 
 ---
 
@@ -321,7 +321,7 @@ Spec files live in: `tasks/specs/`
   - If attempt number would exceed 3: replace checkbox with `[BLOCKED]` and stop
   - Set cursor to: `→ NEXT: Task 2.4 — DEV`
 
-- [ ] **JUDGE** — `persona: tasks/personas/judge.md` — attempt 1 of 3
+- [x] **JUDGE** — `persona: tasks/personas/judge.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-2.4.md`
   Read diff: `git diff HEAD~2`
   Read verify output: `tasks/feedback/task-2.4-verify.txt`
