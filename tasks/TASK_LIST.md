@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 2.4 — TEST
+→ NEXT: Task 2.4 — JUDGE
 
 ---
 
@@ -301,7 +301,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 2.4 — TEST`
 
-- [ ] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
+- [x] **TEST** — `persona: tasks/personas/test_writer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-2.4.md`
   Read the diff: `git diff HEAD~1`
   Write tests for what the developer just built. When done:
@@ -309,7 +309,7 @@ Spec files live in: `tasks/specs/`
   - Check this box
   - Set cursor to: `→ NEXT: Task 2.4 — VERIFY`
 
-- [ ] **VERIFY** — attempt 1 of 3
+- [x] **VERIFY** — attempt 1 of 3
   Run: `cd babytracker/backend && python -m pytest -v 2>&1 | tee ../../tasks/feedback/task-2.4-verify.txt`
   If exit code 0 (tests pass):
   - Check this box
