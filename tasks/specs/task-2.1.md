@@ -1,28 +1,33 @@
-# Task 2.1 — Vite + Tailwind + React Router Setup
+# Task 2.1 — Feed Pause/Resume Endpoints
 
 ## Phase
 2
 
 ## Description
-Configure the frontend build:
+Create two new endpoints in `routers/feeds.py`:
 
-**`vite.config.js`:** Set up proxy so `/api` requests in dev mode forward to `http://localhost:8000`.
+`POST /api/v1/babies/{baby_id}/feeds/{feed_id}/pause`
+- 404 if feed not found or belongs to different baby
+- 409 with message "Feed is already paused" if is_paused=true
+- 409 with message "Feed is already ended" if ended_at is not null
+- Sets is_paused=true, paused_at=now()
+- Returns updated FeedEventResponse
 
-**`tailwind.config.js`:** Enable dark mode via `class` strategy. Extend theme with no required changes (defaults are fine).
-
-**`index.css`:** Import Tailwind directives. Set `font-family` to system sans-serif stack.
-
-**`App.jsx`:** Set up `react-router-dom` `BrowserRouter` with routes:
-- `/` → `Dashboard`
-- `/history` → `History`
-- `/calendar` → `Calendar`
-- `/admin` → `Admin`
-- `/settings` → `Settings`
-
-Wrap app in context providers (create stubs for now): `PersonaProvider`, `BabyProvider`, `SettingsProvider`.
+`POST /api/v1/babies/{baby_id}/feeds/{feed_id}/resume`
+- 404 if feed not found or belongs to different baby
+- 409 with message "Feed is not paused" if is_paused=false
+- 409 with message "Feed is already ended" if ended_at is not null
+- Calculates pause duration: `pause_duration = now() - paused_at`
+- Adds pause_duration seconds to paused_seconds
+- Sets is_paused=false, paused_at=null
+- Returns updated FeedEventResponse
 
 ## Acceptance Criteria
-`npm run dev` starts, all routes render without crashing.
+- Pause endpoint sets correct fields
+- Resume endpoint calculates and stores correct paused_seconds
+- All 409 edge cases return correct error messages
+- Endpoints are registered in main.py router
+- `python -m pytest babytracker/backend/tests/ -v` passes
 
 ## Verify Scope
-frontend
+backend

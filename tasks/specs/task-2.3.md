@@ -1,21 +1,31 @@
-# Task 2.3 — Persona Gate (Who Are You Modal)
+# Task 2.3 — Burp Timer Router
 
 ## Phase
 2
 
 ## Description
-In `App.jsx`, before rendering the main app:
+Create `babytracker/backend/routers/burps.py` with full CRUD:
 
-If `persona` is null, render a full-screen modal:
-- Title: "Welcome — who are you?"
-- Fetches `GET /api/v1/users` and shows a button for each user
-- Tap a user → sets persona in context and localStorage → modal dismisses
-- If no users exist yet: show message "No users set up yet. Ask an admin to add users first." with a link to `/admin`
+```
+GET    /api/v1/babies/{baby_id}/burps          list, ?date=, ?limit=50
+POST   /api/v1/babies/{baby_id}/burps          create (start timer or log complete)
+GET    /api/v1/babies/{baby_id}/burps/active   returns active burp or null
+PATCH  /api/v1/babies/{baby_id}/burps/{id}     update/stop
+DELETE /api/v1/babies/{baby_id}/burps/{id}     delete
+```
 
-This modal must be mobile-friendly with large touch targets.
+Follow exact same patterns as `routers/sleeps.py`.
+Only one active burp per baby (ended_at IS NULL) allowed — return 409 if
+a second is started while one is active.
+
+Register the router in `main.py` with prefix `/api/v1`.
 
 ## Acceptance Criteria
-First visit shows modal. Selecting a user dismisses it and shows the app. Refresh remembers the selection.
+- All 5 endpoints work correctly
+- 409 returned if second active burp started
+- Active burp endpoint returns null when none active
+- Router registered and accessible
+- `python -m pytest babytracker/backend/tests/ -v` passes
 
 ## Verify Scope
-both
+backend

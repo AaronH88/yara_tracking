@@ -120,12 +120,16 @@ class DiaperEventCreate(BaseModel):
     user_id: int
     logged_at: datetime
     type: str
+    wet_amount: str | None = None
+    dirty_colour: str | None = None
     notes: str | None = None
 
 
 class DiaperEventUpdate(BaseModel):
     logged_at: datetime | None = None
     type: str | None = None
+    wet_amount: str | None = None
+    dirty_colour: str | None = None
     notes: str | None = None
 
 
@@ -135,6 +139,33 @@ class DiaperEventResponse(BaseModel):
     user_id: int
     logged_at: datetime
     type: str
+    wet_amount: str | None
+    dirty_colour: str | None
+    notes: str | None
+    created_at: datetime | None
+
+    model_config = {"from_attributes": True}
+
+
+class BurpEventCreate(BaseModel):
+    user_id: int | None = None
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    ended_at: datetime | None = None
+    notes: str | None = None
+
+
+class BurpEventUpdate(BaseModel):
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
+    notes: str | None = None
+
+
+class BurpEventResponse(BaseModel):
+    id: int
+    baby_id: int
+    user_id: int | None
+    started_at: datetime
+    ended_at: datetime | None
     notes: str | None
     created_at: datetime | None
 

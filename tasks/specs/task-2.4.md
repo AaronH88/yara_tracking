@@ -1,21 +1,37 @@
-# Task 2.4 — Layout Shell
+# Task 2.4 — Wake Window Endpoint
 
 ## Phase
 2
 
 ## Description
-Implement the persistent layout:
+Create new endpoint in a new file `routers/wake_window.py`:
 
-**`BottomNav.jsx`:** Fixed bottom navigation bar with 5 items: Dashboard, History, Calendar, Admin, Settings. Active state highlighted. Icons: use simple SVG icons or emoji as placeholders (can be replaced later). Safe area padding for iOS home bar.
+`GET /api/v1/babies/{baby_id}/wake-window`
 
-**`BabySwitcher.jsx`:** Top bar showing current baby name with a dropdown/sheet to switch babies (if more than one exists). Shows baby age in weeks/months next to name.
+Logic:
+1. Check for active sleep (SleepEvent where ended_at IS NULL for this baby)
+   - If found: return `{ "is_sleeping": true, "awake_since": null, "awake_minutes": 0, "sleep_started_at": sleep.started_at }`
+2. Find most recent ended SleepEvent for this baby (order by ended_at DESC, limit 1)
+   - If found: `awake_since = sleep.ended_at`
+   - If not found: `awake_since = baby.created_at`
+3. Return:
+```json
+{
+  "is_sleeping": false,
+  "awake_since": "2026-03-22T14:30:00Z",
+  "awake_minutes": 47,
+  "sleep_started_at": null
+}
+```
 
-**`PersonaBadge.jsx`:** Small chip in top bar showing "You: [Name]", tappable to open persona switcher sheet.
-
-Compose into a `Layout.jsx` wrapper that all pages use.
+Register router in `main.py` with prefix `/api/v1`.
 
 ## Acceptance Criteria
-Navigation works. Baby switcher updates selected baby. Bottom nav highlights active route.
+- Returns is_sleeping=true when active sleep exists
+- Returns correct awake_since from last ended sleep
+- Falls back to baby.created_at when no sleeps on record
+- awake_minutes is correct integer
+- `python -m pytest babytracker/backend/tests/ -v` passes
 
 ## Verify Scope
-frontend
+backend

@@ -1,36 +1,38 @@
-# Task 4.1 — Event Edit Forms
+# Task 4.1 — Burp Timer Component and Dashboard Integration
 
 ## Phase
 4
 
 ## Description
-Implement form components for editing/creating events:
+Create `components/timers/BurpTimer.jsx` following the same pattern as
+`SleepTimer.jsx`:
 
-**`FeedForm.jsx`:**
-- Fields: type (breast L/R/both/bottle), started_at (datetime-local input), ended_at (datetime-local input), amount (number + oz/ml toggle respecting settings), notes (textarea)
-- Used for editing existing events AND retroactive creation
-- Submit calls PATCH or POST as appropriate
+- When no active burp: show "Start Burp" button
+- When active: show ticking timer and "Done" button
+- Done tap: PATCH with ended_at=now(), optional notes modal
+- Uses same `useTimer` hook as other timers
 
-**`SleepForm.jsx`:**
-- Fields: type (nap/night), started_at, ended_at, notes
+Update `useActiveEvents.js` hook to also fetch active burp:
+- Add `GET /babies/{id}/burps/active` to the polling calls
+- Return `activeBurp` alongside `activeFeed` and `activeSleep`
 
-**`DiaperForm.jsx`:**
-- Fields: type (wet/dirty/both), logged_at, notes
+Update `pages/Dashboard.jsx`:
+- Add BurpTimer to the quick actions / active timers section
+- Active burp timer shows below feed and sleep timers
+- Add "Burp" to the quick actions grid
 
-**`PumpForm.jsx`:**
-- Fields: started_at, duration_minutes, left amount, right amount (with unit toggle), notes
+Create `components/forms/BurpForm.jsx` for editing burp events (same
+pattern as SleepForm).
 
-**`MeasurementForm.jsx`:**
-- Fields: measured_at (date only), weight (lbs+oz or kg), height (in or cm), head circumference (cm), notes
-- Weight input: for imperial, show two fields (lbs and oz); for metric, single kg field
-
-**`MilestoneForm.jsx`:**
-- Fields: occurred_at (date), title, notes
-
-All forms should show who logged it (persona), allow changing it via a dropdown of users.
+Update `pages/History.jsx` to include burp events in the event list.
 
 ## Acceptance Criteria
-All forms render. Submission creates/updates events. Times persist correctly (no timezone shifting).
+- Burp timer starts, ticks, and stops correctly
+- Active burp visible on dashboard
+- Burp appears in history with duration
+- Burp does not interact with feed/sleep auto-close logic
+- useActiveEvents returns activeBurp
+- `cd frontend && npm test -- --watchAll=false` passes
 
 ## Verify Scope
 both

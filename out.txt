@@ -1,0 +1,187 @@
+.
+├── .env.example
+├── .gitignore
+├── babytracker
+│   ├── backend
+│   │   ├── database.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── requirements.txt
+│   │   ├── routers
+│   │   │   ├── __init__.py
+│   │   │   ├── babies.py
+│   │   │   ├── calendar.py
+│   │   │   ├── diapers.py
+│   │   │   ├── feeds.py
+│   │   │   ├── measurements.py
+│   │   │   ├── milestones.py
+│   │   │   ├── pumps.py
+│   │   │   ├── settings.py
+│   │   │   ├── sleeps.py
+│   │   │   └── users.py
+│   │   ├── schemas.py
+│   │   └── tests
+│   │       ├── __init__.py
+│   │       ├── conftest.py
+│   │       ├── test_backup.py
+│   │       ├── test_database.py
+│   │       ├── test_deploy.py
+│   │       ├── test_env_config.py
+│   │       ├── test_main.py
+│   │       ├── test_models.py
+│   │       ├── test_project_structure.py
+│   │       ├── test_routers_babies.py
+│   │       ├── test_routers_calendar.py
+│   │       ├── test_routers_diapers.py
+│   │       ├── test_routers_feeds.py
+│   │       ├── test_routers_measurements.py
+│   │       ├── test_routers_milestones.py
+│   │       ├── test_routers_pumps.py
+│   │       ├── test_routers_settings.py
+│   │       ├── test_routers_sleeps.py
+│   │       ├── test_routers_users.py
+│   │       └── test_schemas.py
+│   ├── frontend
+│   │   ├── index.html
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── postcss.config.js
+│   │   ├── public
+│   │   │   ├── icon-192.png
+│   │   │   ├── icon-512.png
+│   │   │   ├── icon.svg
+│   │   │   └── manifest.json
+│   │   ├── src
+│   │   │   ├── __tests__
+│   │   │   │   ├── ActiveTimer.test.jsx
+│   │   │   │   ├── Admin.test.jsx
+│   │   │   │   ├── App.test.jsx
+│   │   │   │   ├── BabySwitcher.test.jsx
+│   │   │   │   ├── BottomNav.test.jsx
+│   │   │   │   ├── Calendar.test.jsx
+│   │   │   │   ├── config.test.js
+│   │   │   │   ├── contexts-edge-cases.test.jsx
+│   │   │   │   ├── contexts.test.jsx
+│   │   │   │   ├── Dashboard.test.jsx
+│   │   │   │   ├── DayTimeline.test.jsx
+│   │   │   │   ├── DiaperForm.test.jsx
+│   │   │   │   ├── FeedForm.test.jsx
+│   │   │   │   ├── FeedTimer.test.jsx
+│   │   │   │   ├── History.test.jsx
+│   │   │   │   ├── Layout.test.jsx
+│   │   │   │   ├── LogPastEventModal.test.jsx
+│   │   │   │   ├── MeasurementForm.test.jsx
+│   │   │   │   ├── MilestoneForm.test.jsx
+│   │   │   │   ├── MobileUX.test.jsx
+│   │   │   │   ├── PersonaBadge.test.jsx
+│   │   │   │   ├── PersonaGate.test.jsx
+│   │   │   │   ├── PumpForm.test.jsx
+│   │   │   │   ├── PWA.test.jsx
+│   │   │   │   ├── Settings.test.jsx
+│   │   │   │   ├── SleepForm.test.jsx
+│   │   │   │   ├── SleepTimer.test.jsx
+│   │   │   │   ├── useActiveEvents.test.js
+│   │   │   │   └── useTimer.test.js
+│   │   │   ├── App.jsx
+│   │   │   ├── components
+│   │   │   │   ├── BabySwitcher.jsx
+│   │   │   │   ├── BottomNav.jsx
+│   │   │   │   ├── DayTimeline.jsx
+│   │   │   │   ├── forms
+│   │   │   │   │   ├── DiaperForm.jsx
+│   │   │   │   │   ├── FeedForm.jsx
+│   │   │   │   │   ├── MeasurementForm.jsx
+│   │   │   │   │   ├── MilestoneForm.jsx
+│   │   │   │   │   ├── PumpForm.jsx
+│   │   │   │   │   └── SleepForm.jsx
+│   │   │   │   ├── Layout.jsx
+│   │   │   │   ├── LogPastEventModal.jsx
+│   │   │   │   ├── PersonaBadge.jsx
+│   │   │   │   ├── PersonaGate.jsx
+│   │   │   │   └── timers
+│   │   │   │       ├── ActiveTimer.jsx
+│   │   │   │       ├── FeedTimer.jsx
+│   │   │   │       └── SleepTimer.jsx
+│   │   │   ├── context
+│   │   │   │   ├── BabyContext.jsx
+│   │   │   │   ├── PersonaContext.jsx
+│   │   │   │   └── SettingsContext.jsx
+│   │   │   ├── hooks
+│   │   │   │   ├── useActiveEvents.js
+│   │   │   │   └── useTimer.js
+│   │   │   ├── index.css
+│   │   │   ├── main.jsx
+│   │   │   ├── pages
+│   │   │   │   ├── Admin.jsx
+│   │   │   │   ├── Calendar.jsx
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── History.jsx
+│   │   │   │   └── Settings.jsx
+│   │   │   └── test-setup.js
+│   │   ├── tailwind.config.js
+│   │   └── vite.config.js
+│   └── README.md
+├── babytracker-architecture.md
+├── babytracker-tasks.md
+├── CLAUDE.md
+├── containers
+│   └── claude-sandbox
+│       └── Containerfile
+├── deploy
+│   ├── babytracker.service
+│   ├── backup.sh
+│   ├── setup.sh
+│   └── update.sh
+├── loop.sh
+├── tasks
+│   ├── ARCHITECTURE_REF.md
+│   ├── babytracker-tasks.md
+│   ├── bootstrap-specs.md
+│   ├── BUILD_STATUS.md
+│   ├── personas
+│   │   ├── developer.md
+│   │   ├── judge.md
+│   │   └── test_writer.md
+│   ├── RUN.md
+│   ├── specs
+│   │   ├── task-0.1.md
+│   │   ├── task-1.1.md
+│   │   ├── task-1.10.md
+│   │   ├── task-1.2.md
+│   │   ├── task-1.3.md
+│   │   ├── task-1.4.md
+│   │   ├── task-1.5.md
+│   │   ├── task-1.6.md
+│   │   ├── task-1.7.md
+│   │   ├── task-1.8.md
+│   │   ├── task-1.9.md
+│   │   ├── task-2.1.md
+│   │   ├── task-2.2.md
+│   │   ├── task-2.3.md
+│   │   ├── task-2.4.md
+│   │   ├── task-3.1.md
+│   │   ├── task-3.2.md
+│   │   ├── task-3.3.md
+│   │   ├── task-3.4.md
+│   │   ├── task-3.5.md
+│   │   ├── task-3.6.md
+│   │   ├── task-4.1.md
+│   │   ├── task-4.2.md
+│   │   ├── task-4.3.md
+│   │   ├── task-4.4.md
+│   │   ├── task-5.1.md
+│   │   ├── task-5.2.md
+│   │   ├── task-6.1.md
+│   │   ├── task-6.2.md
+│   │   ├── task-6.3.md
+│   │   ├── task-7.1.md
+│   │   ├── task-7.2.md
+│   │   └── task-7.3.md
+│   ├── TASK_LIST.md
+│   ├── task-state.json
+│   └── TASKS.md
+└── tools
+    ├── README.md
+    └── run-claude-sandbox.sh
+
+22 directories, 163 files

@@ -61,6 +61,20 @@ class DiaperEvent(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     logged_at = Column(DateTime(timezone=True), nullable=False)
     type = Column(Text, nullable=False)
+    wet_amount = Column(Text)
+    dirty_colour = Column(Text)
+    notes = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class BurpEvent(Base):
+    __tablename__ = "burp_events"
+
+    id = Column(Integer, primary_key=True)
+    baby_id = Column(Integer, ForeignKey("babies.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    started_at = Column(DateTime(timezone=True), nullable=False)
+    ended_at = Column(DateTime(timezone=True))
     notes = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

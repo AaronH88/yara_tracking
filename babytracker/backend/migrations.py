@@ -20,3 +20,21 @@ def _migrate_feed_event_v2_sync(conn):
 async def migrate_feed_event_v2(engine):
     async with engine.begin() as conn:
         await conn.run_sync(_migrate_feed_event_v2_sync)
+
+
+def _migrate_diaper_event_v2_sync(conn):
+    alter_statements = [
+        "ALTER TABLE diaper_events ADD COLUMN wet_amount TEXT",
+        "ALTER TABLE diaper_events ADD COLUMN dirty_colour TEXT",
+    ]
+    for statement in alter_statements:
+        try:
+            conn.execute(text(statement))
+        except OperationalError as e:
+            if "duplicate column name" not in str(e).lower() and "no such table" not in str(e).lower():
+                raise
+
+
+async def migrate_diaper_event_v2(engine):
+    async with engine.begin() as conn:
+        await conn.run_sync(_migrate_diaper_event_v2_sync)

@@ -1,415 +1,286 @@
-# Baby Tracker — Architecture & Requirements
+# Baby Tracker v2 — Architecture Reference
 
-## Overview
-
-A self-hosted, mobile-first web application for tracking a newborn's feeds, sleep, diapers, and more. Runs on a Proxmox LXC container, accessible only via Tailscale VPN. Two users (parents), up to 3 babies. No authentication required — network access is controlled by Tailscale.
-
----
+Quick reference for agents implementing v2 tasks. Read this before every task.
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| Backend | Python 3.12, FastAPI | Familiar to developer, async, lightweight |
-| Database | SQLite via SQLAlchemy (async) | Zero ops, single file, sufficient for scale |
-| Frontend | React 18 + Vite | Live timers require reactive state; Vite builds to static files |
-| Styling | Tailwind CSS | Utility-first, dark mode support built-in |
-| HTTP Server | Uvicorn | ASGI server for FastAPI |
-| Process Manager | systemd | LXC-native, reliable |
-| Deployment | Proxmox LXC (Ubuntu 24.04) | Lightweight, snapshotable |
-| Network Access | Tailscale | Replaces authentication entirely |
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python 3.12, FastAPI, SQLAlchemy (async), SQLite |
+| Frontend | React 18, Vite, Tailwind CSS |
+| Deployment | Proxmox LXC, systemd, Tailscale VPN |
+| Testing | pytest (backend), Vitest + React Testing Library (frontend) |
 
----
-
-## System Architecture
+## Project Structure
 
 ```
-Tailscale VPN
-     │
-     ▼
-LXC Container (Ubuntu 24.04)
-├── systemd service: babytracker
-│   └── uvicorn → FastAPI app
-│       ├── /api/*         → REST API routes
-│       └── /              → Serves React static files (dist/)
-│
-├── /var/lib/babytracker/
-│   └── db.sqlite          → SQLite database (bind mount or local)
-│
-└── /opt/babytracker/
-    ├── backend/           → FastAPI app
-    └── frontend/dist/     → Built React app (served as static)
-```
-
-Both parents access via Tailscale IP or hostname on their phones. No login screen.
-
----
-
-## Data Models
-
-### Baby
-```
-id          INTEGER PRIMARY KEY
-name        TEXT NOT NULL
-birthdate   DATE NOT NULL
-gender      TEXT  -- 'male' | 'female' | 'other' | null
-created_at  DATETIME
-```
-
-### User (for "who logged it")
-```
-id          INTEGER PRIMARY KEY
-name        TEXT NOT NULL UNIQUE
-created_at  DATETIME
-```
-Managed via admin screen. No passwords. Referenced by events.
-
-### FeedEvent
-```
-id              INTEGER PRIMARY KEY
-baby_id         INTEGER FK → Baby
-user_id         INTEGER FK → User
-type            TEXT  -- 'breast_left' | 'breast_right' | 'breast_both' | 'bottle'
-started_at      DATETIME NOT NULL
-ended_at        DATETIME  -- null = active timer
-amount_oz       REAL      -- bottle or pumped
-amount_ml       REAL      -- bottle or pumped (store both, display per setting)
-notes           TEXT
-created_at      DATETIME
-```
-
-### SleepEvent
-```
-id              INTEGER PRIMARY KEY
-baby_id         INTEGER FK → Baby
-user_id         INTEGER FK → User
-type            TEXT  -- 'nap' | 'night'
-started_at      DATETIME NOT NULL
-ended_at        DATETIME  -- null = active timer
-notes           TEXT
-created_at      DATETIME
-```
-
-### DiaperEvent
-```
-id          INTEGER PRIMARY KEY
-baby_id     INTEGER FK → Baby
-user_id     INTEGER FK → User
-logged_at   DATETIME NOT NULL
-type        TEXT NOT NULL  -- 'wet' | 'dirty' | 'both'
-notes       TEXT
-created_at  DATETIME
-```
-
-### PumpEvent
-```
-id          INTEGER PRIMARY KEY
-user_id     INTEGER FK → User
-logged_at   DATETIME NOT NULL
-duration_minutes  INTEGER
-left_oz     REAL
-left_ml     REAL
-right_oz    REAL
-right_ml    REAL
-notes       TEXT
-created_at  DATETIME
-```
-
-### Measurement
-```
-id          INTEGER PRIMARY KEY
-baby_id     INTEGER FK → Baby
-user_id     INTEGER FK → User
-measured_at DATE NOT NULL
-weight_oz   REAL
-height_in   REAL
-head_cm     REAL
-notes       TEXT
-created_at  DATETIME
-```
-
-### Milestone
-```
-id          INTEGER PRIMARY KEY
-baby_id     INTEGER FK → Baby
-user_id     INTEGER FK → User
-occurred_at DATE NOT NULL
-title       TEXT NOT NULL
-notes       TEXT
-created_at  DATETIME
-```
-
-### Settings (key-value, global)
-```
-key         TEXT PRIMARY KEY
-value       TEXT
-```
-Keys: `units` ('imperial' | 'metric'), `time_format` ('24h' | '12h', default 24h)
-
----
-
-## Timer Architecture
-
-**Critical design decision:** timers are server-side, not client-side.
-
-When a user starts a feed or sleep:
-1. A `FeedEvent` or `SleepEvent` row is immediately written to the DB with `started_at = now()` and `ended_at = null`
-2. The frontend receives the event `id` and `started_at`
-3. The React timer UI counts up from `started_at` using the current client time
-4. On page load / refresh, the app checks for any events with `ended_at = null` and resumes the timer display
-
-This means:
-- Timers survive page refreshes and browser crashes
-- Both parents see the same active timer (any active event is visible to both)
-- The timer display is purely presentational — it just counts up from a stored timestamp
-
-**Ending a timer:**
-- User taps "Stop" → a PATCH request sets `ended_at = now()` on the event
-- User can then edit notes, amount, etc.
-
-**Retroactive time editing:**
-- Both `started_at` and `ended_at` are editable after the fact via the event edit form
-- Useful for "I forgot to start the timer" — user can add the event manually with correct times
-
----
-
-## API Design
-
-### Conventions
-- Base path: `/api/v1`
-- Auth: None (Tailscale handles network access)
-- Content-Type: `application/json`
-- Timestamps: ISO 8601 UTC strings
-- "Who am I" persona is sent as `user_id` header or query param on writes (set from localStorage)
-
-### Core Endpoints
-
-**Babies**
-```
-GET    /api/v1/babies
-POST   /api/v1/babies
-GET    /api/v1/babies/{id}
-PATCH  /api/v1/babies/{id}
-```
-
-**Users (admin)**
-```
-GET    /api/v1/users
-POST   /api/v1/users
-PATCH  /api/v1/users/{id}
-DELETE /api/v1/users/{id}
-```
-
-**Feed Events**
-```
-GET    /api/v1/babies/{baby_id}/feeds           ?date=YYYY-MM-DD&limit=50
-POST   /api/v1/babies/{baby_id}/feeds           (starts timer or logs completed)
-GET    /api/v1/babies/{baby_id}/feeds/active    (returns any in-progress feed)
-PATCH  /api/v1/babies/{baby_id}/feeds/{id}      (stop timer, edit details, retroactive times)
-DELETE /api/v1/babies/{baby_id}/feeds/{id}
-```
-
-**Sleep Events**
-```
-GET    /api/v1/babies/{baby_id}/sleeps
-POST   /api/v1/babies/{baby_id}/sleeps
-GET    /api/v1/babies/{baby_id}/sleeps/active
-PATCH  /api/v1/babies/{baby_id}/sleeps/{id}
-DELETE /api/v1/babies/{baby_id}/sleeps/{id}
-```
-
-**Diaper Events**
-```
-GET    /api/v1/babies/{baby_id}/diapers
-POST   /api/v1/babies/{baby_id}/diapers
-PATCH  /api/v1/babies/{baby_id}/diapers/{id}
-DELETE /api/v1/babies/{baby_id}/diapers/{id}
-```
-
-**Pump Events**
-```
-GET    /api/v1/pumps
-POST   /api/v1/pumps
-PATCH  /api/v1/pumps/{id}
-DELETE /api/v1/pumps/{id}
-```
-
-**Measurements**
-```
-GET    /api/v1/babies/{baby_id}/measurements
-POST   /api/v1/babies/{baby_id}/measurements
-PATCH  /api/v1/babies/{baby_id}/measurements/{id}
-DELETE /api/v1/babies/{baby_id}/measurements/{id}
-```
-
-**Milestones**
-```
-GET    /api/v1/babies/{baby_id}/milestones
-POST   /api/v1/babies/{baby_id}/milestones
-PATCH  /api/v1/babies/{baby_id}/milestones/{id}
-DELETE /api/v1/babies/{baby_id}/milestones/{id}
-```
-
-**Calendar**
-```
-GET    /api/v1/babies/{baby_id}/calendar/month?year=YYYY&month=MM
-       → returns daily event summary (counts + types) for dot indicators
-GET    /api/v1/babies/{baby_id}/calendar/day?date=YYYY-MM-DD
-       → returns all events for the day, sorted by time, for timeline rendering
-```
-
-**Settings**
-```
-GET    /api/v1/settings
-PATCH  /api/v1/settings
-```
-
----
-
-## Frontend Structure
-
-```
-src/
-├── main.jsx
-├── App.jsx                    # Router, theme provider, persona gate
-├── context/
-│   ├── PersonaContext.jsx     # Current user (from localStorage)
-│   ├── BabyContext.jsx        # Selected baby
-│   └── SettingsContext.jsx    # Units, time format, dark mode
-├── pages/
-│   ├── Dashboard.jsx          # Main view — active timers + last events
-│   ├── History.jsx            # Scrollable event log, filterable
-│   ├── Calendar.jsx           # Month picker + day timeline
-│   ├── Admin.jsx              # User management, baby management
-│   └── Settings.jsx           # Units, dark mode, time format
-├── components/
-│   ├── layout/
-│   │   ├── BottomNav.jsx      # Mobile bottom navigation
-│   │   ├── BabySwitcher.jsx   # Top bar baby selector
-│   │   └── PersonaBadge.jsx   # "Logged as Aaron" indicator
-│   ├── timers/
-│   │   ├── ActiveTimer.jsx    # Ticking live timer display
-│   │   ├── FeedTimer.jsx      # Feed start/stop with type selector
-│   │   └── SleepTimer.jsx     # Sleep start/stop with type selector
-│   ├── quicklog/
-│   │   ├── DiaperButton.jsx   # One-tap diaper logging
-│   │   └── QuickActions.jsx   # Grid of quick action buttons
-│   ├── forms/
-│   │   ├── FeedForm.jsx       # Edit/create feed event
-│   │   ├── SleepForm.jsx      # Edit/create sleep event
-│   │   ├── DiaperForm.jsx     # Edit/create diaper event
-│   │   ├── PumpForm.jsx
-│   │   ├── MeasurementForm.jsx
-│   │   └── MilestoneForm.jsx
-│   ├── calendar/
-│   │   ├── MonthView.jsx      # Grid with dot indicators
-│   │   └── DayTimeline.jsx    # Vertical timeline of day's events
-│   └── common/
-│       ├── TimeDisplay.jsx    # Respects 24h/12h setting
-│       └── AmountDisplay.jsx  # Respects oz/ml setting
-└── hooks/
-    ├── useTimer.js            # Counts up from a server timestamp
-    ├── useActiveEvents.js     # Polls for active feed/sleep events
-    └── useApi.js              # Fetch wrapper
-```
-
-### Persona Selection (Who Am I)
-
-- On first visit (no `persona` key in localStorage), a modal prompts "Who are you?" with a list of configured users
-- Selection is stored in `localStorage` as `{ userId, userName }`
-- Shown as a small badge in the UI, tappable to switch
-- Every POST/PATCH to events includes this `user_id`
-
-### Real-time / Polling
-
-No websockets needed at this scale. The frontend polls:
-- Active events (`/feeds/active`, `/sleeps/active`) every 10 seconds
-- This keeps both parents' views roughly in sync without complexity
-
-### Dark Mode
-
-- Toggled via a switch in Settings
-- Stored in localStorage and in the global Settings context
-- Implemented via Tailwind's `dark:` variant with a `dark` class on `<html>`
-
----
-
-## Deployment
-
-### LXC Container Setup
-
-```
-OS:       Ubuntu 24.04 LTS
-CPU:      1-2 cores
-RAM:      512MB (SQLite is very light)
-Disk:     8GB
-Network:  Tailscale only (no bridged/public interface needed beyond initial setup)
-```
-
-### Directory Layout on LXC
-
-```
-/opt/babytracker/
-├── backend/          # FastAPI application
-│   ├── main.py
-│   ├── models.py
-│   ├── database.py
+babytracker/
+├── backend/
+│   ├── main.py              # FastAPI app + lifespan
+│   ├── database.py          # Async engine config
+│   ├── models.py            # SQLAlchemy ORM models
+│   ├── schemas.py           # Pydantic request/response schemas
+│   ├── migrations.py        # [NEW] Migration functions
+│   ├── timer_helpers.py     # [NEW] Auto-close logic
 │   ├── routers/
-│   └── requirements.txt
-└── frontend/
-    └── dist/         # Built React app (served as static files)
-
-/var/lib/babytracker/
-└── db.sqlite         # Database (persistent, excluded from deploys)
+│   │   ├── feeds.py         # Feed CRUD + active
+│   │   ├── sleeps.py        # Sleep CRUD + active
+│   │   ├── diapers.py       # Diaper CRUD
+│   │   ├── burps.py         # [NEW] Burp CRUD + active
+│   │   ├── wake_window.py   # [NEW] Wake window calc
+│   │   └── insights.py      # [NEW] Dashboard insights
+│   └── tests/               # pytest test files
+│       └── test_*.py
+└── frontend/src/
+    ├── main.jsx             # App entry point
+    ├── pages/               # Route components
+    │   ├── Dashboard.jsx    # Main page (timers, quick actions, insights)
+    │   └── History.jsx      # Event list
+    ├── components/
+    │   ├── timers/
+    │   │   ├── ActiveTimer.jsx   # Shared timer display
+    │   │   ├── FeedTimer.jsx     # Feed control + pause
+    │   │   ├── SleepTimer.jsx    # Sleep control
+    │   │   └── BurpTimer.jsx     # [NEW] Burp control
+    │   ├── forms/
+    │   │   ├── FeedForm.jsx      # Edit feeds
+    │   │   ├── DiaperForm.jsx    # Edit diapers (wet/dirty fields)
+    │   │   └── BurpForm.jsx      # [NEW] Edit burps
+    │   ├── WakeWindow.jsx        # [NEW] Wake window display
+    │   ├── Insights.jsx          # [NEW] Dashboard insights cards
+    │   └── Toast.jsx             # [NEW] Toast notifications
+    ├── context/
+    │   ├── BabyContext.jsx       # Current baby
+    │   └── PersonaContext.jsx    # Current user
+    ├── hooks/
+    │   ├── useActiveEvents.js    # Poll active feed/sleep/burp
+    │   └── useTimer.js           # Timer tick logic
+    └── __tests__/                # Vitest test files
+        └── *.test.jsx
 ```
 
-### systemd Service
+## Database Conventions
 
-```ini
-[Unit]
-Description=Baby Tracker API
-After=network.target
+### Models (SQLAlchemy)
 
-[Service]
-User=babytracker
-WorkingDirectory=/opt/babytracker/backend
-ExecStart=/opt/babytracker/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.end
+All event models follow this pattern:
+```python
+id: int (Primary Key)
+baby_id: int (Foreign Key → Baby)
+user_id: int (Foreign Key → User, nullable)
+started_at: datetime (NOT NULL for timers)
+ended_at: datetime (NULL = active timer)
+notes: str (nullable)
+created_at: datetime (default=now)
 ```
 
-FastAPI serves the React `dist/` folder as a static mount at `/`, with the API under `/api/v1`. All non-API routes fall through to `index.html` for client-side routing.
+Model names: `FeedEvent`, `SleepEvent`, `DiaperEvent`, `BurpEvent`
 
-### Build & Deploy Script
+### Schemas (Pydantic)
 
-A simple shell script:
-1. Pull latest code
-2. `cd frontend && npm run build`
-3. Copy `dist/` to `/opt/babytracker/frontend/dist/`
-4. `pip install -r requirements.txt`
-5. `systemctl restart babytracker`
+Three schemas per model:
+- `{Model}Create`: fields for POST (started_at, baby_id, user_id, type-specific)
+- `{Model}Update`: all fields optional for PATCH
+- `{Model}Response`: full model for GET responses (includes id, created_at)
 
----
+All datetime fields are strings in ISO 8601 UTC format.
 
-## Non-Functional Requirements
+### Migrations
 
-- **Mobile-first:** All UI designed for 390px viewport (iPhone size). Large tap targets (min 48px).
-- **Performance:** Page load < 2s on LAN. Timer updates every second without jank.
-- **Offline resilience:** Timer display continues counting even if API is briefly unreachable. Retry on reconnect.
-- **Dark mode:** All screens support dark mode. Default follows system preference, overridable in settings.
-- **Backup:** SQLite file at `/var/lib/babytracker/db.sqlite` — snapshot LXC or rsync this file.
-- **No external dependencies:** App runs fully offline on the LAN. No CDN calls, no cloud services.
+Pattern for adding columns (idempotent):
+```python
+def migrate_table_v2(engine):
+    with engine.begin() as conn:
+        try:
+            conn.execute(text("ALTER TABLE tablename ADD COLUMN col_name TYPE"))
+        except OperationalError as e:
+            if "duplicate column name" not in str(e):
+                raise
+```
 
----
+Call migrations in `main.py` lifespan startup BEFORE `create_tables()`.
 
-## Out of Scope (v1)
+## API Patterns
 
-- Push notifications / reminders
-- WHO growth percentile charts
-- PDF export for pediatrician
-- Huckleberry-style sleep scheduling / predictions
-- User accounts / passwords
-- HTTPS (Tailscale handles encryption in transit)
+### Router Conventions
+
+Standard CRUD endpoints for event types:
+```
+GET    /api/v1/babies/{baby_id}/{resource}           # List (queryable by date)
+POST   /api/v1/babies/{baby_id}/{resource}           # Create
+GET    /api/v1/babies/{baby_id}/{resource}/active    # Get active (ended_at=null)
+PATCH  /api/v1/babies/{baby_id}/{resource}/{id}      # Update
+DELETE /api/v1/babies/{baby_id}/{resource}/{id}      # Delete
+```
+
+Active endpoints return `null` when no active event, not 404.
+
+Status codes:
+- 200: Success
+- 404: Resource not found or baby_id mismatch
+- 409: Conflict (e.g., starting second active timer)
+
+### Error Messages
+
+Be specific in 409 responses:
+- "Feed is already paused"
+- "Feed is not paused"
+- "Feed is already ended"
+
+## Frontend Patterns
+
+### Component File Organization
+
+- One component per file
+- Export component as default
+- Co-locate test files: `ComponentName.test.jsx` next to `ComponentName.jsx` (alternative) or in `__tests__/`
+
+### Context Usage
+
+Wrap entire app in contexts (already done):
+```jsx
+<PersonaContext.Provider>
+  <BabyContext.Provider>
+    <SettingsContext.Provider>
+      <App />
+```
+
+Access current baby: `const { currentBaby } = useBaby()`
+Access current user: `const { persona } = usePersona()`
+
+### Timer Architecture (CRITICAL)
+
+**Timers are server-side, not client-side.**
+
+Starting a timer:
+1. POST to create event with `started_at=now()`, `ended_at=null`
+2. Backend returns event with ID and `started_at`
+3. Frontend stores event and ticks up from `started_at`
+
+Stopping a timer:
+1. PATCH event with `ended_at=now()`
+
+Active timer polling:
+- `useActiveEvents` hook polls every 10 seconds
+- Fetches `/babies/{id}/feeds/active`, `/babies/{id}/sleeps/active`, `/babies/{id}/burps/active`
+- Returns `{ activeFeed, activeSleep, activeBurp }`
+
+### Tailwind Conventions
+
+- Mobile-first (min 390px viewport)
+- All screens support dark mode: `dark:bg-gray-900`, `dark:text-white`
+- Minimum tap target: 48px (`min-h-12`, `min-w-12`)
+
+## V2 New Features Summary
+
+### Database Changes
+
+| Table | New Columns |
+|-------|------------|
+| FeedEvent | paused_seconds, is_paused, paused_at, quality |
+| DiaperEvent | wet_amount, dirty_colour |
+| BurpEvent | [NEW TABLE] id, baby_id, user_id, started_at, ended_at, notes, created_at |
+
+All new FeedEvent/DiaperEvent columns nullable/default.
+
+### New Backend Endpoints
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | /api/v1/babies/{id}/feeds/{id}/pause | Pause feed timer |
+| POST | /api/v1/babies/{id}/feeds/{id}/resume | Resume feed timer |
+| GET/POST/PATCH/DELETE | /api/v1/babies/{id}/burps/* | Burp CRUD |
+| GET | /api/v1/babies/{id}/wake-window | Current wake window calc |
+| GET | /api/v1/babies/{id}/insights | Dashboard insights data |
+
+### Auto-Close Logic
+
+Helper: `timer_helpers.close_active_timers(baby_id, db, exclude_model)`
+- Called when creating feed or sleep
+- Sets `ended_at=now()` on any active feed/sleep for that baby
+- Returns list of closed events for toast notification
+- Does NOT close burp timers
+
+### Feed Pause/Resume
+
+Pause calculation:
+- Running: `elapsed = (now - started_at) - paused_seconds`
+- Paused: `elapsed = (paused_at - started_at) - paused_seconds`
+
+On resume: add `(now - paused_at)` to `paused_seconds`.
+
+### Wake Window Thresholds (hardcoded in frontend)
+
+```js
+const WAKE_WINDOWS = [
+  { maxWeeks: 2,  idealMin: 45,  idealMax: 60,  alertAt: 75  },
+  { maxWeeks: 4,  idealMin: 60,  idealMax: 75,  alertAt: 90  },
+  { maxWeeks: 8,  idealMin: 60,  idealMax: 90,  alertAt: 105 },
+  { maxWeeks: 13, idealMin: 75,  idealMax: 120, alertAt: 135 },
+  { maxWeeks: 17, idealMin: 90,  idealMax: 120, alertAt: 150 },
+  { maxWeeks: 21, idealMin: 90,  idealMax: 150, alertAt: 180 },
+  { maxWeeks: 26, idealMin: 120, idealMax: 180, alertAt: 210 },
+  { maxWeeks: 39, idealMin: 150, idealMax: 210, alertAt: 240 },
+  { maxWeeks: 999,idealMin: 180, idealMax: 240, alertAt: 270 },
+]
+```
+
+### Insights Calculations
+
+All calculated server-side:
+- "Today" = midnight UTC to now UTC
+- "Last night" = 8pm UTC yesterday to 8am UTC today
+- "7-day average" = sum over last 7 days / 7
+- `has_enough_data` = false if < 2 days of any events
+
+Alert conditions (max 3 shown):
+- Fewer wet nappies: wet_count_today < 70% of avg AND hour >= 16
+- More frequent feeds: count > 130% of avg AND past noon
+- No dirty nappy: days_since_dirty >= 2
+- Great sleep: longest_night_stretch >= 240 min
+
+## Testing Conventions
+
+Backend (pytest):
+- Test file: `tests/test_{router_name}.py`
+- Use `httpx.AsyncClient` with FastAPI test client
+- Test happy paths AND all error conditions
+- Idempotent migration tests (run twice = no error)
+
+Frontend (Vitest):
+- Test file: `__tests__/{Component}.test.jsx` or `{Component}.test.jsx`
+- Use `@testing-library/react`
+- Test render + key interactions
+- Mock API calls with mock functions
+
+Run tests:
+- Backend: `cd babytracker/backend && python -m pytest -v`
+- Frontend: `cd babytracker/frontend && npm test -- --watchAll=false`
+
+## Naming Rules
+
+Variables: Descriptive, not generic
+- Bad: `result`, `data`, `response`, `temp`, `obj`, `val`
+- Good: `active_feed`, `closed_timers`, `updated_event`
+
+Functions: Verb phrases describing action
+- `close_active_timers`, `calculate_awake_minutes`, `get_wake_window_status`
+
+## Reusable Helpers
+
+Backend:
+- `database.get_db()` — async session dependency
+- Existing router patterns in `routers/sleeps.py` (copy for burps)
+
+Frontend:
+- `useActiveEvents()` — poll for active timers
+- `useTimer(startedAt)` — ticking elapsed display
+- `ActiveTimer.jsx` — shared timer display component
+
+## Constraints
+
+- Mobile-first UI (390px viewport)
+- Dark mode required on all screens
+- No authentication (Tailscale VPN only)
+- Offline-capable (no external CDN calls)
+- SQLite single-file database

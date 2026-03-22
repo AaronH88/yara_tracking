@@ -1,23 +1,38 @@
-# Task 5.1 — Admin Page
+# Task 5.1 — Nappy Size and Colour Fields
 
 ## Phase
 5
 
 ## Description
-Implement `pages/Admin.jsx`:
+Update `components/forms/DiaperForm.jsx`:
 
-**Users section:**
-- List of current users with edit (name) and delete buttons
-- Add user form (name input + submit)
-- Delete shows confirmation; shows error if user has logged events
+**Wet amount selector** (shown when type includes 'wet'):
+- Three buttons: Small / Medium / Heavy
+- Optional — null is valid
 
-**Babies section:**
-- List of current babies with edit and (soft) delete
-- Add baby form: name, birthdate (date picker), gender (optional select)
-- Edit baby: same fields
+**Dirty colour selector** (shown when type includes 'dirty'):
+- Four coloured circle buttons:
+  - 🟡 Yellow
+  - 🟢 Green
+  - 🟤 Brown
+  - ⚪ Other
+- Optional — null is valid
+
+Update `pages/Dashboard.jsx` quick-log nappy buttons:
+- Keep existing one-tap Wet/Dirty/Both buttons unchanged
+- After a one-tap log, show a small dismissable "Add details →" chip
+- Tapping "Add details →" opens DiaperForm pre-filled with the just-logged event
+
+Update history list nappy rows to show amount and colour labels when present.
 
 ## Acceptance Criteria
-Can add/edit/delete users. Can add/edit babies. Baby age shows correctly on switcher after adding.
+- Existing one-tap quick log requires no extra taps
+- "Add details" path works and pre-fills correctly
+- wet_amount saves correctly for wet/both nappies
+- dirty_colour saves correctly for dirty/both nappies
+- Fields hidden when not relevant to nappy type
+- History rows show amount/colour when set
+- `cd frontend && npm test -- --watchAll=false` passes
 
 ## Verify Scope
-both
+frontend

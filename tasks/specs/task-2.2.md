@@ -1,30 +1,40 @@
-# Task 2.2 — Context Providers
+# Task 2.2 — Auto-Close Conflicting Timers
 
 ## Phase
 2
 
 ## Description
-Implement the three context providers:
+Add a shared helper function in a new file `babytracker/backend/timer_helpers.py`:
 
-**`SettingsContext.jsx`:**
-- Fetches settings from `GET /api/v1/settings` on mount
-- Exposes `settings`, `updateSetting(key, value)`, `isDark`, `toggleDark`
-- Dark mode: reads from `localStorage` first (`darkMode: true/false`), syncs `dark` class on `document.documentElement`
-- Re-fetches settings on focus (in case other parent changed them)
+```python
+async def close_active_timers(baby_id: int, db: AsyncSession, exclude_model=None) -> list[dict]:
+```
 
-**`PersonaContext.jsx`:**
-- Reads `localStorage` key `babytracker_persona` (`{ userId, userName }`)
-- Exposes `persona`, `setPersona(user)`, `clearPersona()`
-- If no persona set, `persona` is `null`
+This function:
+- Queries for any FeedEvent with ended_at IS NULL for this baby_id
+- Queries for any SleepEvent with ended_at IS NULL for this baby_id
+- Skips the model type passed as `exclude_model` (so creating a feed skips closing feeds)
+- Sets ended_at=now() on any found active events
+- Returns a list of dicts describing what was closed:
+  `[{"type": "sleep", "id": 5, "started_at": "..."}]`
 
-**`BabyContext.jsx`:**
-- Fetches `GET /api/v1/babies` on mount
-- Exposes `babies`, `selectedBaby`, `setSelectedBaby(baby)`
-- Persists `selectedBabyId` in `localStorage`
-- Auto-selects first baby if none stored
+Update `POST /api/v1/babies/{baby_id}/feeds` to:
+- Call `close_active_timers(baby_id, db, exclude_model=FeedEvent)` before creating
+- Include `auto_closed` list in the response
+
+Update `POST /api/v1/babies/{baby_id}/sleeps` to:
+- Call `close_active_timers(baby_id, db, exclude_model=SleepEvent)` before creating
+- Include `auto_closed` list in the response
+
+Burp creation does NOT call this helper.
 
 ## Acceptance Criteria
-Contexts provide data to children. Persona and baby selection survive page refresh.
+- Starting a feed while a sleep is active: sleep gets ended_at=now()
+- Starting a sleep while a feed is active: feed gets ended_at=now()
+- Starting a feed while a feed is active: previous feed gets ended_at=now()
+- auto_closed list in response is accurate
+- No conflict with burp timers
+- `python -m pytest babytracker/backend/tests/ -v` passes
 
 ## Verify Scope
-both
+backend

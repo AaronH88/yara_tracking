@@ -1,22 +1,31 @@
-# Task 3.1 — useTimer Hook
+# Task 3.1 — Feed Timer Pause/Resume UI
 
 ## Phase
 3
 
 ## Description
-In `hooks/useTimer.js`:
+Update `components/timers/FeedTimer.jsx` and `components/timers/ActiveTimer.jsx`:
 
-```js
-// useTimer(startedAt: ISO string | null) → { elapsed: string, isRunning: bool }
-// elapsed format: "1h 23m" or "45m" or "2h 04m 32s" (seconds shown when < 2 min)
-// Updates every second when isRunning
-// Returns isRunning: false and elapsed: null when startedAt is null
-```
+**ActiveTimer.jsx:**
+- Accept new props: `pausedSeconds`, `isPaused`, `pausedAt`
+- Elapsed calculation: `(now - startedAt) - pausedSeconds` when running
+- When paused: freeze display at `(pausedAt - startedAt) - pausedSeconds`
+- Show "PAUSED" badge on timer when isPaused=true
 
-Use `setInterval` in `useEffect`, clean up on unmount. Calculate elapsed from `startedAt` to `Date.now()` each tick.
+**FeedTimer.jsx:**
+- When active feed is running: show three buttons — "⏸ Pause", "⏹ Stop", and (if breast) "Switch →"
+- When active feed is paused: show "▶ Resume" and "⏹ Stop" (no Switch when paused)
+- Pause button calls `POST /feeds/{id}/pause`, updates local state
+- Resume button calls `POST /feeds/{id}/resume`, updates local state
+- Update `useActiveEvents` hook to return `paused_seconds`, `is_paused`, `paused_at` fields
 
 ## Acceptance Criteria
-Hook ticks every second. Correct elapsed format. Cleans up interval on unmount.
+- Pause freezes timer display at correct elapsed
+- Resume continues from correct elapsed
+- "PAUSED" badge visible when paused
+- Switch button hidden when paused
+- Both phones see paused state within 10s polling
+- `cd frontend && npm test -- --watchAll=false` passes
 
 ## Verify Scope
 frontend

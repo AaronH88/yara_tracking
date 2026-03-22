@@ -1,45 +1,46 @@
-# Task 7.1 — LXC Deployment Script
+# Task 7.1 — Insights Component
 
 ## Phase
 7
 
 ## Description
-Create `deploy/setup.sh` — a script to run on a fresh Ubuntu 24.04 LXC:
+Create `components/Insights.jsx`:
 
-```bash
-# Install system deps
-apt update && apt install -y python3.12 python3.12-venv nodejs npm sqlite3
+Fetches `GET /api/v1/babies/{baby_id}/insights` on mount and every 5 minutes.
+Shows a skeleton loader while fetching.
+Does not render if `has_enough_data=false` (baby has less than 2 days of data).
 
-# Create service user
-useradd -r -s /bin/false babytracker
-mkdir -p /opt/babytracker /var/lib/babytracker
-chown babytracker:babytracker /var/lib/babytracker
+Renders three cards and an alerts section:
 
-# Install Python deps
-python3.12 -m venv /opt/babytracker/venv
-/opt/babytracker/venv/bin/pip install -r /opt/babytracker/backend/requirements.txt
+**Feeds card:**
+- "Feeds since midnight: 6"
+- "This week avg: 11/day"
 
-# Build frontend
-cd /opt/babytracker/frontend && npm ci && npm run build
+**Sleep card:**
+- "Sleep last 24h: 14h 7m"
+- "Naps today: 3"
+- "Longest stretch last night: 3h 5m"
 
-# Install systemd service
-cp deploy/babytracker.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable babytracker
-systemctl start babytracker
-```
+**Nappies card:**
+- "Wet nappies today: 4 (avg: 6)"
+- "Last dirty: today" (amber if 1 day ago, red if 2+ days)
 
-Create `deploy/babytracker.service` (systemd unit file as specified in architecture doc).
+**Alerts section** (only rendered when alerts.length > 0):
+- Each alert as a chip with appropriate icon
+- warning type: 🚨 amber chip
+- info type: ℹ️ blue chip / 🎉 for positive
 
-Create `deploy/update.sh` — a script for subsequent deploys:
-```bash
-# Pull code (or rsync from dev machine)
-# Rebuild frontend
-# Restart service
-```
+Add Insights component to the bottom of `pages/Dashboard.jsx`.
 
 ## Acceptance Criteria
-Fresh LXC can be set up from scratch with one script. Service starts on boot. SQLite file is not in the app directory (won't get wiped on redeploy).
+- All insight values render correctly
+- Skeleton shown while loading
+- No render when has_enough_data=false
+- Alerts section hidden when no alerts
+- Each card renders correct values with correct units
+- Dirty nappy last seen changes colour correctly
+- Refreshes every 5 minutes
+- `cd frontend && npm test -- --watchAll=false` passes
 
 ## Verify Scope
-backend
+both
