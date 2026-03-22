@@ -18,6 +18,9 @@ vi.mock("../components/timers/FeedTimer", () => ({
 vi.mock("../components/timers/SleepTimer", () => ({
   default: () => <div data-testid="sleep-timer">SleepTimer</div>,
 }));
+vi.mock("../components/timers/BurpTimer", () => ({
+  default: () => <div data-testid="burp-timer">BurpTimer</div>,
+}));
 vi.mock("../components/LogPastEventModal", () => ({
   default: ({ onClose }) => (
     <div data-testid="log-past-event-modal">
@@ -35,11 +38,11 @@ import { useActiveEvents } from "../hooks/useActiveEvents";
 const BABY = { id: 42, name: "TestBaby" };
 const PERSONA = { id: 7, name: "Mom" };
 
-function setupDefaults({ activeFeed = null, activeSleep = null } = {}) {
+function setupDefaults({ activeFeed = null, activeSleep = null, activeBurp = null } = {}) {
   const refetch = vi.fn(() => Promise.resolve());
   useBaby.mockReturnValue({ selectedBaby: BABY });
   usePersona.mockReturnValue({ persona: PERSONA });
-  useActiveEvents.mockReturnValue({ activeFeed, activeSleep, refetch });
+  useActiveEvents.mockReturnValue({ activeFeed, activeSleep, activeBurp, refetch });
   return { refetch };
 }
 
@@ -90,7 +93,7 @@ describe("Dashboard — no baby selected", () => {
     render(<Dashboard />);
 
     expect(screen.queryByRole("button", { name: /wet/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /log feed/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /feed/i })).not.toBeInTheDocument();
   });
 });
 
@@ -297,38 +300,38 @@ describe("Dashboard — diaper quick log", () => {
 // ---- Quick Log — Feed/Sleep shortcuts ----
 
 describe("Dashboard — feed and sleep shortcuts", () => {
-  it("renders Log Feed button", () => {
+  it("renders Feed button", () => {
     setupDefaults();
     render(<Dashboard />);
 
-    expect(screen.getByRole("button", { name: /log feed/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /feed/i })).toBeInTheDocument();
   });
 
-  it("renders Log Sleep button", () => {
+  it("renders Sleep button", () => {
     setupDefaults();
     render(<Dashboard />);
 
-    expect(screen.getByRole("button", { name: /log sleep/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sleep/i })).toBeInTheDocument();
   });
 
-  it("shows FeedTimer when Log Feed is clicked", async () => {
+  it("shows FeedTimer when Feed is clicked", async () => {
     setupDefaults();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<Dashboard />);
 
-    await user.click(screen.getByRole("button", { name: /log feed/i }));
+    await user.click(screen.getByRole("button", { name: /feed/i }));
 
     expect(screen.getByTestId("feed-timer")).toBeInTheDocument();
     // Dashboard quick log should be gone
     expect(screen.queryByText(/quick log/i)).not.toBeInTheDocument();
   });
 
-  it("shows SleepTimer when Log Sleep is clicked", async () => {
+  it("shows SleepTimer when Sleep is clicked", async () => {
     setupDefaults();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<Dashboard />);
 
-    await user.click(screen.getByRole("button", { name: /log sleep/i }));
+    await user.click(screen.getByRole("button", { name: /sleep/i }));
 
     expect(screen.getByTestId("sleep-timer")).toBeInTheDocument();
     expect(screen.queryByText(/quick log/i)).not.toBeInTheDocument();
@@ -339,7 +342,7 @@ describe("Dashboard — feed and sleep shortcuts", () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<Dashboard />);
 
-    await user.click(screen.getByRole("button", { name: /log feed/i }));
+    await user.click(screen.getByRole("button", { name: /feed/i }));
 
     expect(screen.getByText(/back to dashboard/i)).toBeInTheDocument();
   });
@@ -349,7 +352,7 @@ describe("Dashboard — feed and sleep shortcuts", () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<Dashboard />);
 
-    await user.click(screen.getByRole("button", { name: /log feed/i }));
+    await user.click(screen.getByRole("button", { name: /feed/i }));
     await user.click(screen.getByText(/back to dashboard/i));
 
     expect(screen.getByText(/quick log/i)).toBeInTheDocument();
@@ -360,7 +363,7 @@ describe("Dashboard — feed and sleep shortcuts", () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<Dashboard />);
 
-    await user.click(screen.getByRole("button", { name: /log sleep/i }));
+    await user.click(screen.getByRole("button", { name: /sleep/i }));
     await user.click(screen.getByText(/back to dashboard/i));
 
     expect(screen.getByText(/quick log/i)).toBeInTheDocument();

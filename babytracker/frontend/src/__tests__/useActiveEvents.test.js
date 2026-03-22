@@ -4,8 +4,9 @@ import { useActiveEvents } from "../hooks/useActiveEvents";
 
 const FEED_DATA = { id: 1, type: "feed", started_at: "2026-03-14T10:00:00Z" };
 const SLEEP_DATA = { id: 2, type: "sleep", started_at: "2026-03-14T09:00:00Z" };
+const BURP_DATA = { id: 3, type: "burp", started_at: "2026-03-14T11:00:00Z" };
 
-function mockFetchResponses({ feed = null, sleep = null, feedStatus = 200, sleepStatus = 200 } = {}) {
+function mockFetchResponses({ feed = null, sleep = null, burp = null, feedStatus = 200, sleepStatus = 200, burpStatus = 200 } = {}) {
   return (url) => {
     if (url.includes("/feeds/active")) {
       return Promise.resolve({
@@ -19,6 +20,13 @@ function mockFetchResponses({ feed = null, sleep = null, feedStatus = 200, sleep
         ok: sleepStatus >= 200 && sleepStatus < 300,
         status: sleepStatus,
         json: () => Promise.resolve(sleep),
+      });
+    }
+    if (url.includes("/burps/active")) {
+      return Promise.resolve({
+        ok: burpStatus >= 200 && burpStatus < 300,
+        status: burpStatus,
+        json: () => Promise.resolve(burp),
       });
     }
     return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve(null) });
@@ -40,16 +48,18 @@ describe("useActiveEvents", () => {
 
   // --- Null/missing babyId ---
 
-  it("returns null for both events when babyId is null", () => {
+  it("returns null for all events when babyId is null", () => {
     const { result } = renderHook(() => useActiveEvents(null));
     expect(result.current.activeFeed).toBeNull();
     expect(result.current.activeSleep).toBeNull();
+    expect(result.current.activeBurp).toBeNull();
   });
 
-  it("returns null for both events when babyId is undefined", () => {
+  it("returns null for all events when babyId is undefined", () => {
     const { result } = renderHook(() => useActiveEvents(undefined));
     expect(result.current.activeFeed).toBeNull();
     expect(result.current.activeSleep).toBeNull();
+    expect(result.current.activeBurp).toBeNull();
   });
 
   it("does not call fetch when babyId is null", async () => {
@@ -61,9 +71,9 @@ describe("useActiveEvents", () => {
 
   // --- Fetching active events ---
 
-  it("fetches active feed and sleep on mount", async () => {
+  it("fetches active feed, sleep, and burp on mount", async () => {
     vi.spyOn(global, "fetch").mockImplementation(
-      mockFetchResponses({ feed: FEED_DATA, sleep: SLEEP_DATA })
+      mockFetchResponses({ feed: FEED_DATA, sleep: SLEEP_DATA, burp: BURP_DATA })
     );
 
     const { result } = renderHook(() => useActiveEvents("baby-1"));
@@ -71,10 +81,12 @@ describe("useActiveEvents", () => {
     await waitFor(() => {
       expect(result.current.activeFeed).toEqual(FEED_DATA);
       expect(result.current.activeSleep).toEqual(SLEEP_DATA);
+      expect(result.current.activeBurp).toEqual(BURP_DATA);
     });
 
     expect(global.fetch).toHaveBeenCalledWith("/api/v1/babies/baby-1/feeds/active");
     expect(global.fetch).toHaveBeenCalledWith("/api/v1/babies/baby-1/sleeps/active");
+    expect(global.fetch).toHaveBeenCalledWith("/api/v1/babies/baby-1/burps/active");
   });
 
   it("returns null for feed when no active feed (404)", async () => {
@@ -90,6 +102,20 @@ describe("useActiveEvents", () => {
     expect(result.current.activeFeed).toBeNull();
   });
 
+  it("returns null for burp when no active burp (404)", async () => {
+    vi.spyOn(global, "fetch").mockImplementation(
+      mockFetchResponses({ feed: FEED_DATA, sleep: SLEEP_DATA, burp: null, burpStatus: 404 })
+    );
+
+    const { result } = renderHook(() => useActiveEvents("baby-1"));
+
+    await waitFor(() => {
+      expect(result.current.activeFeed).toEqual(FEED_DATA);
+      expect(result.current.activeSleep).toEqual(SLEEP_DATA);
+    });
+    expect(result.current.activeBurp).toBeNull();
+  });
+
   it("returns null for sleep when no active sleep (404)", async () => {
     vi.spyOn(global, "fetch").mockImplementation(
       mockFetchResponses({ feed: FEED_DATA, sleep: null, sleepStatus: 404 })
@@ -103,9 +129,9 @@ describe("useActiveEvents", () => {
     expect(result.current.activeSleep).toBeNull();
   });
 
-  it("returns null for both when both return non-ok status", async () => {
+  it("returns null for all when all return non-ok status", async () => {
     vi.spyOn(global, "fetch").mockImplementation(
-      mockFetchResponses({ feedStatus: 404, sleepStatus: 500 })
+      mockFetchResponses({ feedStatus: 404, sleepStatus: 500, burpStatus: 404 })
     );
 
     const { result } = renderHook(() => useActiveEvents("baby-1"));
@@ -114,6 +140,7 @@ describe("useActiveEvents", () => {
 
     expect(result.current.activeFeed).toBeNull();
     expect(result.current.activeSleep).toBeNull();
+    expect(result.current.activeBurp).toBeNull();
   });
 
   // --- Polling ---
@@ -129,21 +156,21 @@ describe("useActiveEvents", () => {
     // Flush initial fetch
     await act(async () => {});
     const initialCallCount = global.fetch.mock.calls.length;
-    expect(initialCallCount).toBe(2); // one for feed, one for sleep
+    expect(initialCallCount).toBe(3); // one for feed, one for sleep, one for burp
 
     // Advance 10 seconds - should poll again
     await act(async () => {
       vi.advanceTimersByTime(10_000);
     });
     await act(async () => {});
-    expect(global.fetch).toHaveBeenCalledTimes(4); // 2 initial + 2 poll
+    expect(global.fetch).toHaveBeenCalledTimes(6); // 3 initial + 3 poll
 
     // Advance another 10 seconds
     await act(async () => {
       vi.advanceTimersByTime(10_000);
     });
     await act(async () => {});
-    expect(global.fetch).toHaveBeenCalledTimes(6);
+    expect(global.fetch).toHaveBeenCalledTimes(9);
   });
 
   it("updates state when polling returns new data", async () => {
@@ -198,7 +225,7 @@ describe("useActiveEvents", () => {
     await act(async () => {
       await result.current.refetch();
     });
-    expect(global.fetch.mock.calls.length).toBe(callsAfterInit + 2);
+    expect(global.fetch.mock.calls.length).toBe(callsAfterInit + 3);
   });
 
   it("refetch is a stable function reference across rerenders", () => {
@@ -329,6 +356,7 @@ describe("useActiveEvents", () => {
     await waitFor(() => {
       expect(result.current.activeFeed).toBeNull();
       expect(result.current.activeSleep).toBeNull();
+      expect(result.current.activeBurp).toBeNull();
     });
   });
 
@@ -369,6 +397,7 @@ describe("useActiveEvents", () => {
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith("/api/v1/babies/abc-123/feeds/active");
       expect(global.fetch).toHaveBeenCalledWith("/api/v1/babies/abc-123/sleeps/active");
+      expect(global.fetch).toHaveBeenCalledWith("/api/v1/babies/abc-123/burps/active");
     });
   });
 });

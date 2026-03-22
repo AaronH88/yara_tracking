@@ -22,7 +22,7 @@ Spec files live in: `tasks/specs/`
 
 ---
 
-→ NEXT: Task 4.1 — DEV
+→ NEXT: Task 4.1 — TEST
 
 ---
 
@@ -611,7 +611,7 @@ Spec files live in: `tasks/specs/`
 
 ## Task 4.1 — Burp Timer Component and Dashboard Integration
 
-- [ ] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
+- [x] **DEV** — `persona: tasks/personas/developer.md` — attempt 1 of 3
   Read spec: `tasks/specs/task-4.1.md`
   If retrying, read feedback: _(none yet)_
   Implement the task. When done:
