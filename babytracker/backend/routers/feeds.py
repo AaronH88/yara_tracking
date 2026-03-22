@@ -1,4 +1,4 @@
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
@@ -100,3 +100,46 @@ async def delete_feed(
         raise HTTPException(status_code=404, detail="Feed not found")
     await db.delete(feed)
     await db.commit()
+
+
+@router.post("/babies/{baby_id}/feeds/{feed_id}/pause", response_model=FeedEventResponse)
+async def pause_feed(
+    baby_id: int,
+    feed_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    feed = await db.get(FeedEvent, feed_id)
+    if not feed or feed.baby_id != baby_id:
+        raise HTTPException(status_code=404, detail="Feed not found")
+    if feed.ended_at is not None:
+        raise HTTPException(status_code=409, detail="Feed is already ended")
+    if feed.is_paused:
+        raise HTTPException(status_code=409, detail="Feed is already paused")
+    feed.is_paused = True
+    feed.paused_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(feed)
+    return feed
+
+
+@router.post("/babies/{baby_id}/feeds/{feed_id}/resume", response_model=FeedEventResponse)
+async def resume_feed(
+    baby_id: int,
+    feed_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    feed = await db.get(FeedEvent, feed_id)
+    if not feed or feed.baby_id != baby_id:
+        raise HTTPException(status_code=404, detail="Feed not found")
+    if feed.ended_at is not None:
+        raise HTTPException(status_code=409, detail="Feed is already ended")
+    if not feed.is_paused:
+        raise HTTPException(status_code=409, detail="Feed is not paused")
+    now = datetime.now(timezone.utc)
+    pause_duration = int((now - feed.paused_at).total_seconds())
+    feed.paused_seconds = (feed.paused_seconds or 0) + pause_duration
+    feed.is_paused = False
+    feed.paused_at = None
+    await db.commit()
+    await db.refresh(feed)
+    return feed
