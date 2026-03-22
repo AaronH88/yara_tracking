@@ -282,6 +282,13 @@ class MilestoneResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class WakeWindowResponse(BaseModel):
+    is_sleeping: bool
+    awake_since: datetime | None
+    awake_minutes: int
+    sleep_started_at: datetime | None
+
+
 class SettingResponse(BaseModel):
     key: str
     value: str | None
