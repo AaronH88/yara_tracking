@@ -167,3 +167,242 @@ describe("DiaperForm", () => {
     });
   });
 });
+
+// ---- Wet Amount selector ----
+
+describe("DiaperForm — wet amount selector", () => {
+  it("shows wet amount buttons when type is wet", async () => {
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByText("Wet Amount")).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Small" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Medium" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Heavy" })).toBeInTheDocument();
+  });
+
+  it("shows wet amount buttons when type is both", async () => {
+    const user = userEvent.setup();
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "both");
+    expect(screen.getByText("Wet Amount")).toBeInTheDocument();
+  });
+
+  it("hides wet amount buttons when type is dirty", async () => {
+    const user = userEvent.setup();
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "dirty");
+    expect(screen.queryByText("Wet Amount")).not.toBeInTheDocument();
+  });
+
+  it("selects a wet amount on click", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByText("Wet Amount")).toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Medium" }));
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.wet_amount).toBe("medium");
+    });
+  });
+
+  it("toggles wet amount off when clicked again (deselect)", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByText("Wet Amount")).toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Small" }));
+    await user.click(screen.getByRole("button", { name: "Small" }));
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.wet_amount).toBeNull();
+    });
+  });
+
+  it("sends null wet_amount when type is dirty", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+
+    // Select a wet amount first
+    await user.click(screen.getByRole("button", { name: "Heavy" }));
+    // Then switch to dirty
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "dirty");
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.wet_amount).toBeNull();
+    });
+  });
+
+  it("pre-fills wet amount from existing event", async () => {
+    const event = { id: 5, user_id: 2, type: "wet", wet_amount: "heavy", logged_at: "2024-01-15T10:00:00Z", notes: "" };
+    const onSaved = vi.fn();
+    render(<DiaperForm event={event} onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByText("Wet Amount")).toBeInTheDocument());
+
+    // Submit without changing anything — should preserve pre-filled value
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    await waitFor(() => {
+      const patchCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "PATCH"
+      );
+      const body = JSON.parse(patchCall[1].body);
+      expect(body.wet_amount).toBe("heavy");
+    });
+  });
+});
+
+// ---- Dirty Colour selector ----
+
+describe("DiaperForm — dirty colour selector", () => {
+  it("shows colour buttons when type is dirty", async () => {
+    const user = userEvent.setup();
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "dirty");
+    expect(screen.getByText("Colour")).toBeInTheDocument();
+    expect(screen.getByText("Yellow")).toBeInTheDocument();
+    expect(screen.getByText("Green")).toBeInTheDocument();
+    expect(screen.getByText("Brown")).toBeInTheDocument();
+    expect(screen.getByText("Other")).toBeInTheDocument();
+  });
+
+  it("shows colour buttons when type is both", async () => {
+    const user = userEvent.setup();
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "both");
+    expect(screen.getByText("Colour")).toBeInTheDocument();
+  });
+
+  it("hides colour buttons when type is wet", async () => {
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    expect(screen.queryByText("Colour")).not.toBeInTheDocument();
+  });
+
+  it("selects a dirty colour on click", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "dirty");
+
+    await user.click(screen.getByText("Brown"));
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.dirty_colour).toBe("brown");
+    });
+  });
+
+  it("toggles dirty colour off when clicked again", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "dirty");
+
+    await user.click(screen.getByText("Green"));
+    await user.click(screen.getByText("Green"));
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.dirty_colour).toBeNull();
+    });
+  });
+
+  it("sends null dirty_colour when type is wet", async () => {
+    const onSaved = vi.fn();
+    const user = userEvent.setup();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.dirty_colour).toBeNull();
+    });
+  });
+
+  it("pre-fills dirty colour from existing event", async () => {
+    const event = { id: 6, user_id: 2, type: "dirty", dirty_colour: "green", logged_at: "2024-01-15T10:00:00Z", notes: "" };
+    const onSaved = vi.fn();
+    render(<DiaperForm event={event} onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByText("Colour")).toBeInTheDocument());
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    await waitFor(() => {
+      const patchCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "PATCH"
+      );
+      const body = JSON.parse(patchCall[1].body);
+      expect(body.dirty_colour).toBe("green");
+    });
+  });
+
+  it("shows both wet amount and colour when type is both", async () => {
+    const user = userEvent.setup();
+    render(<DiaperForm onSaved={vi.fn()} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "both");
+    expect(screen.getByText("Wet Amount")).toBeInTheDocument();
+    expect(screen.getByText("Colour")).toBeInTheDocument();
+  });
+
+  it("submits both wet_amount and dirty_colour when type is both", async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    render(<DiaperForm onSaved={onSaved} />);
+    await waitFor(() => expect(screen.getByDisplayValue("Wet")).toBeInTheDocument());
+    await user.selectOptions(screen.getByDisplayValue("Wet"), "both");
+
+    await user.click(screen.getByRole("button", { name: "Medium" }));
+    await user.click(screen.getByText("Yellow"));
+    await user.click(screen.getByRole("button", { name: "Create" }));
+
+    await waitFor(() => {
+      const postCall = global.fetch.mock.calls.find(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      const body = JSON.parse(postCall[1].body);
+      expect(body.wet_amount).toBe("medium");
+      expect(body.dirty_colour).toBe("yellow");
+    });
+  });
+});

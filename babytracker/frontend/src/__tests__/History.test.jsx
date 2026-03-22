@@ -406,6 +406,82 @@ describe("History — quality icon display", () => {
   });
 });
 
+// ---- Wet amount and dirty colour display ----
+
+describe("History — wet amount and dirty colour display", () => {
+  it("shows wet amount label for diaper with wet_amount set", async () => {
+    global.fetch = mockFetch({
+      diapers: [makeDiaper({ wet_amount: "heavy" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Heavy")).toBeInTheDocument();
+    });
+  });
+
+  it("shows dirty colour label for diaper with dirty_colour set", async () => {
+    global.fetch = mockFetch({
+      diapers: [makeDiaper({ type: "dirty", dirty_colour: "brown" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Dirty")).toBeInTheDocument();
+    });
+    // The label includes an emoji prefix
+    expect(screen.getByText(/Brown/)).toBeInTheDocument();
+  });
+
+  it("shows both amount and colour for 'both' type diapers", async () => {
+    global.fetch = mockFetch({
+      diapers: [makeDiaper({ type: "both", wet_amount: "small", dirty_colour: "yellow" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Small")).toBeInTheDocument();
+      expect(screen.getByText(/Yellow/)).toBeInTheDocument();
+    });
+  });
+
+  it("does not show amount label when wet_amount is null", async () => {
+    global.fetch = mockFetch({
+      diapers: [makeDiaper({ wet_amount: null })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Wet")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("Small")).not.toBeInTheDocument();
+    expect(screen.queryByText("Medium")).not.toBeInTheDocument();
+    expect(screen.queryByText("Heavy")).not.toBeInTheDocument();
+  });
+
+  it("does not show colour label when dirty_colour is null", async () => {
+    global.fetch = mockFetch({
+      diapers: [makeDiaper({ type: "dirty", dirty_colour: null })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Dirty")).toBeInTheDocument();
+    });
+    // None of the colour labels should appear
+    expect(screen.queryByText(/Yellow/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Green/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Brown/)).not.toBeInTheDocument();
+  });
+
+  it("does not show wet_amount label for non-diaper events", async () => {
+    global.fetch = mockFetch({
+      feeds: [makeFeed({ wet_amount: "heavy" })],
+    });
+    render(<History />);
+    await waitFor(() => {
+      expect(screen.getByText("Bottle")).toBeInTheDocument();
+    });
+    // Feed events should not render wet amount even if field exists
+    expect(screen.queryByText("Heavy")).not.toBeInTheDocument();
+  });
+});
+
 // ---- Type filtering ----
 
 describe("History — type filter", () => {

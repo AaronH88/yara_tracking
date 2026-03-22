@@ -29,6 +29,15 @@ vi.mock("../components/LogPastEventModal", () => ({
     </div>
   ),
 }));
+vi.mock("../components/forms/DiaperForm", () => ({
+  default: ({ event, onSaved, onCancel }) => (
+    <div data-testid="diaper-form">
+      <span data-testid="diaper-form-event">{JSON.stringify(event)}</span>
+      <button onClick={() => onSaved && onSaved()}>MockSaveDiaper</button>
+      <button onClick={() => onCancel && onCancel()}>MockCancelDiaper</button>
+    </div>
+  ),
+}));
 
 import Dashboard from "../pages/Dashboard";
 import { useBaby } from "../context/BabyContext";
@@ -608,5 +617,194 @@ describe("Dashboard — Log Past Event", () => {
     render(<Dashboard />);
 
     expect(screen.queryByRole("button", { name: /log past event/i })).not.toBeInTheDocument();
+  });
+});
+
+// ---- Add Details chip after diaper quick log ----
+
+describe("Dashboard — add details chip", () => {
+  it("shows 'Add details' chip after quick-logging a diaper", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "wet", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+  });
+
+  it("dismisses the chip when the close button is clicked", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "wet", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByLabelText("Dismiss"));
+
+    expect(screen.queryByText(/add details/i)).not.toBeInTheDocument();
+  });
+
+  it("opens DiaperForm modal with pre-filled event when 'Add details' is clicked", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "dirty", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /dirty/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/add details/i));
+
+    expect(screen.getByTestId("diaper-form")).toBeInTheDocument();
+    // Check that the event was passed correctly
+    const eventData = JSON.parse(screen.getByTestId("diaper-form-event").textContent);
+    expect(eventData.id).toBe(99);
+    expect(eventData.type).toBe("dirty");
+  });
+
+  it("hides 'Add details' chip when 'Add details' is clicked (chip is dismissed)", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "wet", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/add details/i));
+
+    // Chip should be gone
+    expect(screen.queryByText(/add details/i)).not.toBeInTheDocument();
+    // But form should be open
+    expect(screen.getByTestId("diaper-form")).toBeInTheDocument();
+  });
+
+  it("closes the DiaperForm modal and refetches when saved", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "wet", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/add details/i));
+    expect(screen.getByTestId("diaper-form")).toBeInTheDocument();
+
+    await user.click(screen.getByText("MockSaveDiaper"));
+
+    expect(screen.queryByTestId("diaper-form")).not.toBeInTheDocument();
+  });
+
+  it("closes the DiaperForm modal when cancelled", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "wet", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/add details/i));
+    await user.click(screen.getByText("MockCancelDiaper"));
+
+    expect(screen.queryByTestId("diaper-form")).not.toBeInTheDocument();
+  });
+
+  it("does not show 'Add details' chip when POST fails", async () => {
+    setupDefaults();
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: false, status: 500 });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+
+    // Wait for the POST to complete
+    await waitFor(() => {
+      const postCalls = global.fetch.mock.calls.filter(
+        ([url, opts]) => opts?.method === "POST"
+      );
+      expect(postCalls).toHaveLength(1);
+    });
+
+    expect(screen.queryByText(/add details/i)).not.toBeInTheDocument();
+  });
+
+  it("shows 'Nappy Details' heading in the modal", async () => {
+    setupDefaults();
+    const createdDiaper = { id: 99, type: "wet", user_id: PERSONA.id };
+    global.fetch = vi.fn((url, opts) => {
+      if (opts?.method === "POST" && url.includes("/diapers")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(createdDiaper) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole("button", { name: /wet/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/add details/i)).toBeInTheDocument();
+    });
+    await user.click(screen.getByText(/add details/i));
+
+    expect(screen.getByText("Nappy Details")).toBeInTheDocument();
   });
 });
