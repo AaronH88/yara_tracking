@@ -8,6 +8,7 @@ import BurpTimer from "../components/timers/BurpTimer";
 import LogPastEventModal from "../components/LogPastEventModal";
 import DiaperForm from "../components/forms/DiaperForm";
 import WakeWindow from "../components/WakeWindow";
+import Insights from "../components/Insights";
 
 const DIAPER_TYPES = [
   { type: "wet", label: "Wet" },
@@ -371,6 +372,8 @@ export default function Dashboard() {
           />
         </div>
       </section>
+
+      <Insights />
 
       {showLogPastEvent && (
         <LogPastEventModal
