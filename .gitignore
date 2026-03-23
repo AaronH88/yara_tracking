@@ -26,3 +26,5 @@ tasks/feedback/
 # Test files
 hello.txt
 tasks/hello.md
+tasks/TASK_LIST.md
+tasks/BUILD_STATUS.md
