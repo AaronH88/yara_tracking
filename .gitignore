@@ -3,6 +3,7 @@ babytracker/venv/
 babytracker/backend/venv/
 babytracker/backend/__pycache__/
 babytracker/backend/**/__pycache__/
+babytracker/backend/.testvenv
 *.pyc
 *.pyo
 *.db
@@ -28,3 +29,7 @@ hello.txt
 tasks/hello.md
 tasks/TASK_LIST.md
 tasks/BUILD_STATUS.md
+out.txt
+tmp
+tmp2.txt
+design_options/
