@@ -3,11 +3,16 @@ set -euo pipefail
 
 APP_DIR="/opt/babytracker"
 SERVICE_FILE="babytracker.service"
+DB_PATH="/var/lib/babytracker/db.sqlite"
 
 echo "=== Baby Tracker — Update Deploy ==="
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Backup database before any changes
+echo "Creating database backup..."
+"$SCRIPT_DIR/backup.sh"
 
 # Stop service during update
 echo "Stopping service..."
@@ -20,6 +25,15 @@ rsync -a --delete \
     --exclude node_modules \
     --exclude dist \
     "$REPO_DIR/babytracker/frontend/" "$APP_DIR/frontend/"
+
+# Run database migrations if they exist
+echo "Checking for database migrations..."
+for migration_script in "$APP_DIR/backend"/migrate_*.py; do
+    if [ -f "$migration_script" ]; then
+        echo "Running migration: $(basename "$migration_script")"
+        "$APP_DIR/venv/bin/python" "$migration_script" "$DB_PATH" <<< "yes"
+    fi
+done
 
 # Update Python dependencies
 echo "Updating Python dependencies..."
