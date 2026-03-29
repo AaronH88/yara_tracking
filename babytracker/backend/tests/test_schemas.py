@@ -168,9 +168,9 @@ class TestFeedEventCreate:
         assert f.notes is None
 
     def test_started_at_defaults_to_now(self):
-        before = datetime.utcnow()
+        before = datetime.now(timezone.utc)
         f = FeedEventCreate(user_id=1, type="breast")
-        after = datetime.utcnow()
+        after = datetime.now(timezone.utc)
         assert before <= f.started_at <= after
 
     def test_started_at_can_be_provided_explicitly(self):
@@ -256,9 +256,9 @@ class TestSleepEventCreate:
         assert s.notes is None
 
     def test_started_at_defaults_to_now(self):
-        before = datetime.utcnow()
+        before = datetime.now(timezone.utc)
         s = SleepEventCreate(user_id=1, type="nap")
-        after = datetime.utcnow()
+        after = datetime.now(timezone.utc)
         assert before <= s.started_at <= after
 
     def test_started_at_can_be_provided_explicitly(self):

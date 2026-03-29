@@ -1,6 +1,6 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 
 
 class BabyCreate(BaseModel):
@@ -22,7 +22,15 @@ class BabyResponse(BaseModel):
     gender: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class UserCreate(BaseModel):
@@ -38,13 +46,21 @@ class UserResponse(BaseModel):
     name: str
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class FeedEventCreate(BaseModel):
     user_id: int
     type: str
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: datetime | None = None
     amount_oz: float | None = None
     amount_ml: float | None = None
@@ -85,7 +101,16 @@ class FeedEventResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('started_at', 'ended_at', 'paused_at', 'created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        # Ensure timezone-aware and return as ISO string with Z suffix
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class AutoClosedItem(BaseModel):
@@ -101,7 +126,7 @@ class FeedEventCreateResponse(FeedEventResponse):
 class SleepEventCreate(BaseModel):
     user_id: int
     type: str
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: datetime | None = None
     notes: str | None = None
 
@@ -123,7 +148,15 @@ class SleepEventResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('started_at', 'ended_at', 'created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class SleepEventCreateResponse(SleepEventResponse):
@@ -158,12 +191,20 @@ class DiaperEventResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('logged_at', 'created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class BurpEventCreate(BaseModel):
     user_id: int | None = None
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: datetime | None = None
     notes: str | None = None
 
@@ -183,7 +224,15 @@ class BurpEventResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('started_at', 'ended_at', 'created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class BurpEventCreateResponse(BurpEventResponse):
@@ -223,7 +272,15 @@ class PumpEventResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('logged_at', 'created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class MeasurementCreate(BaseModel):
@@ -254,7 +311,15 @@ class MeasurementResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class MilestoneCreate(BaseModel):
@@ -279,7 +344,15 @@ class MilestoneResponse(BaseModel):
     notes: str | None
     created_at: datetime | None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('created_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class WakeWindowResponse(BaseModel):
@@ -287,6 +360,14 @@ class WakeWindowResponse(BaseModel):
     awake_since: datetime | None
     awake_minutes: int
     sleep_started_at: datetime | None
+
+    @field_serializer('awake_since', 'sleep_started_at', when_used='json')
+    def serialize_datetime(self, dt: datetime | None) -> str | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat().replace('+00:00', 'Z')
 
 
 class SettingResponse(BaseModel):
